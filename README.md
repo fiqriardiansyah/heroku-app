@@ -5,7 +5,13 @@
 -   TailwindCss
 -   CommitLint
 
-# GIT STEP
+## START DEV
+
+-   git clone ...
+-   npx husky-init & npm install
+-   npm run start
+
+## GIT STEP
 
 -   git add .
 -   npm run commit, for automatic format OR regular git commit -m ""
