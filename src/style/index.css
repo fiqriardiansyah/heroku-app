@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+    @apply !font-poppins;
+}
+
+body {
+    @apply !font-poppins;
+}
+
+@layer {
+    .CONTAINER {
+        @apply container w-full px-4 md:px-6 lg:px-10 xl:px-12 mx-auto;
+    }
+    .BUTTON-BASE {
+        @apply !capitalize !font-poppins;
+    }
+    .BUTTON-PRIMARY-ROUND {
+        @apply BUTTON-BASE !rounded-full !shadow-none !font-normal !text-white !bg-primary !border-none;
+    }
+    .BUTTON-PRIMARY {
+        @apply BUTTON-BASE !rounded !shadow-none !font-normal !text-white !bg-primary !border-none;
+    }
+    .INPUT-GRAY {
+        @apply !bg-gray-200 !border-none !p-2 !px-4 !rounded-lg;
+    }
+    .INPUT-GRAY .ant-input {
+        @apply !bg-gray-200;
+    }
+}
