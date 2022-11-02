@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { UserProvider } from "context/user";
 import { StateProvider } from "context/state";
 import App from "./app";
 import "./style/index.css";
@@ -15,9 +16,11 @@ const root = ReactDOM.createRoot(
 root.render(
     <React.StrictMode>
         <QueryClientProvider client={queryClient}>
-            <StateProvider>
-                <App />
-            </StateProvider>
+            <UserProvider>
+                <StateProvider>
+                    <App />
+                </StateProvider>
+            </UserProvider>
             <ReactQueryDevtools />
         </QueryClientProvider>
     </React.StrictMode>

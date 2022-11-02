@@ -25,6 +25,7 @@
     },
     "plugins": ["react", "@typescript-eslint"],
     "rules": {
+        "no-underscore-dangle": "off",
         "linebreak-style": "off",
         "class-methods-use-this": "off",
         "react/prop-types": "off",

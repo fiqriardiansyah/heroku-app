@@ -13,8 +13,10 @@ import { SignUpEmail } from "models";
 import ControlledInputText from "components/form/controlled-inputs/controlled-input-text";
 import { SIGN_IN_PATH } from "utils/routes";
 import { Link } from "react-router-dom";
+import userService from "services/user";
 
 const schema: yup.SchemaOf<SignUpEmail> = yup.object().shape({
+    name: yup.string().required("Nama wajib diisi"),
     email: yup.string().required("Email wajib diisi"),
     password: yup.string().required("Password wajib diisi"),
 });
@@ -32,13 +34,22 @@ function SignUp() {
     });
 
     const signupMutation = useMutation(async (data: SignUpEmail) => {
-        const req = await authService.SignUpEmail(data);
-        return req;
+        const signup = await authService.SignUpEmail(data);
+        await userService.CreateUser({
+            name: data.name,
+            uid: signup.user.uid,
+        });
     });
 
     const signinGoogleMutation = useMutation(async () => {
-        const req = await authService.SignInGoogle();
-        return req;
+        const signin = await authService.SignInGoogle();
+        const user = await userService.GetUser(signin.user.uid);
+        if (!user) {
+            await userService.CreateUser({
+                name: signin.user.displayName || "",
+                uid: signin.user.uid,
+            });
+        }
     });
 
     const onSubmitHandler = handleSubmit((data) => {
@@ -69,6 +80,14 @@ function SignUp() {
                         onFinish={onSubmitHandler}
                     >
                         <Space direction="vertical" className="w-full">
+                            <ControlledInputText
+                                control={control}
+                                name="name"
+                                labelCol={{ xs: 24 }}
+                                label=""
+                                placeholder="Name"
+                                className="INPUT-GRAY"
+                            />
                             <ControlledInputText
                                 control={control}
                                 name="email"

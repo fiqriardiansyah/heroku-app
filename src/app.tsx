@@ -76,7 +76,7 @@ function App() {
                             />
                             <Route path={MY_JOB_PATH} element={<MyJob />} />
                             <Route
-                                path={SERVICE_HERO_PATH}
+                                path={`${SERVICE_HERO_PATH}/:uid/:id`}
                                 element={<DetailServiceHero />}
                             />
                             <Route
@@ -106,7 +106,7 @@ function App() {
                                 element={<DetailPost />}
                             />
                             <Route
-                                path={SERVICE_OWNER_PATH}
+                                path={`${SERVICE_OWNER_PATH}/:uid/:id`}
                                 element={<DetailServiceOwner />}
                             />
                         </>

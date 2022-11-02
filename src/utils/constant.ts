@@ -10,5 +10,14 @@ export const CURRENCY = [
         CcyMnrUnts: "2",
     },
 ];
+export const DOCUMENTS = {
+    users: "users",
+    services: "services",
+    services_data: "services_data",
+    assignment: "assignment",
+    posters: "posters",
+};
+export const SERVICE_ACTIVE = "1";
+export const SERVICE_DRAFT = "0";
 
 export default {};

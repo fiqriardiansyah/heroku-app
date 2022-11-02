@@ -68,8 +68,9 @@ function MenuNavigation() {
     const user = authService.CurrentUser();
     const { state, changeRole } = useContext(StateContext);
 
-    const logoutHandler = () => {
-        authService.Logout();
+    const logoutHandler = async () => {
+        await authService.Logout();
+        window.location.reload();
     };
 
     const switchRoleHandler = () => {

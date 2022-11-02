@@ -8,6 +8,7 @@ import {
     signOut,
     GoogleAuthProvider,
     signInWithPopup,
+    getIdToken,
 } from "firebase/auth";
 import { SignInEmail, SignUpEmail } from "../models/data";
 import { DEFAULT_ERROR } from "../utils/constant";

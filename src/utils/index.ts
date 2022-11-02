@@ -99,4 +99,13 @@ export default class Utils {
         }
         return isJpgOrPng && isLt2M;
     };
+
+    static parseTreeObjectToArray<T>(obj: any): T[] {
+        if (!obj) return [];
+        const parse = Object.keys(obj).map((key) => ({
+            ...obj[key],
+            id: key,
+        })) as T[];
+        return parse as T[];
+    }
 }

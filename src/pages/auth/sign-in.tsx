@@ -13,6 +13,7 @@ import { SignInEmail } from "models";
 import ControlledInputText from "components/form/controlled-inputs/controlled-input-text";
 import { SIGN_UP_PATH } from "utils/routes";
 import { Link } from "react-router-dom";
+import userService from "services/user";
 
 const schema: yup.SchemaOf<SignInEmail> = yup.object().shape({
     email: yup.string().required("Email wajib diisi"),
@@ -37,8 +38,14 @@ function SignIn() {
     });
 
     const signinGoogleMutation = useMutation(async () => {
-        const req = await authService.SignInGoogle();
-        return req;
+        const signin = await authService.SignInGoogle();
+        const user = await userService.GetUser(signin.user.uid);
+        if (!user) {
+            await userService.CreateUser({
+                name: signin.user.displayName || "",
+                uid: signin.user.uid,
+            });
+        }
     });
 
     const onSubmitHandler = handleSubmit((data) => {

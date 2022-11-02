@@ -8,7 +8,6 @@ class ConfigFirebase {
         storageBucket: string;
         messagingSenderId: string;
         appId: string;
-        measurementId: string;
     };
 
     app: FirebaseApp;
@@ -22,7 +21,6 @@ class ConfigFirebase {
             messagingSenderId: process.env
                 .REACT_APP_MESSAGING_SENDER_ID as string,
             appId: process.env.REACT_APP_APP_ID as string,
-            measurementId: process.env.REACT_APP_MEASUREMENT_ID as string,
         };
         this.app = initializeApp(this.firebaseConfig);
     }
