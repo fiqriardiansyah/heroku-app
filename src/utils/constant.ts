@@ -16,6 +16,8 @@ export const DOCUMENTS = {
     services_data: "services_data",
     assignment: "assignment",
     posters: "posters",
+    bids: "bids",
+    applications: "applications",
 };
 export const SERVICE_ACTIVE = "1";
 export const SERVICE_DRAFT = "0";

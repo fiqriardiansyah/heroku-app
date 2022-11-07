@@ -2,6 +2,7 @@ import {
     child,
     Database,
     DataSnapshot,
+    endAt,
     equalTo,
     get,
     limitToFirst,
@@ -14,11 +15,14 @@ import {
     query,
     ref,
     remove,
+    serverTimestamp,
     startAt,
     update,
 } from "firebase/database";
 import {
+    Application,
     Assignments,
+    Bid,
     IDs,
     Poster,
     Service,
@@ -43,6 +47,10 @@ class RealtimeDatabase {
 
     pstr = DOCUMENTS.posters;
 
+    bids = DOCUMENTS.bids;
+
+    appl = DOCUMENTS.applications;
+
     constructor(db: Database) {
         this.db = db;
     }
@@ -57,177 +65,142 @@ class RealtimeDatabase {
     }
 
     // services documents
-    async GetServices({ uid }: Pick<IDs, "uid">): Promise<Service[]> {
-        const services = (await get(ref(this.db, `${this.serv}/${uid}`))).val();
-        return Utils.parseTreeObjectToArray<Service>(services);
+    getAllMyServices({ uid }: Pick<IDs, "uid">) {
+        const queryRef = query(ref(this.db, this.serv), orderByChild("uid"), equalTo(uid));
+        return get(queryRef);
     }
 
-    async GetService(ids: Pick<IDs, "sid" | "hid">): Promise<Service> {
-        return (
-            await get(ref(this.db, `${this.serv}/${ids.hid}/${ids.sid}`))
-        ).val();
+    getOneService(ids: Pick<IDs, "sid">) {
+        return get(ref(this.db, `${this.serv}/${ids.sid}`));
     }
 
-    async AddService({
+    addService({
         data,
         ...ids
     }: Pick<IDs, "uid" | "sid"> & {
         data: Service;
     }) {
-        await update(ref(this.db, `${this.serv}/${ids.uid}/${ids.sid}`), data);
-        return true;
+        return update(ref(this.db, `${this.serv}/${ids.sid}`), data);
+    }
+
+    deleteService({ sid }: Pick<IDs, "sid">) {
+        return remove(ref(this.db, `${this.serv}/${sid}`));
     }
 
     // services_data documents
-    async GetServicesData({ uid }: Pick<IDs, "uid">): Promise<ServiceData[]> {
-        const services = (
-            await get(ref(this.db, `${this.servDt}/${uid}`))
-        ).val();
-        return Utils.parseTreeObjectToArray<ServiceData>(services);
+    getAllMyServicesData({ uid }: Pick<IDs, "uid">) {
+        const queryRef = query(ref(this.db, this.servDt), orderByChild("uid"), equalTo(uid));
+        return get(queryRef);
     }
 
-    async GetServiceData(ids: Pick<IDs, "sid" | "hid">): Promise<ServiceData> {
-        return (
-            await get(ref(this.db, `${this.servDt}/${ids.hid}/${ids.sid}`))
-        ).val();
+    _getAllShowServicesData(callback: (data: ServiceData[]) => void) {
+        onValue(query(ref(this.db, this.servDt), orderByChild("status"), equalTo("active")), (snapshot) => {
+            if (!snapshot.exists()) return;
+            callback(Utils.parseTreeObjectToArray<ServiceData>(snapshot.val()) || []);
+        });
     }
 
-    async AddServiceDataRequest({
+    _searchShowServicesData(key: string, callback: (data: ServiceData[]) => void) {
+        const keyString = key.trim().toLocaleLowerCase();
+        if (!keyString) return;
+        const onSubscribe = onValue(query(ref(this.db, this.servDt), orderByChild("flag"), startAt(keyString)), (snapshot) => {
+            if (!snapshot.exists()) return;
+            callback(Utils.parseTreeObjectToArray<ServiceData>(snapshot.val()).filter((el) => el.flag?.includes(keyString)) || []);
+        });
+        if (!keyString) {
+            onSubscribe();
+        }
+    }
+
+    deleteServiceData({ sid }: Pick<IDs, "sid">) {
+        return remove(ref(this.db, `${this.servDt}/${sid}`));
+    }
+
+    getOneServiceData(ids: Pick<IDs, "sid">) {
+        return get(ref(this.db, `${this.servDt}/${ids.sid}`));
+    }
+
+    addServiceDataRequest({
         data,
         ...ids
-    }: Pick<IDs, "uid" | "sid"> & {
+    }: Pick<IDs, "sid"> & {
         data: ServiceRequest;
     }) {
-        return (
-            await push(
-                ref(this.db, `${this.servDt}/${ids.uid}/${ids.sid}/request`),
-                data
-            )
-        ).ref;
+        return push(ref(this.db, `${this.servDt}/${ids.sid}/request`), data);
     }
 
-    async AddServiceData({
+    addServiceData({
         data,
         ...ids
-    }: Pick<IDs, "uid" | "sid"> & {
+    }: Pick<IDs, "sid"> & {
         data: ServiceData;
     }) {
-        await update(
-            ref(this.db, `${this.servDt}/${ids.uid}/${ids.sid}`),
-            data
-        );
-        return true;
+        return update(ref(this.db, `${this.servDt}/${ids.sid}`), data);
     }
 
-    async AddServiceDataOrder({
+    addServiceDataOrder({
         data,
         ...ids
-    }: Pick<IDs, "uid" | "sid"> & {
+    }: Pick<IDs, "sid"> & {
         data: ServiceOrder;
     }) {
-        await push(
-            ref(this.db, `${this.servDt}/${ids.uid}/${ids.sid}/orders`),
-            data
-        );
-        return true;
+        return push(ref(this.db, `${this.servDt}/${ids.sid}/orders`), data);
     }
 
-    async DeleteServiceDataRequest(ids: Pick<IDs, "sid" | "uid" | "rid">) {
-        return remove(
-            ref(
-                this.db,
-                `${this.servDt}/${ids.uid}/${ids.sid}/request/${ids.rid}`
-            )
-        );
+    deleteServiceDataRequest(ids: Pick<IDs, "sid" | "rid">) {
+        return remove(ref(this.db, `${this.servDt}/${ids.sid}/request/${ids.rid}`));
     }
 
-    async UpdateServiceDataOrder({
+    updateServiceDataOrder({
         data,
         ...ids
-    }: Pick<IDs, "sid" | "uid" | "oid"> & {
+    }: Pick<IDs, "sid" | "oid"> & {
         data: ServiceOrder;
     }) {
-        return update(
-            ref(
-                this.db,
-                `${this.servDt}/${ids.uid}/${ids.sid}/orders/${ids.oid}`
-            ),
-            data
-        );
+        return update(ref(this.db, `${this.servDt}/${ids.sid}/orders/${ids.oid}`), data);
     }
 
     // assignments documents
-    async AddAssignmentRequest({
+    addAssignmentRequest({
         data,
         ...ids
     }: Pick<IDs, "uid"> & {
         data: ServiceOwnerRequest;
     }) {
-        return (
-            await push(ref(this.db, `${this.asg}/${ids.uid}/request`), data)
-        ).ref;
+        return push(ref(this.db, `${this.asg}/${ids.uid}/request`), data);
     }
 
-    async UpdateAssignmentOrder({
+    updateAssignmentOrder({
         uid,
         data,
     }: Pick<IDs, "uid"> & {
         data: ServiceOwnerOrder;
     }) {
-        return update(
-            ref(this.db, `${this.asg}/${uid}/orders/${data.id}`),
-            data
-        );
+        return update(ref(this.db, `${this.asg}/${uid}/orders/${data.id}`), data);
     }
 
-    async GetAssigments({ uid }: Pick<IDs, "uid">): Promise<Assignments> {
-        const assignments = (
-            await get(ref(this.db, `${this.asg}/${uid}`))
-        ).val();
-        return {
-            orders: Utils.parseTreeObjectToArray(assignments?.orders),
-            request: Utils.parseTreeObjectToArray(assignments?.request),
-            finish: Utils.parseTreeObjectToArray(assignments?.finish),
-        };
+    getAssigments({ uid }: Pick<IDs, "uid">) {
+        return get(ref(this.db, `${this.asg}/${uid}`));
     }
 
-    async GetOneAssignmentRequest({ uid, sid }: Pick<IDs, "uid" | "sid">) {
-        const requests = (
-            await get(ref(this.db, `${this.asg}/${uid}/request`))
-        ).val();
-        const request = Utils.parseTreeObjectToArray<ServiceOwnerRequest>(
-            requests
-        )?.find((el) => el.sid === sid);
-        return request;
+    getAssignmentRequests({ uid }: Pick<IDs, "uid">) {
+        return get(ref(this.db, `${this.asg}/${uid}/request`));
     }
 
-    async GetOneAssignmentOrder({
-        uid,
-        sid,
-        date,
-    }: Pick<IDs, "uid" | "sid"> & { date: number }) {
-        const orders = (
-            await get(ref(this.db, `${this.asg}/${uid}/orders`))
-        ).val();
-        const order = Utils.parseTreeObjectToArray<ServiceOwnerOrder>(
-            orders
-        )?.find((el) => el.sid === sid && el.date === date);
-        return order;
+    getAssignmentOrders({ uid }: Pick<IDs, "uid">) {
+        return get(ref(this.db, `${this.asg}/${uid}/orders`));
     }
 
-    async UpdateAssignmentRequest({
+    updateAssignmentRequest({
         data,
         ...ids
     }: Pick<IDs, "uid" | "rid"> & {
         data: ServiceOwnerRequest;
     }) {
-        return update(
-            ref(this.db, `${this.asg}/${ids.uid}/request/${ids.rid}`),
-            data
-        );
+        return update(ref(this.db, `${this.asg}/${ids.uid}/request/${ids.rid}`), data);
     }
 
-    async AddAssignmentOrder({
+    addAssignmentOrder({
         uid,
         data,
     }: Pick<IDs, "uid"> & {
@@ -236,17 +209,13 @@ class RealtimeDatabase {
         return push(ref(this.db, `${this.asg}/${uid}/orders`), data);
     }
 
-    async DeleteAssignmentRequest(ids: Pick<IDs, "sid" | "uid">) {
-        const queryRef = query(
-            ref(this.db, `${this.asg}/${ids.uid}/request`),
-            orderByChild("sid"),
-            equalTo(ids.sid)
-        );
+    deleteAssignmentRequest(ids: Pick<IDs, "sid" | "uid">) {
+        const queryRef = query(ref(this.db, `${this.asg}/${ids.uid}/request`), orderByChild("sid"), equalTo(ids.sid));
         return remove(queryRef.ref);
     }
 
     // posters
-    _addPoster({
+    addPoster({
         pid,
         data,
     }: Pick<IDs, "pid"> & {
@@ -255,23 +224,62 @@ class RealtimeDatabase {
         return update(ref(this.db, `${this.pstr}/${pid}`), data);
     }
 
-    async GetAllPoster() {
-        const posters: Poster[] = [];
-        onValue(
-            query(
-                ref(this.db, this.pstr),
-                orderByChild("status"),
-                equalTo("close")
-            ),
-            (snapshot) => {
-                if (snapshot.exists()) {
-                    posters.push(
-                        ...Utils.parseTreeObjectToArray<Poster>(snapshot.val())
-                    );
-                }
-            }
-        );
-        return posters;
+    myPosters({ uid }: Pick<IDs, "uid">) {
+        const queryRef = query(ref(this.db, this.pstr), orderByChild("uid"), equalTo(uid));
+        return get(queryRef);
+    }
+
+    getOnePoster({ pid }: Pick<IDs, "pid">) {
+        return get(ref(this.db, `${this.pstr}/${pid}`));
+    }
+
+    _getAllShowPoster(callback: (data: Poster[]) => void) {
+        onValue(query(ref(this.db, this.pstr), orderByChild("status"), equalTo("open")), (snapshot) => {
+            if (!snapshot.exists()) return;
+            callback(Utils.parseTreeObjectToArray<Poster>(snapshot.val()) || []);
+        });
+    }
+
+    _searchShowPoster(key: string, callback: (data: Poster[]) => void) {
+        const keyString = key.trim().toLocaleLowerCase();
+        if (!keyString) return;
+        const onSubscribe = onValue(query(ref(this.db, this.pstr), orderByChild("flag"), startAt(keyString)), (snapshot) => {
+            if (!snapshot.exists()) return;
+            callback(Utils.parseTreeObjectToArray<Poster>(snapshot.val()).filter((el) => el.flag?.includes(keyString)) || []);
+        });
+        if (!keyString) {
+            onSubscribe();
+        }
+    }
+
+    // bids
+    addBids({
+        data,
+        biid,
+    }: Pick<IDs, "biid"> & {
+        data: Bid;
+    }) {
+        return update(ref(this.db, `${this.bids}/${biid}`), data);
+    }
+
+    myBids({ uid }: Pick<IDs, "uid">) {
+        const queryRef = query(ref(this.db, this.bids), orderByChild("hid"), equalTo(uid));
+        return get(queryRef);
+    }
+
+    // aplications
+    addApplications({
+        data,
+        apcid,
+    }: Pick<IDs, "apcid"> & {
+        data: Application;
+    }) {
+        return update(ref(this.db, `${this.appl}/${apcid}`), data);
+    }
+
+    myApplications({ uid }: Pick<IDs, "uid">) {
+        const queryRef = query(ref(this.db, this.appl), orderByChild("hid"), equalTo(uid));
+        return get(queryRef);
     }
 }
 

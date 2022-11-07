@@ -6,9 +6,14 @@ import { FirebaseApp } from "firebase/app";
 import {
     Database,
     getDatabase,
+    serverTimestamp,
 } from "firebase/database";
 import {
+    Application,
+    Bid,
+    IDs,
     Service,
+    ServiceData,
     ServiceDetail,
     ServiceOrder,
     ServiceRequest,
@@ -28,20 +33,29 @@ class HeroService extends HeroServiceSupport {
         this.database = database;
     }
 
-    async CreateService({ service, uid }: { service: Service; uid: string }) {
+    async CreateService({ service, uid, status }: { service: Service; uid: string, status: ServiceData['status'] }) {
         return this.ProxyRequest(async () => {
             const id = uuidv4();
-            await this.AddService({ data: service, uid, sid: id });
-            await this.AddServiceData({
+            await this.addService({
+                data: {
+                    ...service,
+                    uid,
+                    id,
+                },
+                uid,
+                sid: id
+            });
+            await this.addServiceData({
                 data: {
                     id,
                     uid,
-                    post_date: new Date().getTime(),
-                    status: "active",
+                    post_date: serverTimestamp(),
+                    status,
                     viewed: 0,
                     poster_image: service.images[0],
                     title: service.title,
-                }, sid: id, uid
+                    flag: `${service.title} ${service.category} ${service.tags?.join(' ')}`
+                }, sid: id,
             });
             return id;
         })
@@ -49,8 +63,8 @@ class HeroService extends HeroServiceSupport {
 
     async GetDetailService({ sid, uid }: { sid: string; uid: string }) {
         return this.ProxyRequest(async () => {
-            const services = await this.GetService({ sid, hid: uid });
-            const servicesData = await this.GetServiceData({ sid, hid: uid });
+            const services = await (await this.getOneService({ sid })).val();
+            const servicesData = await (await this.getOneServiceData({ sid })).val();
             return { ...services, ...servicesData } as ServiceDetail;
         });
     }
@@ -65,15 +79,16 @@ class HeroService extends HeroServiceSupport {
         request: ServiceRequest;
     }) {
         return this.ProxyRequest(async () => {
-            const date = new Date().getTime();
-            await this.AddServiceDataOrder({
+            const date = serverTimestamp();
+            await this.addServiceDataOrder({
                 data: {
                     uid: request.uid,
                     date,
                     status: 0,
-                }, uid, sid,
+                },
+                sid,
             })
-            this.AddAssignmentOrder({
+            await this.addAssignmentOrder({
                 data: {
                     sid,
                     uid,
@@ -82,8 +97,8 @@ class HeroService extends HeroServiceSupport {
                 },
                 uid: request.uid,
             })
-            await this.DeleteAssignmentRequest({ sid, uid: request.uid });
-            await this.DeleteServiceDataRequest({ sid, uid, rid: request.id as any });
+            await this.deleteAssignmentRequest({ sid, uid: request.uid });
+            await this.deleteServiceDataRequest({ sid, rid: request.id as any });
             return date;
         });
     }
@@ -98,12 +113,12 @@ class HeroService extends HeroServiceSupport {
         request: ServiceRequest;
     }) {
         return this.ProxyRequest(async () => {
-            await this.DeleteServiceDataRequest({ uid, sid, rid: request.id as any })
+            await this.deleteServiceDataRequest({ sid, rid: request.id as any })
             const requestData = await this.GetOneAssignmentRequest({ uid: request.uid, sid });
             if (!requestData) {
                 throw new Error('request data not found!');
             }
-            await this.UpdateAssignmentRequest({
+            await this.updateAssignmentRequest({
                 data: {
                     ...requestData,
                     status: "rejected",
@@ -123,9 +138,11 @@ class HeroService extends HeroServiceSupport {
         order: ServiceOrder;
     }) {
         return this.ProxyRequest(async () => {
-            const date = new Date().getTime();
-            await this.UpdateServiceDataOrder({
-                uid, sid, oid: order.id as any, data: {
+            const date = serverTimestamp();
+            await this.updateServiceDataOrder({
+                sid,
+                oid: order.id as any,
+                data: {
                     ...order,
                     status: order.status + 1,
                     progress: !order.progress ? [{
@@ -141,7 +158,7 @@ class HeroService extends HeroServiceSupport {
             if (!orderData) {
                 throw new Error('assignment order not found!');
             }
-            await this.UpdateAssignmentOrder({
+            await this.updateAssignmentOrder({
                 uid: order.uid as any,
                 data: {
                     ...orderData,
@@ -159,6 +176,63 @@ class HeroService extends HeroServiceSupport {
         });
     }
 
+    async DeleteMyService(service: ServiceDetail) {
+        if (!service) {
+            throw new Error("Service can't empty");
+        }
+        return this.ProxyRequest(async () => {
+            if (service.request?.length === 0 && service.orders?.length === 0) {
+                await this.deleteService({ sid: service.id as any });
+                await this.deleteServiceData({ sid: service.id as any });
+                return true;
+            }
+            throw new Error("There is still activity,  Can't remove this service");
+        });
+    }
+
+    async CreateBid(data: Bid) {
+        return this.ProxyRequest(async () => {
+            const id = uuidv4();
+            this.addBids({
+                biid: id,
+                data: {
+                    ...data,
+                    id,
+                    date: serverTimestamp(),
+                }
+            });
+            return id;
+        });
+    }
+
+    async CreateApplication(data: Application) {
+        return this.ProxyRequest(async () => {
+            const id = uuidv4();
+            this.addApplications({
+                apcid: id,
+                data: {
+                    ...data,
+                    id,
+                    date: serverTimestamp(),
+                }
+            });
+            return id;
+        });
+    }
+
+    async GetAllMyBid({ uid }: Pick<IDs, "uid">) { // myjob - bidding
+        return this.ProxyRequest(async () => {
+            const bids = await this.myBids({ uid });
+            return Utils.parseTreeObjectToArray<Bid>(bids.val()) || [];
+        });
+    }
+
+    async GetAllMyApplication({ uid }: Pick<IDs, "uid">) { // myjob - contracts
+        return this.ProxyRequest(async () => {
+            const bids = await this.myApplications({ uid });
+            return Utils.parseTreeObjectToArray<Application>(bids.val()) || [];
+        });
+    }
 }
 
 const heroService = new HeroService({ config: configFirebase.app, database: getDatabase(configFirebase.app) });
