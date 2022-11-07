@@ -5,11 +5,15 @@ import HerokuImage from "assets/svgs/heroku-image.svg";
 function Footer() {
     return (
         <div className="w-full bg-primary py-10">
-            <div className="CONTAINER flex items-start">
+            <div className="CONTAINER grid grid-cols-1 md:grid-cols-2">
                 <div className="flex-1">
-                    <img src={HerokuImage} alt="heroku" className="h-[200px]" />
+                    <img
+                        src={HerokuImage}
+                        alt="heroku"
+                        className="w-full md:w-auto"
+                    />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 justify-between">
                     <h2 className="text-white font-semibold">
                         Heroku - Get work done
                     </h2>
