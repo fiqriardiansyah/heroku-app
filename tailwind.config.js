@@ -4,7 +4,8 @@ module.exports = {
     theme: {
         extend: {
             backgroundImage: {
-                "transparent-white": "linear-gradient(90deg, rgba(158,158,158,0) 0%, rgba(221,221,221,0.3533788515406162) 59%, rgba(230,230,230,0.7483368347338936) 72%, rgba(255,255,255) 90%)",
+                "transparent-white":
+                    "linear-gradient(90deg, rgba(158,158,158,0) 0%, rgba(221,221,221,0.3533788515406162) 59%, rgba(230,230,230,0.7483368347338936) 72%, rgba(255,255,255) 90%)",
             },
             colors: {
                 primary: "#3498FF",
@@ -43,7 +44,11 @@ module.exports = {
             fontFamily: {
                 poppins: ["Poppins"],
             },
-            fontSize: {},
+            fontSize: {
+                10: "10px",
+                12: "12px",
+                16: "16px",
+            },
             zIndex: {
                 "-1": "-1",
                 100: "100",
@@ -84,6 +89,7 @@ module.exports = {
                 "150vh": "150vh",
                 "200vh": "200vh",
                 "300vh": "300vh",
+                68: "17rem",
             },
             maxHeight: {
                 "300px": "300px",
