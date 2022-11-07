@@ -11,15 +11,7 @@ function MyAssignment() {
     const [options, setOptions] = useState<{ value: string }[]>([]);
 
     const onSearch = (searchText: string) => {
-        setOptions(
-            !searchText
-                ? []
-                : [
-                      mockVal(searchText),
-                      mockVal(searchText, 2),
-                      mockVal(searchText, 3),
-                  ]
-        );
+        setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
     };
 
     const onSelect = (data: string) => {
@@ -34,13 +26,7 @@ function MyAssignment() {
         <Layout>
             <br />
             <Card title="Explore Services">
-                <AutoComplete
-                    options={options}
-                    style={{ width: "100%" }}
-                    onSelect={onSelect}
-                    onSearch={onSearch}
-                    placeholder="Search Service"
-                />
+                <AutoComplete options={options} style={{ width: "100%" }} onSelect={onSelect} onSearch={onSearch} placeholder="Search Service" />
             </Card>
             <br />
             <Card className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
@@ -52,12 +38,8 @@ function MyAssignment() {
                             alt=""
                         />
                         <div className="ml-3">
-                            <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-                                Bonnie Green
-                            </h5>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                                Visual Designer
-                            </span>
+                            <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">Bonnie Green</h5>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">Visual Designer</span>
                         </div>
                     </div>
                     <div className=" m-4 flex flex-col">
@@ -68,13 +50,11 @@ function MyAssignment() {
                         />
                         <br />
                         <p className="text-gray-900 dark:text-white text-sm font-bold">
-                            Some quick example text to build on the card title
-                            and make up the bulk of the cards content.
+                            Some quick example text to build on the card title and make up the bulk of the cards content.
                         </p>
 
                         <p className="text-gray-400 dark:text-white mb-4">
-                            Some quick example text to build on the card title
-                            and make up the bulk of the cards content.
+                            Some quick example text to build on the card title and make up the bulk of the cards content.
                         </p>
                         <p className="inline-flex py-2 px-4 text-sm font-medium text-center text-gray-900 bg-white rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
                             Rp. 210.100,00
@@ -89,12 +69,8 @@ function MyAssignment() {
                             alt=""
                         />
                         <div className="ml-3">
-                            <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-                                Bonnie Green
-                            </h5>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                                Visual Designer
-                            </span>
+                            <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">Bonnie Green</h5>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">Visual Designer</span>
                         </div>
                     </div>
                     <div className=" m-4 flex flex-col">
@@ -105,13 +81,11 @@ function MyAssignment() {
                         />
                         <br />
                         <p className="text-gray-900 dark:text-white text-sm font-bold">
-                            Some quick example text to build on the card title
-                            and make up the bulk of the cards content.
+                            Some quick example text to build on the card title and make up the bulk of the cards content.
                         </p>
 
                         <p className="text-gray-400 dark:text-white mb-4">
-                            Some quick example text to build on the card title
-                            and make up the bulk of the cards content.
+                            Some quick example text to build on the card title and make up the bulk of the cards content.
                         </p>
                         <p className="inline-flex py-2 px-4 text-sm font-medium text-center text-gray-900 bg-white rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
                             Rp. 210.100,00
