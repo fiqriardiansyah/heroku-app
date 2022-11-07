@@ -7,11 +7,7 @@ type Props = {
     children: any;
 };
 
-function ProtectedRoute({
-    isAllowed,
-    redirectPath = "/landing",
-    children,
-}: Props) {
+function ProtectedRoute({ isAllowed, redirectPath = "/landing", children }: Props) {
     if (!isAllowed) {
         return <Navigate to={redirectPath} replace />;
     }

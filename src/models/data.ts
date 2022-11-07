@@ -13,7 +13,7 @@ export interface SignInEmail {
 
 export interface Service {
     id?: string;
-    uid: string;
+    uid?: string;
     title: string;
     category: string;
     subcategory: string;
@@ -27,28 +27,29 @@ export interface Service {
 export interface ServiceRequest {
     id?: string;
     uid: string;
-    date: number;
+    date: any;
 }
 
 export interface ServiceOrder {
     id?: string;
     uid: string;
-    date: number;
+    date: any;
     status: number;
     progress?: {
         status: number;
-        date: number;
+        date: any;
     }[];
     files?: string[];
 }
 
 export interface ServiceData {
     id?: string;
-    uid: string;
-    post_date: string | number;
+    uid?: string;
+    post_date: any;
     poster_image: string;
     title: string;
     status: "active" | "draft";
+    flag?: string;
     finish?: string[];
     orders?: ServiceRequest[];
     request?: ServiceRequest[];
@@ -59,7 +60,7 @@ export interface ServiceOwnerRequest {
     id?: string;
     sid: string;
     uid: string;
-    date: number;
+    date: any;
     status: "waiting" | "rejected";
 }
 
@@ -68,12 +69,12 @@ export interface ServiceOwnerOrder {
     sid: string;
     uid: string;
     heroId?: string;
-    date: number;
+    date: any;
     status: number;
     files?: string[];
     progress?: {
         status: number;
-        date: number;
+        date: any;
     }[];
 }
 
@@ -100,22 +101,36 @@ export interface IDs {
     oid: string; // order id
     rid: string; // request id
     pid: string; // poster id
+    biid: string; // bid id
+    apcid: string; // aplication id;
 }
 
-export interface Bid {
+export interface Bid extends Pick<IDs, "pid" | "hid" | "uid"> {
     id?: string;
-    uid: string;
-    date: string;
+    date: any;
+    description: string;
     price: string | number;
-    description: string;
+    accept: boolean;
+    status: number;
+    files?: string[];
+    progress?: {
+        status: number;
+        date: any;
+    }[];
 }
 
-export interface Applicant {
+export interface Application extends Pick<IDs, "pid" | "hid" | "uid"> {
     id?: string;
-    uid: string;
-    date: string;
-    file?: string;
+    date: any;
+    cv?: string;
     description: string;
+    accept: boolean;
+    status: number;
+    files?: string[];
+    progress?: {
+        status: number;
+        date: any;
+    }[];
 }
 
 export interface Poster {
@@ -131,9 +146,9 @@ export interface Poster {
     skills: string[];
     number_of_hero?: number;
     bids?: Bid[];
-    applicants?: Applicant[];
+    applications?: Application[];
     status?: "open" | "close";
     date?: any;
+    flag?: string;
 }
-
 export default {};

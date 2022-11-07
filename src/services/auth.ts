@@ -29,11 +29,7 @@ class AuthService {
 
     async SignUpEmail({ email, password }: SignUpEmail) {
         try {
-            const request = await createUserWithEmailAndPassword(
-                this.auth,
-                email,
-                password
-            );
+            const request = await createUserWithEmailAndPassword(this.auth, email, password);
             return request;
         } catch (error: any) {
             const message = error?.message || DEFAULT_ERROR;
@@ -43,11 +39,7 @@ class AuthService {
 
     async SignInEmail({ email, password }: SignInEmail) {
         try {
-            const request = await signInWithEmailAndPassword(
-                this.auth,
-                email,
-                password
-            );
+            const request = await signInWithEmailAndPassword(this.auth, email, password);
             return request;
         } catch (error: any) {
             const message = error?.message || DEFAULT_ERROR;

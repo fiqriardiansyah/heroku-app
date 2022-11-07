@@ -72,7 +72,7 @@ function DetailServiceHero() {
     });
 
     const assignmentsQuery = useQuery([user?.uid], async () => {
-        const req = await ownerService.GetAssigments({
+        const req = await ownerService.GetMyAssigments({
             uid: user?.uid as any,
         });
         return req;
@@ -99,16 +99,10 @@ function DetailServiceHero() {
             <button type="button" onClick={() => orderServiceMutation.mutate()}>
                 order
             </button>
-            <button
-                type="button"
-                onClick={() => acceptServiceMutation.mutate()}
-            >
+            <button type="button" onClick={() => acceptServiceMutation.mutate()}>
                 accept
             </button>
-            <button
-                type="button"
-                onClick={() => declineServiceMutation.mutate()}
-            >
+            <button type="button" onClick={() => declineServiceMutation.mutate()}>
                 reject
             </button>
             <button type="button" onClick={() => setJourneyOrder.mutate()}>
