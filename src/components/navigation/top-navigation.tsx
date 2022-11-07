@@ -21,11 +21,7 @@ function TopNavigation() {
                     <Link to={HOME_PATH}>
                         <img src={HeroKuImage} alt="heroku" />
                     </Link>
-                    {user && (
-                        <p className="text-gray-400 capitalize m-0 ml-3">
-                            {`as ${state?.role}`}
-                        </p>
-                    )}
+                    {user && <p className="text-gray-400 capitalize m-0 ml-3">{`as ${state?.role}`}</p>}
                 </div>
                 <div className="flex items-center">
                     {!user ? (
@@ -36,10 +32,7 @@ function TopNavigation() {
                                 </Button>
                             </Link>
                             <Link to={SIGN_UP_PATH}>
-                                <Button
-                                    type="primary"
-                                    className="BUTTON-PRIMARY-ROUND"
-                                >
+                                <Button type="primary" className="BUTTON-PRIMARY-ROUND">
                                     sign up
                                 </Button>
                             </Link>
@@ -55,11 +48,7 @@ function TopNavigation() {
                                 />
                             </Link>
                             <Dropdown overlay={<MenuNavigation />}>
-                                <Button
-                                    size="large"
-                                    shape="circle"
-                                    className="!border-none !p-0 !overflow-hidden"
-                                >
+                                <Button size="large" shape="circle" className="!border-none !p-0 !overflow-hidden">
                                     <img
                                         referrerPolicy="no-referrer"
                                         src={user?.photoURL || ProfileImage}

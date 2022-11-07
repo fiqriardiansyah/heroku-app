@@ -1,11 +1,4 @@
-import React, {
-    createContext,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
+import React, { createContext, Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { CURRENT_ROLE } from "utils/constant";
 
 type Props = {
@@ -52,11 +45,7 @@ function StateProvider({ children }: Props) {
         }),
         [state]
     );
-    return (
-        <StateContext.Provider value={value as any}>
-            {children}
-        </StateContext.Provider>
-    );
+    return <StateContext.Provider value={value as any}>{children}</StateContext.Provider>;
 }
 
 export { StateContext, StateProvider };

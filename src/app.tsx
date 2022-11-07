@@ -52,9 +52,7 @@ function App() {
                 <img src={HerokuImage} alt="" className="h-[200px]" />
                 <div className="flex items-center mt-5">
                     <Spin />
-                    <p className="capitalize m-0 ml-2 text-gray-500 text-xl">
-                        get ready...
-                    </p>
+                    <p className="capitalize m-0 ml-2 text-gray-500 text-xl">get ready...</p>
                 </div>
             </div>
         );
@@ -70,45 +68,21 @@ function App() {
 
                     {state?.role === "hero" && (
                         <>
-                            <Route
-                                path={MY_SERVICE_PATH}
-                                element={<MyService />}
-                            />
+                            <Route path={MY_SERVICE_PATH} element={<MyService />} />
                             <Route path={MY_JOB_PATH} element={<MyJob />} />
-                            <Route
-                                path={`${SERVICE_HERO_PATH}/:uid/:id`}
-                                element={<DetailServiceHero />}
-                            />
-                            <Route
-                                path={DETAIL_JOB_PATH}
-                                element={<DetailJob />}
-                            />
-                            <Route
-                                path={CREATE_SERVICE_PATH}
-                                element={<CreateService />}
-                            />
+                            <Route path={`${SERVICE_HERO_PATH}/:uid/:id`} element={<DetailServiceHero />} />
+                            <Route path={DETAIL_JOB_PATH} element={<DetailJob />} />
+                            <Route path={CREATE_SERVICE_PATH} element={<CreateService />} />
                         </>
                     )}
 
                     {state?.role === "owner" && (
                         <>
                             <Route path={MY_POST_PATH} element={<MyPost />} />
-                            <Route
-                                path={MY_ASSIGNMENT_PATH}
-                                element={<MyAssignment />}
-                            />
-                            <Route
-                                path={CREATE_POST_PATH}
-                                element={<CreatePost />}
-                            />
-                            <Route
-                                path={DETAIL_POST_PATH}
-                                element={<DetailPost />}
-                            />
-                            <Route
-                                path={`${SERVICE_OWNER_PATH}/:uid/:id`}
-                                element={<DetailServiceOwner />}
-                            />
+                            <Route path={MY_ASSIGNMENT_PATH} element={<MyAssignment />} />
+                            <Route path={CREATE_POST_PATH} element={<CreatePost />} />
+                            <Route path={DETAIL_POST_PATH} element={<DetailPost />} />
+                            <Route path={`${SERVICE_OWNER_PATH}/:uid/:id`} element={<DetailServiceOwner />} />
                         </>
                     )}
                     <Route path="*" element={<Navigate to="/" replace />} />

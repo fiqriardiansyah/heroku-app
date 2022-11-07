@@ -10,40 +10,26 @@ function Footer() {
                     <img src={HerokuImage} alt="heroku" className="h-[200px]" />
                 </div>
                 <div className="flex-1">
-                    <h2 className="text-white font-semibold">
-                        Heroku - Get work done
-                    </h2>
+                    <h2 className="text-white font-semibold">Heroku - Get work done</h2>
                     <p className="text-white capitalize m-0">creator:</p>
                     <ul className="text-white">
                         <li>
-                            <a
-                                href="mailto:fiqriardian92@gmail.com"
-                                className="text-white"
-                            >
+                            <a href="mailto:fiqriardian92@gmail.com" className="text-white">
                                 Fiqri Ardiansyah
                             </a>
                         </li>
                         <li>
-                            <a
-                                href="mailto:beryl.naga@gmail.com"
-                                className="text-white"
-                            >
+                            <a href="mailto:beryl.naga@gmail.com" className="text-white">
                                 Azaria Beryl Nagata
                             </a>
                         </li>
                         <li>
-                            <a
-                                href="mailto:abdwasidev@gmail.com"
-                                className="text-white"
-                            >
+                            <a href="mailto:abdwasidev@gmail.com" className="text-white">
                                 Abdul Wasi Al-Afif
                             </a>
                         </li>
                         <li>
-                            <a
-                                href="mailto:rossadwi19@gmail.com"
-                                className="text-white"
-                            >
+                            <a href="mailto:rossadwi19@gmail.com" className="text-white">
                                 Rossa Dwi Sukmawati
                             </a>
                         </li>

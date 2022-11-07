@@ -63,9 +63,7 @@ function SignIn() {
             </div>
             <div className="flex-1 flex flex-col items-center">
                 <div className="max-w-[400px] lg:w-[500px]">
-                    <p className="font-semibold text-primary text-2xl capitalize">
-                        sign in
-                    </p>
+                    <p className="font-semibold text-primary text-2xl capitalize">sign in</p>
                     <Form
                         form={form}
                         labelCol={{ span: 3 }}
@@ -116,27 +114,11 @@ function SignIn() {
                         className="!items-center !mb-3 !justify-center !flex BUTTON-PRIMARY !px-7 !py-5 !w-full"
                     >
                         <BsGoogle />
-                        <p className="capitalize m-0 ml-3">
-                            continue with google
-                        </p>
+                        <p className="capitalize m-0 ml-3">continue with google</p>
                     </Button>
-                    {signinMutation.isError && (
-                        <Alert
-                            message={
-                                (signinMutation.error as any)?.message ||
-                                signinMutation.error
-                            }
-                            type="error"
-                        />
-                    )}
+                    {signinMutation.isError && <Alert message={(signinMutation.error as any)?.message || signinMutation.error} type="error" />}
                     {signinGoogleMutation.isError && (
-                        <Alert
-                            message={
-                                (signinGoogleMutation.error as any)?.message ||
-                                signinGoogleMutation.error
-                            }
-                            type="error"
-                        />
+                        <Alert message={(signinGoogleMutation.error as any)?.message || signinGoogleMutation.error} type="error" />
                     )}
                 </div>
             </div>
