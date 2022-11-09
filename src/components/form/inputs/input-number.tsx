@@ -1,9 +1,4 @@
-import {
-    ColProps,
-    Form,
-    InputNumber as InputNumberAntd,
-    InputNumberProps,
-} from "antd";
+import { ColProps, Form, InputNumber as InputNumberAntd, InputNumberProps } from "antd";
 import React, { forwardRef, Ref } from "react";
 import Utils from "utils";
 import { CURRENCY } from "utils/constant";
@@ -18,21 +13,7 @@ type TextInputProps = InputNumberProps & {
 };
 
 const InputNumber: React.FC<TextInputProps> = forwardRef(
-    (
-        {
-            placeholder,
-            error,
-            label,
-            name,
-            labelCol,
-            initialValue,
-            onChange,
-            value,
-            onBlur,
-            ...rest
-        }: TextInputProps,
-        ref: Ref<HTMLInputElement>
-    ) => {
+    ({ placeholder, error, label, name, labelCol, initialValue, onChange, value, onBlur, ...rest }: TextInputProps, ref: Ref<HTMLInputElement>) => {
         const currencyOptions = CURRENCY.map((c) => ({
             label: c.CcyNm,
             value: `${c.CtryNm}::${c.Ccy}`,
@@ -51,9 +32,7 @@ const InputNumber: React.FC<TextInputProps> = forwardRef(
                     {...rest}
                     value={value || ""}
                     style={{ width: "100%" }}
-                    formatter={Utils.currencyFormatter(
-                        currencyOptions[0].value
-                    )}
+                    formatter={Utils.currencyFormatter(currencyOptions[0].value)}
                     parser={Utils.currencyParser}
                     onChange={onChange}
                     onBlur={onBlur}
