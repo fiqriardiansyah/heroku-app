@@ -1,4 +1,5 @@
 import { StateContext } from "context/state";
+// import useRealtimeValue from "hooks/useRealtimeValue";
 import { Poster } from "models";
 import moment from "moment";
 import React, { useContext, useState } from "react";
@@ -14,6 +15,24 @@ const mockVal = (str: string, repeat = 1) => ({
 function HomeAsOwner() {
     const user = authService.CurrentUser();
     const { state } = useContext(StateContext);
+    // const [query, setQuery] = useState("");
+
+    // const { data, loading } = useRealtimeValue(({ setData, setLoading }) => {
+    //     ownerService._getAllPoster((posters) => {
+    //         setLoading(false);
+    //         setData(posters);
+    //     });
+    // });
+
+    // const { data, loading } = useRealtimeValue(({ setData, setLoading }) => {
+    //     ownerService._searchPoster(query, (posters) => {
+    //         setLoading(false);
+    //         setData(posters);
+    //     });
+    // }, query);
+
+    // Jangan di HAPUS Dulu
+    // ANTD AUTO COMPLETE START
     const [value, setValue] = useState("");
     const [options, setOptions] = useState<{ value: string }[]>([]);
 
@@ -36,11 +55,18 @@ function HomeAsOwner() {
     const onChange = (data: string) => {
         setValue(data);
     };
+    // ANTD AUTO COMPLETE END
 
     return (
         <div className="grid">
             <br />
             <Card title="Explore Services">
+                {/* Baris di bawah, jangan di HAPUS karena digunakan untuk [auto complete] */}
+                {/* <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                /> */}
                 <AutoComplete
                     options={options}
                     style={{ width: "100%" }}
