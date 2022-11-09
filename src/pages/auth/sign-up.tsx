@@ -71,9 +71,7 @@ function SignUp() {
             </div>
             <div className="flex-1 flex flex-col items-center">
                 <div className="max-w-[400px] lg:w-[500px]">
-                    <p className="font-semibold text-primary text-2xl capitalize">
-                        sign up
-                    </p>
+                    <p className="font-semibold text-primary text-2xl capitalize">sign up</p>
                     <Form
                         form={form}
                         labelCol={{ span: 3 }}
@@ -120,9 +118,7 @@ function SignUp() {
                             >
                                 sign up
                             </Button>
-                            <Link to={SIGN_IN_PATH}>
-                                Already have an account?
-                            </Link>
+                            <Link to={SIGN_IN_PATH}>Already have an account?</Link>
                         </Space>
                     </Form>
                     <Divider plain className="!text-gray-400">
@@ -134,27 +130,11 @@ function SignUp() {
                         className="!items-center !mb-3 !justify-center !flex BUTTON-PRIMARY !px-7 !py-5 !w-full"
                     >
                         <BsGoogle />
-                        <p className="capitalize m-0 ml-3">
-                            continue with google
-                        </p>
+                        <p className="capitalize m-0 ml-3">continue with google</p>
                     </Button>
-                    {signupMutation.isError && (
-                        <Alert
-                            message={
-                                (signupMutation.error as any)?.message ||
-                                signupMutation.error
-                            }
-                            type="error"
-                        />
-                    )}
+                    {signupMutation.isError && <Alert message={(signupMutation.error as any)?.message || signupMutation.error} type="error" />}
                     {signinGoogleMutation.isError && (
-                        <Alert
-                            message={
-                                (signinGoogleMutation.error as any)?.message ||
-                                signinGoogleMutation.error
-                            }
-                            type="error"
-                        />
+                        <Alert message={(signinGoogleMutation.error as any)?.message || signinGoogleMutation.error} type="error" />
                     )}
                 </div>
             </div>

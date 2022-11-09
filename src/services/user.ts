@@ -16,10 +16,7 @@ class UserService {
 
     async CreateUser(data: User) {
         try {
-            const request = await set(
-                ref(this.database, `${DOCUMENTS.users}/${data.uid}`),
-                data
-            );
+            const request = await set(ref(this.database, `${DOCUMENTS.users}/${data.uid}`), data);
             return request;
         } catch (error: any) {
             const message = error?.message || DEFAULT_ERROR;
@@ -29,9 +26,7 @@ class UserService {
 
     async GetUser(uid: string): Promise<User> {
         try {
-            const request = await get(
-                child(ref(this.database), `${DOCUMENTS.users}/${uid}`)
-            );
+            const request = await get(child(ref(this.database), `${DOCUMENTS.users}/${uid}`));
             return request.val();
         } catch (error: any) {
             const message = error?.message || DEFAULT_ERROR;

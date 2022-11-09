@@ -44,7 +44,11 @@ module.exports = {
             fontFamily: {
                 poppins: ["Poppins"],
             },
-            fontSize: {},
+            fontSize: {
+                10: "10px",
+                12: "12px",
+                16: "16px",
+            },
             zIndex: {
                 "-1": "-1",
                 100: "100",
@@ -85,6 +89,7 @@ module.exports = {
                 "150vh": "150vh",
                 "200vh": "200vh",
                 "300vh": "300vh",
+                68: "17rem",
             },
             maxHeight: {
                 "300px": "300px",

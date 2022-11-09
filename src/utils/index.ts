@@ -18,9 +18,7 @@ export default class Utils {
 
     static cutText(length: number, string?: string): string {
         if (!string) return "-";
-        return string?.length > length
-            ? `${string.slice(0, length)}...`
-            : string;
+        return string?.length > length ? `${string.slice(0, length)}...` : string;
     }
 
     static imageSafety(image: string | undefined | null): string {
@@ -43,20 +41,10 @@ export default class Utils {
             }
 
             // detecting and parsing between comma and dot
-            const group = new Intl.NumberFormat(LOCALE)
-                .format(1111)
-                .replace(/1/g, "");
-            const decimal = new Intl.NumberFormat(LOCALE)
-                .format(1.1)
-                .replace(/1/g, "");
-            let reversedVal = newValue.replace(
-                new RegExp(`\\${group}`, "g"),
-                ""
-            );
-            reversedVal = reversedVal.replace(
-                new RegExp(`\\${decimal}`, "g"),
-                "."
-            );
+            const group = new Intl.NumberFormat(LOCALE).format(1111).replace(/1/g, "");
+            const decimal = new Intl.NumberFormat(LOCALE).format(1.1).replace(/1/g, "");
+            let reversedVal = newValue.replace(new RegExp(`\\${group}`, "g"), "");
+            reversedVal = reversedVal.replace(new RegExp(`\\${decimal}`, "g"), ".");
             //  => 1232.21 €
 
             // removing everything except the digits and dot
@@ -64,8 +52,7 @@ export default class Utils {
             //  => 1232.21
 
             // appending digits properly
-            const digitsAfterDecimalCount = (reversedVal.split(".")[1] || [])
-                .length;
+            const digitsAfterDecimalCount = (reversedVal.split(".")[1] || []).length;
             const needsDigitsAppended = digitsAfterDecimalCount > 2;
 
             if (needsDigitsAppended) {
@@ -81,15 +68,12 @@ export default class Utils {
 
     static getBase64 = (img: RcFile, callback: (url: string) => void) => {
         const reader = new FileReader();
-        reader.addEventListener("load", () =>
-            callback(reader.result as string)
-        );
+        reader.addEventListener("load", () => callback(reader.result as string));
         reader.readAsDataURL(img);
     };
 
     static beforeUpload = (file: RcFile) => {
-        const isJpgOrPng =
-            file.type === "image/jpeg" || file.type === "image/png";
+        const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
         if (!isJpgOrPng) {
             message.error("Format gambar hanya boleh jpg/jpeg/png");
         }

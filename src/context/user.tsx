@@ -1,11 +1,5 @@
 import { User } from "models";
-import React, {
-    createContext,
-    Dispatch,
-    SetStateAction,
-    useMemo,
-    useState,
-} from "react";
+import React, { createContext, Dispatch, SetStateAction, useMemo, useState } from "react";
 
 type Props = {
     children: any;
@@ -47,11 +41,7 @@ function UserProvider({ children }: Props) {
         }),
         [state]
     );
-    return (
-        <UserContext.Provider value={value as any}>
-            {children}
-        </UserContext.Provider>
-    );
+    return <UserContext.Provider value={value as any}>{children}</UserContext.Provider>;
 }
 
 export { UserContext, UserProvider };
