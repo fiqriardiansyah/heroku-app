@@ -83,22 +83,6 @@ function MyPost() {
             <br />
             <Card>
                 <Tabs items={items} />
-                {/* <Tabs defaultActiveKey="1">
-                    <Panes tab="Task" key="task-tabs">
-                        <TableApp />
-                    </Panes>
-                    <Panes tab="Hiring" key="hiring-tabs">
-                        <TableApp />
-                    </Panes>
-                </Tabs> */}
-                {/* <Tabs items={items}> */}
-                {/* <Tabs.TabPane tab="Task" key="task-tabs">
-                    <TableApp />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="Hiring" key="hiring-tabs">
-                    Conten
-                </Tabs.TabPane> */}
-                {/* </Tabs> */}
             </Card>
         </Layout>
     );
