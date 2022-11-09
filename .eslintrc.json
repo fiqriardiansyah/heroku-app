@@ -35,6 +35,7 @@
         "react/no-danger": "off",
         "jsx-a11y/anchor-is-valid": "off",
         "react/require-default-props": "off",
+        "allowForLoopAfterthoughts": true,
         "react/jsx-filename-extension": [
             2,
             { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
