@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="http://github.com"><img src="https://raw.githubusercontent.com/abdwasidev/heroku-app/d499e0b9b7f50b3cb1b36067a8efbaafcdedab21/src/assets/svgs/heroku-image.svg" alt="Heroku"></a>
+  <a href="https://github.com/fiqriardiansyah/heroku-app"><img src="https://raw.githubusercontent.com/abdwasidev/heroku-app/d499e0b9b7f50b3cb1b36067a8efbaafcdedab21/src/assets/svgs/heroku-image.svg" alt="Heroku"></a>
   <br>
   Heroku
   <br>
