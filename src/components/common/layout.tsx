@@ -4,14 +4,15 @@ import Footer from "./footer";
 
 type Props = {
     children: any;
+    useFooter?: boolean;
 };
 
-function Layout({ children }: Props) {
+function Layout({ children, useFooter = true }: Props) {
     return (
         <div className="w-full bg-base">
             <Navigation />
             <div className="CONTAINER min-h-[90vh] mb-10">{children}</div>
-            <Footer />
+            {useFooter && <Footer />}
         </div>
     );
 }

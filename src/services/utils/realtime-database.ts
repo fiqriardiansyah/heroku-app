@@ -1,28 +1,20 @@
 import {
-    child,
     Database,
-    DataSnapshot,
-    endAt,
     equalTo,
     get,
-    limitToFirst,
-    limitToLast,
     onValue,
     orderByChild,
-    orderByKey,
-    orderByValue,
     push,
     query,
     ref,
     remove,
-    serverTimestamp,
     startAt,
     update,
 } from "firebase/database";
 import {
     Application,
-    Assignments,
     Bid,
+    ChatInfo,
     IDs,
     Poster,
     Service,
@@ -31,12 +23,14 @@ import {
     ServiceOwnerOrder,
     ServiceOwnerRequest,
     ServiceRequest,
+    User,
 } from "models";
 import moment from "moment";
 import Utils from "utils";
 import { DEFAULT_ERROR, DOCUMENTS } from "utils/constant";
+import BaseService from "./base";
 
-class RealtimeDatabase {
+class RealtimeDatabase extends BaseService {
     db: Database;
 
     servDt = DOCUMENTS.services_data;
@@ -51,17 +45,11 @@ class RealtimeDatabase {
 
     appl = DOCUMENTS.applications;
 
-    constructor(db: Database) {
-        this.db = db;
-    }
+    users = DOCUMENTS.users
 
-    async ProxyRequest<T>(request: () => Promise<T>): Promise<T> {
-        try {
-            return request();
-        } catch (error: any) {
-            const message = error?.message || DEFAULT_ERROR;
-            throw new Error(message);
-        }
+    constructor(db: Database) {
+        super();
+        this.db = db;
     }
 
     // services documents
@@ -280,6 +268,32 @@ class RealtimeDatabase {
     myApplications({ uid }: Pick<IDs, "uid">) {
         const queryRef = query(ref(this.db, this.appl), orderByChild("hid"), equalTo(uid));
         return get(queryRef);
+    }
+
+    // user
+    _observeMyProfile({ uid, callback }: Pick<IDs, 'uid'> & {
+        callback: (data: User) => void
+    }) {
+        onValue(ref(this.db, `${this.users}/${uid}`), (snapshot) => {
+            callback(snapshot.val());
+        });
+    }
+
+    _observeMyChats({ uid, callback }: Pick<IDs, 'uid'> & {
+        callback: (data: ChatInfo[]) => void
+    }) {
+        onValue(query(ref(this.db, `${this.users}/${uid}/chats`), orderByChild('last_chat')), (snapshot) => {
+            if (!snapshot.exists()) {
+                callback([]);
+            }
+            callback(Utils.parseTreeObjectToArray<ChatInfo>(snapshot.val()) || []);
+        });
+    }
+
+    updateInfoChatUser({ uid, cid, data }: Pick<IDs, 'uid' | 'cid'> & {
+        data: ChatInfo
+    }) {
+        return update(ref(this.db, `${this.users}/${uid}/chats/${cid}`), data);
     }
 }
 

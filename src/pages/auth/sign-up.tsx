@@ -36,6 +36,7 @@ function SignUp() {
     const signupMutation = useMutation(async (data: SignUpEmail) => {
         const signup = await authService.SignUpEmail(data);
         await userService.CreateUser({
+            profile: "",
             name: data.name,
             uid: signup.user.uid,
         });
@@ -46,6 +47,7 @@ function SignUp() {
         const user = await userService.GetUser(signin.user.uid);
         if (!user) {
             await userService.CreateUser({
+                profile: signin.user.photoURL || "",
                 name: signin.user.displayName || "",
                 uid: signin.user.uid,
             });
@@ -63,11 +65,7 @@ function SignUp() {
     return (
         <div className="CONTAINER grid grid-cols-1 md:grid-cols-2 items-center min-h-screen">
             <div className="flex-1">
-                <img
-                    src={HerokuImage}
-                    alt="heroku"
-                    className="w-full md:w-auto"
-                />
+                <img src={HerokuImage} alt="heroku" className="w-full md:w-auto" />
             </div>
             <div className="flex-1 flex flex-col items-center">
                 <div className="max-w-[400px] lg:w-[500px]">

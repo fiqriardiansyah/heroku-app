@@ -3,15 +3,17 @@ import { FirebaseApp } from "firebase/app";
 import { child, Database, get, getDatabase, ref, set } from "firebase/database";
 import { User } from "models";
 import { DEFAULT_ERROR, DOCUMENTS } from "utils/constant";
+import RealtimeDatabase from "./utils/realtime-database";
 
-class UserService {
+class UserService extends RealtimeDatabase {
     config: FirebaseApp;
 
     database: Database;
 
-    constructor(config: FirebaseApp) {
+    constructor({ config, db }: { config: FirebaseApp, db: Database }) {
+        super(db);
         this.config = config;
-        this.database = getDatabase(this.config);
+        this.database = db;
     }
 
     async CreateUser(data: User) {
@@ -35,5 +37,8 @@ class UserService {
     }
 }
 
-const userService = new UserService(configFirebase.app);
+const userService = new UserService({
+    config: configFirebase.app,
+    db: getDatabase(configFirebase.app)
+});
 export default userService;

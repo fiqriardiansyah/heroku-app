@@ -1,5 +1,8 @@
-import { User } from "models";
-import React, { createContext, Dispatch, SetStateAction, useMemo, useState } from "react";
+import useAuthChange from "hooks/useAuthChange";
+import useRealtimeValue from "hooks/useRealtimeValue";
+import { ChatInfo, User } from "models";
+import React, { createContext, Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import userService from "services/user";
 
 type Props = {
     children: any;
@@ -22,16 +25,29 @@ const UserContext = createContext<ValueContextType>({
 });
 
 function UserProvider({ children }: Props) {
+    const { user: userAuth } = useAuthChange();
     const [state, setState] = useState<UserData>({
         user: null,
     });
 
-    const saveUser = (data: User | null = null) => {
+    const saveUser = (user: User | null = null) => {
         setState((prev) => ({
             ...prev,
-            user: data,
+            user,
         }));
     };
+
+    useRealtimeValue(({ setData, setLoading }) => {
+        if (userAuth) {
+            userService._observeMyProfile({
+                uid: userAuth?.uid as any,
+                callback: (user) => {
+                    setLoading(false);
+                    saveUser(user);
+                },
+            });
+        }
+    }, userAuth?.uid);
 
     const value = useMemo(
         () => ({

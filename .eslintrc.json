@@ -43,6 +43,6 @@
                 "tsx": "never"
             }
         ],
-        "prettier/prettier": ["error", { "endOfLine": "auto" }]
+        "prettier/prettier": "off"
     }
 }

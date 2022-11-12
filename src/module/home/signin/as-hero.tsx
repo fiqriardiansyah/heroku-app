@@ -14,6 +14,7 @@ import NoJobs from "assets/svgs/no-jobs.svg";
 import PosterItem from "components/PosterItem";
 import RealtimeDatabase from "services/utils/realtime-database";
 import { getDatabase } from "firebase/database";
+import chatService from "services/chat";
 
 function HomeAsHero() {
     const user = authService.CurrentUser();
@@ -162,16 +163,7 @@ function HomeAsHero() {
         return req;
     });
 
-    return (
-        <div className="wfull">
-            <button type="button" onClick={() => create.mutate()}>
-                create servcie
-            </button>
-            <button type="button" onClick={() => createPoster.mutate()}>
-                create poster
-            </button>
-        </div>
-    );
+    return <div className="wfull">AS HERO</div>;
 }
 
 export default HomeAsHero;

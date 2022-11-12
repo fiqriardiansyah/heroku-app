@@ -1,4 +1,5 @@
 import { serverTimestamp } from "firebase/database";
+import { StorageError, UploadTask } from "firebase/storage";
 
 export interface SignUpEmail {
     name: string;
@@ -85,7 +86,9 @@ export interface ServiceDetail extends Service, ServiceData {
 export interface User {
     uid: string;
     name: string;
+    profile: string;
     services?: string[];
+    chats?: string[];
 }
 
 export interface Assignments {
@@ -96,6 +99,7 @@ export interface Assignments {
 
 export interface IDs {
     uid: string; // user id
+    uid2: string; // other user id
     sid: string; // service id
     hid: string; // hero id
     oid: string; // order id
@@ -103,6 +107,9 @@ export interface IDs {
     pid: string; // poster id
     biid: string; // bid id
     apcid: string; // aplication id;
+    anyid: string; // any other id;
+    cid: string; // chat id
+    mid: string; // message id
 }
 
 export interface Bid extends Pick<IDs, "pid" | "hid" | "uid"> {
@@ -151,4 +158,36 @@ export interface Poster {
     date?: any;
     flag?: string;
 }
+
+export interface MessageBuble {
+    id: string;
+    date: any;
+    file: any | null;
+    typeFile: string | null;
+    message: string;
+    senderUid: string;
+    statusFile: 'uploading' | 'uploaded' | 'failed' | 'none';
+    nameFile: string;
+}
+
+export interface ChatDoc extends Pick<IDs, 'anyid'> {
+    participants: string[];
+    anytitle: string;
+    last_update: any;
+}
+
+export interface ChatInfo extends Pick<IDs, 'uid' | 'cid' | 'anyid'> {
+    id?: string;
+    anytitle: string;
+    last_chat: any;
+    last_message: string;
+    type: string;
+};
+
+export interface TaskProgress extends Pick<IDs, 'mid'> {
+    progress: number;
+    error: null | any;
+    task: UploadTask;
+}
+
 export default {};

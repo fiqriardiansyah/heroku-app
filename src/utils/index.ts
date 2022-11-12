@@ -1,5 +1,7 @@
+/* eslint-disable no-plusplus */
 import { message } from "antd";
 import type { RcFile } from "antd/es/upload/interface";
+import moment from "moment";
 import { LOCALE } from "./constant";
 
 export default class Utils {
@@ -66,10 +68,10 @@ export default class Utils {
         }
     };
 
-    static getBase64 = (img: RcFile, callback: (url: string) => void) => {
+    static getBase64 = (data: RcFile, callback: (url: string) => void) => {
         const reader = new FileReader();
         reader.addEventListener("load", () => callback(reader.result as string));
-        reader.readAsDataURL(img);
+        reader.readAsDataURL(data);
     };
 
     static beforeUpload = (file: RcFile) => {
@@ -92,4 +94,40 @@ export default class Utils {
         })) as T[];
         return parse as T[];
     }
+
+    static onPaste = (e: any): Promise<any> | null => {
+        if (!(e.clipboardData && e.clipboardData.items)) return null;
+        return new Promise((resolve, reject) => {
+            for (let i = 0, len = e.clipboardData.items.length; i < len; i++) {
+                const item = e.clipboardData.items[i];
+                if (item.kind === 'string') {
+                    item.getAsString((str: any) => resolve({ type: 'text', value: str }));
+                } else if (item.kind === 'file') {
+                    const pasteFile = item.getAsFile();
+                    resolve({ type: 'file', value: pasteFile });
+                } else {
+                    reject(new Error('Not allow to paste this type!'));
+                }
+            }
+        });
+    }
+
+    static removeDashes(str: string) {
+        return str.split('-').join('');
+    }
+
+    static createChatId({ postfix, uids }: { uids: string[], postfix: string }) {
+        return this.removeDashes(uids.sort().join('') + postfix);
+    }
+
+    static stripHtml = (html: string) => {
+        const tmp = document.createElement("DIV");
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || "";
+    }
+
+    static isDifferentDate = ({ prevTime, time }: { prevTime: any, time: any }) => {
+        return moment(prevTime || moment.now()).isSame(time, 'date');
+    }
+
 }
