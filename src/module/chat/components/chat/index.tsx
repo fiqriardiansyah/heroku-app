@@ -62,7 +62,7 @@ function Chat() {
                 </>
             ) : (
                 <div className="w-full h-full flex items-center justify-center flex-col pointer-events-none">
-                    <img src={HerokuImage} alt="" className="opacity-50 grayscale" />
+                    <img src={HerokuImage} alt="" className="opacity-50 grayscale w-full md:w-auto" />
                     <p className="text-gray-300 font-medium text-2xl">Start connect to your partner</p>
                 </div>
             )}
