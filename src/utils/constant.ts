@@ -31,4 +31,26 @@ export const DOCUMENTS = {
 export const SERVICE_ACTIVE = "1";
 export const SERVICE_DRAFT = "0";
 
+export const TYPE_OF_JOBS = [
+    {
+        value: 1,
+        label: 'Task'
+    },
+    {
+        value: 2,
+        label: 'Hiring'
+    }
+]
+
+export const TYPE_PRICES = [
+    {
+        value: 1,
+        label: 'Fixed Price'
+    },
+    {
+        value: 2,
+        label: 'Bargain'
+    }
+]
+
 export default {};
