@@ -1,9 +1,8 @@
 import Layout from "components/common/layout";
+import Swal from "sweetalert2";
 import { AutoComplete, Card, Tabs } from "antd";
 import React, { useState } from "react";
 import TableApp from "components/common/table";
-
-const Swal = require("sweetalert2");
 
 const mockVal = (str: string, repeat = 1) => ({
     value: str.repeat(repeat),
@@ -19,15 +18,7 @@ function MyPost() {
     const [options, setOptions] = useState<{ value: string }[]>([]);
 
     const onSearch = (searchText: string) => {
-        setOptions(
-            !searchText
-                ? []
-                : [
-                      mockVal(searchText),
-                      mockVal(searchText, 2),
-                      mockVal(searchText, 3),
-                  ]
-        );
+        setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
     };
 
     const onSelect = (data: string) => {
@@ -39,11 +30,7 @@ function MyPost() {
     };
 
     const myPostOnClick = () => {
-        Swal.fire(
-            "Apa itu My Post?",
-            "That thing is still around?",
-            "question"
-        );
+        Swal.fire("Apa itu My Post?", "That thing is still around?", "question");
     };
 
     return (
@@ -53,29 +40,15 @@ function MyPost() {
                 <div className="flex flex-0 flex-row md:flex-1">
                     <h3>My Post </h3>
                     <div>
-                        <button
-                            type="button"
-                            className="rounded-full bg-gray border-0"
-                            onClick={myPostOnClick}
-                        >
+                        <button type="button" className="rounded-full bg-gray border-0" onClick={myPostOnClick}>
                             ?
                         </button>
                     </div>
                 </div>
                 <div className="flex flex-1 flex-row">
-                    <AutoComplete
-                        options={options}
-                        style={{ width: "100%" }}
-                        onSelect={onSelect}
-                        onSearch={onSearch}
-                        placeholder="Search Service"
-                    />
+                    <AutoComplete options={options} style={{ width: "100%" }} onSelect={onSelect} onSearch={onSearch} placeholder="Search Service" />
                     <br />
-                    <button
-                        type="button"
-                        className="bg-primary border-0 text-white w-full md:w-1/3"
-                        onClick={myPostOnClick}
-                    >
+                    <button type="button" className="bg-primary border-0 text-white w-full md:w-1/3" onClick={myPostOnClick}>
                         Create new post
                     </button>
                 </div>

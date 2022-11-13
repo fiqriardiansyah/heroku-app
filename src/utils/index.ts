@@ -1,5 +1,6 @@
 /* eslint-disable no-plusplus */
 import { message } from "antd";
+import { v4 as uuid } from 'uuid';
 import type { RcFile } from "antd/es/upload/interface";
 import moment from "moment";
 import { LOCALE } from "./constant";
@@ -68,7 +69,7 @@ export default class Utils {
         }
     };
 
-    static getBase64 = (data: RcFile, callback: (url: string) => void) => {
+    static getBase64 = (data: RcFile | File, callback: (url: string) => void) => {
         const reader = new FileReader();
         reader.addEventListener("load", () => callback(reader.result as string));
         reader.readAsDataURL(data);
@@ -128,6 +129,11 @@ export default class Utils {
 
     static isDifferentDate = ({ prevTime, time }: { prevTime: any, time: any }) => {
         return moment(prevTime || moment.now()).isSame(time, 'date');
+    }
+
+    static generateFileName({ file }: { file: File }) {
+        const extension = file.name.split('.')[file.name.split('.').length - 1].toLowerCase();
+        return `${uuid()}.${extension}`;
     }
 
 }

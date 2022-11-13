@@ -52,7 +52,7 @@ class HeroService extends HeroServiceSupport {
                     post_date: serverTimestamp(),
                     status,
                     viewed: 0,
-                    poster_image: service.images[0],
+                    poster_image: service?.images ? service?.images[0] : '',
                     title: service.title,
                     flag: `${service.title} ${service.category} ${service.tags?.join(' ')}`
                 }, sid: id,

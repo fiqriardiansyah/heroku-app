@@ -13,16 +13,7 @@ type Props<T extends FieldValues> = InputNumberProps & {
     initialValue?: string;
 };
 
-function ControlledInputNumber<T extends FieldValues>({
-    label,
-    type = "text",
-    control,
-    placeholder,
-    name,
-    labelCol,
-    initialValue,
-    ...rest
-}: Props<T>) {
+function ControlledInputNumber<T extends FieldValues>({ label, control, placeholder, name, labelCol, initialValue, ...rest }: Props<T>) {
     return (
         <Controller
             control={control}
@@ -33,7 +24,6 @@ function ControlledInputNumber<T extends FieldValues>({
                     {...rest}
                     label={label}
                     labelCol={labelCol}
-                    type={type}
                     placeholder={placeholder}
                     value={(field.value as unknown as never) || rest.value}
                     initialValue={initialValue}

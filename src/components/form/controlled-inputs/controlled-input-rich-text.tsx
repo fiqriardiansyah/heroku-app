@@ -1,46 +1,38 @@
 import React from "react";
-import { ColProps, SelectProps } from "antd";
+import { ColProps, InputProps } from "antd";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
-import SelectInput, { SelectOption } from "../inputs/input-select";
+import { ReactQuillProps } from "react-quill";
+import InputText from "../inputs/input-text";
+import InputRichText from "../inputs/input-rich-text";
 
-type ControlledInputSelectProps<T extends FieldValues> = SelectProps & {
+type Props<T extends FieldValues> = ReactQuillProps & {
     placeholder: string;
     label: string;
     control: Control<T, any>;
     name: Path<T>;
-    options: SelectOption[];
     labelCol?: ColProps;
+    initialValue?: string;
 };
 
-function ControlledSelectInput<T extends FieldValues>({
-    label,
-    control,
-    placeholder,
-    name,
-    loading,
-    options,
-    labelCol,
-    ...rest
-}: ControlledInputSelectProps<T>) {
+function ControlledInputRichText<T extends FieldValues>({ label, control, placeholder, name, labelCol, initialValue, ...rest }: Props<T>) {
     return (
         <Controller
             control={control}
             name={name}
             render={({ field, fieldState: { error } }) => (
-                <SelectInput
+                <InputRichText
                     {...field}
                     {...rest}
                     label={label}
                     labelCol={labelCol}
-                    options={options}
                     placeholder={placeholder}
+                    value={(field.value as unknown as never) || rest.value}
+                    initialValue={initialValue}
                     error={error?.message}
-                    value={field.value}
-                    loading={loading}
                 />
             )}
         />
     );
 }
 
-export default ControlledSelectInput;
+export default ControlledInputRichText;

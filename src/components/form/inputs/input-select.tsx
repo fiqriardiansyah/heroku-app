@@ -1,4 +1,4 @@
-import { Form, Select, SelectProps } from "antd";
+import { ColProps, Form, Select, SelectProps } from "antd";
 import React, { forwardRef } from "react";
 
 export type SelectOption = {
@@ -10,11 +10,12 @@ type InputSelectProps = SelectProps & {
     error: string | undefined;
     label: string;
     options: SelectOption[];
+    labelCol?: ColProps;
 };
 
 const InputSelect: React.FC<InputSelectProps> = forwardRef(
-    ({ placeholder, error, label, value, onChange, options, loading, ...rest }: InputSelectProps) => (
-        <Form.Item label={label} validateStatus={error ? "error" : ""} help={error && error} labelCol={{ xs: 24 }} className="!w-full">
+    ({ placeholder, error, label, value, onChange, options, labelCol, loading, ...rest }: InputSelectProps) => (
+        <Form.Item label={label} validateStatus={error ? "error" : ""} help={error && error} labelCol={labelCol} className="!w-full">
             <Select {...rest} value={value} loading={loading} placeholder={placeholder} onChange={onChange}>
                 {options.map((option) => {
                     return (
