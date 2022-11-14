@@ -31,78 +31,79 @@ function HomeAsHero() {
     //     getPosters();
     // }, []);
 
-    // if (posters.length === 0) {
-    //     return (
-    //         <div className="w-full h-full">
-    //             <div className="w-full py-2.5 px-5 bg-white rounded-xl mt-7 border border-solid" style={{ borderColor: "#B4B4B4" }}>
-    //                 <h2 style={{ fontFamily: "Montserrat, sans-serif" }} className="text-2.5xl font-semibold">
-    //                     Explore Jobs
-    //                 </h2>
-    //                 <div className="flex gap-x-2.5">
-    //                     <Input
-    //                         style={{ borderRadius: "4px" }}
-    //                         placeholder="Search keyword title like “Build landing page using React “"
-    //                         value={filter}
-    //                         onInput={(e) => {
-    //                             setfilter(e.currentTarget.value);
-    //                         }}
-    //                     />
-    //                     <Button
-    //                         style={{
-    //                             borderRadius: "5px",
-    //                         }}
-    //                         size="large"
-    //                         type="primary"
-    //                     >
-    //                         Search
-    //                     </Button>
-    //                 </div>
-    //             </div>
-    //             <div
-    //                 style={{ border: "1px solid #CECECE" }}
-    //                 className="w-full mt-5 py-3 px-5 bg-white rounded-xl h-80vh flex justify-center align-middle"
-    //             >
-    //                 <img src={NoJobs} alt="No Jobs" className="w-96 " />
-    //             </div>
-    //         </div>
-    //     );
-    // }
+    if (posters.length === 0) {
+        return (
+            <div className="w-full h-full">
+                <div className="w-full py-2.5 px-5 bg-white rounded-xl mt-7 border border-solid" style={{ borderColor: "#B4B4B4" }}>
+                    <h2 style={{ fontFamily: "Montserrat, sans-serif" }} className="text-2.5xl font-semibold">
+                        Explore Jobs
+                    </h2>
+                    <div className="flex gap-x-2.5">
+                        <Input
+                            style={{ borderRadius: "4px" }}
+                            placeholder="Search keyword title like “Build landing page using React “"
+                            value={filter}
+                            onInput={(e) => {
+                                setfilter(e.currentTarget.value);
+                            }}
+                        />
+                        <Button
+                            style={{
+                                borderRadius: "5px",
+                            }}
+                            size="large"
+                            type="primary"
+                        >
+                            Search
+                        </Button>
+                    </div>
+                </div>
+                <div
+                    style={{ border: "1px solid #CECECE" }}
+                    className="w-full mt-5 py-3 px-5 bg-white rounded-xl h-80vh flex justify-center align-middle"
+                >
+                    <img src={NoJobs} alt="No Jobs" className="w-96 " />
+                </div>
+            </div>
+        );
+    }
 
-    // const filteredPosters = posters.filter((poster) => poster.title === filter);
-    // return (
-    //     // Search
-    //     <div className="w-full h-full">
-    //         <div className="w-full py-2.5 px-5 bg-white rounded-xl mt-7 border border-solid" style={{ borderColor: "#B4B4B4" }}>
-    //             <h2 style={{ fontFamily: "Montserrat, sans-serif" }} className="text-2.5xl font-semibold">
-    //                 Explore Jobs
-    //             </h2>
-    //             <div className="flex gap-x-2.5">
-    //                 <Input
-    //                     style={{ borderRadius: "4px" }}
-    //                     placeholder="Search keyword title like “Build landing page using React “"
-    //                     value={filter}
-    //                     onInput={(e) => setfilter(e.currentTarget.value)}
-    //                 />
-    //                 <Button
-    //                     style={{
-    //                         borderRadius: "5px",
-    //                     }}
-    //                     size="large"
-    //                     type="primary"
-    //                 >
-    //                     Search
-    //                 </Button>
-    //             </div>
-    //         </div>
+    const filteredPosters = posters.filter((poster) => poster.title === filter);
+    return (
+        // Search
+        <div className="w-full h-full">
+            <div className="w-full py-2.5 px-5 bg-white rounded-xl mt-7 border border-solid" style={{ borderColor: "#B4B4B4" }}>
+                <h2 style={{ fontFamily: "Montserrat, sans-serif" }} className="text-2.5xl font-semibold">
+                    Explore Jobs
+                </h2>
+                <div className="flex gap-x-2.5">
+                    <Input
+                        style={{ borderRadius: "4px" }}
+                        placeholder="Search keyword title like “Build landing page using React “"
+                        value={filter}
+                        onInput={(e) => setfilter(e.currentTarget.value)}
+                    />
+                    <Button
+                        style={{
+                            borderRadius: "5px",
+                        }}
+                        size="large"
+                        type="primary"
+                    >
+                        Search
+                    </Button>
+                </div>
+            </div>
 
-    //         {/* List item */}
-    //         <div style={{ border: "1px solid #CECECE" }} className="mt-5 py-3 px-5 bg-white rounded-xl h-full">
-    //             {filteredPosters.map((poster) => {
-    //                 return <PosterItem poster={poster} />;
-    //             })}
-    //         </div>
-    //     </div>
-    // );
+            {/* List item */}
+            <div style={{ border: "1px solid #CECECE" }} className="mt-5 py-3 px-5 bg-white rounded-xl h-full">
+                {filteredPosters.map((poster) => {
+                    return <PosterItem poster={poster} />;
+                })}
+            </div>
+        </div>
+    );
+
     // const { data } = useRealtimeValue(({ setData, setLoading }) => {
     //     heroService._getAllShowServicesData((servicesData) => {
     //         setLoading(false);
@@ -130,40 +131,40 @@ function HomeAsHero() {
     //     return svs;
     // });
 
-    const createPoster = useMutation(async () => {
-        const req = await ownerService.CreatePoster({
-            uid: user?.uid as any,
-            data: {
-                title: "new poster",
-                description: "my new poster bitch!",
-                category: "web development",
-                skills: ["javascript", "kotlin"],
-                type_of_job: "hiring",
-                company: "pt. presentologic",
-            },
-        });
-        return req;
-    });
+    // const createPoster = useMutation(async () => {
+    //     const req = await ownerService.CreatePoster({
+    //         uid: user?.uid as any,
+    //         data: {
+    //             title: "new poster",
+    //             description: "my new poster bitch!",
+    //             category: "web development",
+    //             skills: ["javascript", "kotlin"],
+    //             type_of_job: "hiring",
+    //             company: "pt. presentologic",
+    //         },
+    //     });
+    //     return req;
+    // });
 
-    const create = useMutation(async () => {
-        const req = await heroService.CreateService({
-            uid: user?.uid as any,
-            status: "active",
-            service: {
-                category: "web development",
-                title: "test web dev",
-                description: "asdf asdfa sdfasdf asdf asdfasdf asdf asdf",
-                images: ["images.png"],
-                price: 1200000,
-                subcategory: "front end",
-                tags: ["javascript", "kotlin"],
-                pdfs: [],
-            },
-        });
-        return req;
-    });
+    // const create = useMutation(async () => {
+    //     const req = await heroService.CreateService({
+    //         uid: user?.uid as any,
+    //         status: "active",
+    //         service: {
+    //             category: "web development",
+    //             title: "test web dev",
+    //             description: "asdf asdfa sdfasdf asdf asdfasdf asdf asdf",
+    //             images: ["images.png"],
+    //             price: 1200000,
+    //             subcategory: "front end",
+    //             tags: ["javascript", "kotlin"],
+    //             pdfs: [],
+    //         },
+    //     });
+    //     return req;
+    // });
 
-    return <div className="wfull">AS HERO</div>;
+    // return <div className="wfull">AS HERO</div>;
 }
 
 export default HomeAsHero;
