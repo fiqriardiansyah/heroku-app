@@ -1,7 +1,7 @@
 import Layout from "components/common/layout";
 import React, { useState } from "react";
 import { Button, Card, Modal, Steps } from "antd";
-import { FaPaperPlane, FaInfo, FaFile } from "react-icons/fa";
+import { FaPaperPlane, FaArrowLeft, FaInfo, FaFile } from "react-icons/fa";
 import { AiOutlineCheck } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { CHAT_PATH } from "utils/routes";
@@ -10,6 +10,8 @@ type Props = {
     children: string;
     Wrapper?: any;
 };
+
+const { Step } = Steps;
 
 function DetailPostTextContent(props: any) {
     const { children, Wrapper = "div" } = props;
@@ -30,6 +32,42 @@ function DetailPostProfileContent() {
                 </div>
             </div>
         </div>
+    );
+}
+
+function DetailTaskProgress() {
+    return (
+        <>
+            <div className="flex flex-row">
+                <FaArrowLeft className="w-6 h-6" />
+                <h3 className="ml-1">Task Progress</h3>
+            </div>
+            <br />
+            <Card>
+                <div className="flex flex-row place-content-between">
+                    <DetailPostProfileContent />
+                    <p>12 Nov 2022</p>
+                </div>
+                <DetailPostTextContent>
+                    {`Criteria
+            
+            test aja
+            test aja
+            `}
+                </DetailPostTextContent>
+                <br />
+                <h3>Progress</h3>
+                <div className="flex items-center p-5">
+                    <Steps>
+                        <Step title="Start" description="Starting on project at 10 Nov 2022" />
+                        <Step title="Process" description="Hero, process service" />
+                        <Step title="Deliver" description="Hero sends work" />
+                        <Step title="Checking" description="Owner checks the work" />
+                        <Step title="Finish" description="This work has been completed" />
+                    </Steps>
+                </div>
+            </Card>
+        </>
     );
 }
 
@@ -304,6 +342,10 @@ function DetailPost() {
             <br />
             <div className="flex flex-col">
                 <DetailPostHiringApplicant />
+            </div>
+            <br />
+            <div className="flex flex-col">
+                <DetailTaskProgress />
             </div>
         </Layout>
     );
