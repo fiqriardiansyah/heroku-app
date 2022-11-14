@@ -86,6 +86,14 @@ class OwnerService extends OwnerServiceSupport {
             return req.val() as Poster;
         });
     }
+
+    async SearchService(key: string) {
+        return this.ProxyRequest(async () => {
+            const req = await this.getAllShowServiceData();
+            const services = Utils.parseTreeObjectToArray<ServiceData>(req.val() || {});
+            return services.filter((service) => service.flag?.includes(key));
+        });
+    }
 }
 
 const ownerService = new OwnerService({

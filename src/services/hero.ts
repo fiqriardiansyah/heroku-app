@@ -50,6 +50,7 @@ class HeroService extends HeroServiceSupport {
                     id,
                     uid,
                     post_date: serverTimestamp(),
+                    price: service.price,
                     status,
                     viewed: 0,
                     poster_image: service?.images ? service?.images[0] : '',
