@@ -3,7 +3,7 @@ import { message } from "antd";
 import { v4 as uuid } from 'uuid';
 import type { RcFile } from "antd/es/upload/interface";
 import moment from "moment";
-import { LOCALE } from "./constant";
+import { LOCALE, VALUE_TOKEN } from "./constant";
 
 export default class Utils {
     static charCodeA = 65;
@@ -134,6 +134,10 @@ export default class Utils {
     static generateFileName({ file }: { file: File }) {
         const extension = file.name.split('.')[file.name.split('.').length - 1].toLowerCase();
         return `${uuid()}.${extension}`;
+    }
+
+    static convertToToken(total: number) {
+        return Math.round(total / VALUE_TOKEN);
     }
 
 }

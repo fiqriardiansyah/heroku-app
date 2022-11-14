@@ -1,98 +1,131 @@
 import Layout from "components/common/layout";
 import React, { Children, useState } from "react";
-import { Card } from "antd";
-import { FaPaperPlane } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Alert, Button, Card, Image, Skeleton, Space } from "antd";
+import parser from "html-react-parser";
+import { useParams } from "react-router-dom";
 import { CHAT_PATH } from "utils/routes";
-
-type Props = {
-    children: string;
-    Wrapper?: any;
-    src?: string | undefined;
-};
-
-function TextOfDetailServiceOwner(props: any) {
-    const { children, Wrapper = "div" } = props;
-    return <Wrapper style={{ whiteSpace: "pre-line" }}>{children}</Wrapper>;
-}
-
-function DetailServiceOwnerLeft() {
-    const cumaButton = ["App", "development", "Firebase", "Kotlin", "API Rest"];
-    // const testImage = [];
-
-    return (
-        <Card className="flex-3">
-            <div className="flex flex-col gap-4">
-                <h1>I can make you a beatifull vector photo of you</h1>
-                <TextOfDetailServiceOwner key={cumaButton}>
-                    {`Call Text Service Text
-                    
-                    test aja
-                    test aja
-                    test aja
-                    test aja
-                    test aja
-                    `}
-                </TextOfDetailServiceOwner>
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 flex-row gap-2">
-                        <h3>Category</h3>
-                        {cumaButton.map((categoryItem) => (
-                            <button type="button" className="gap-2 p-2 rounded-lg bg-secondary text-base border-0">
-                                {categoryItem}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="flex-1 flex-row gap-2">
-                        <h3>Tags</h3>
-                        {cumaButton.map((TagsItem) => (
-                            <button type="button" className="gap-2 p-2 rounded-lg bg-tertiary text-base border-0">
-                                {TagsItem}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-                <div className="flex-1 flex-row gap-2">
-                    <h3>Gallery</h3>
-                    {/* {[testImage, cumaButton].map((GalleryItem, altImage) => ( */}
-                    <img
-                        src="https://images.all-free-download.com/images/graphiclarge/abstract_background_311486.jpg"
-                        alt="{altImage}"
-                        className="gap-2 w-32 h-32 rounded-lg border-0"
-                    />
-                    {/* ))} */}
-                </div>
-            </div>
-        </Card>
-    );
-}
-function DetailServiceOwnerRight() {
-    return (
-        <Card className="flex-1">
-            <div className="flex flex-col items-center justify-center">
-                <h1>Rp. 3000</h1>
-                <div className="mt-4 flex flex-row gap-2">
-                    <button type="button" className="px-2 py-0.5 rounded-lg bg-primary text-base border-0">
-                        Order
-                    </button>
-                    <Link to={CHAT_PATH}>
-                        <button type="button" className="flex items-center justify-center rounded-full w-10 h-10 bg-primary text-base border-0">
-                            <FaPaperPlane />
-                        </button>
-                    </Link>
-                </div>
-            </div>
-        </Card>
-    );
-}
+import { FaTelegramPlane } from "react-icons/fa";
+import { useQuery } from "react-query";
+import ownerService from "services/owner";
+import State from "components/common/state";
+import { IMAGE_FALLBACK } from "utils/constant";
+import Chip from "components/common/chip";
+import ButtonFileDownload from "components/button/file-download";
+import CutTokenModal from "components/modal/cut-token-modal";
 
 function DetailServiceOwner() {
+    const { uid, id } = useParams();
+
+    const serviceQuery = useQuery(
+        ["service", uid, id],
+        async () => {
+            const serviceDetail = await ownerService.GetDetailService({ sid: id as any, hid: uid as any });
+            return serviceDetail;
+        },
+        {
+            enabled: !!uid && !!id,
+        }
+    );
+
     return (
         <Layout>
             <br />
             <div className="flex flex-col md:flex-row gap-4">
-                <DetailServiceOwnerLeft />
-                <DetailServiceOwnerRight />
+                <Card className="flex-2">
+                    <State data={serviceQuery.data} isLoading={serviceQuery.isLoading} isError={serviceQuery.isError}>
+                        {(state) => (
+                            <>
+                                <State.Data state={state}>
+                                    <div className="w-full">
+                                        <h1 className="text-lg font-semibold">{serviceQuery.data?.title}</h1>
+                                        <div className="">{parser(serviceQuery.data?.description || "")}</div>
+                                        <div className="w-full flex">
+                                            <div className="flex-1">
+                                                <p className="capitalize font-medium">category</p>
+                                                <Chip text={serviceQuery.data?.category} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="capitalize font-medium">tags</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {serviceQuery.data?.tags?.map((tag) => (
+                                                        <Chip text={tag} />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p className="capitalize font-medium">images</p>
+                                        <Space direction="horizontal">
+                                            {serviceQuery.data?.images?.map((image) => (
+                                                <Image
+                                                    fallback={IMAGE_FALLBACK}
+                                                    loading="lazy"
+                                                    className="rounded-md bg-gray-200 object-cover "
+                                                    src={image || undefined}
+                                                    width={150}
+                                                    height={150}
+                                                />
+                                            ))}
+                                        </Space>
+                                        {serviceQuery.data?.pdfs && <p className="capitalize font-medium mt-4 mb-2">documents</p>}
+                                        <Space direction="vertical">
+                                            {serviceQuery.data?.pdfs?.map((pdf, i) => (
+                                                <ButtonFileDownload name={`document-${i + 1}.pdf`} url={pdf} key={pdf} />
+                                            ))}
+                                        </Space>
+                                    </div>
+                                </State.Data>
+                                <State.Loading state={state}>
+                                    <Skeleton paragraph={{ rows: 5 }} active />
+                                    <Skeleton.Image active />
+                                </State.Loading>
+                                <State.Error state={state}>
+                                    <Alert message={(serviceQuery.error as any)?.message || serviceQuery.error} />
+                                </State.Error>
+                            </>
+                        )}
+                    </State>
+                </Card>
+                <Card className="flex-1 h-fit">
+                    <State data={serviceQuery.data} isLoading={serviceQuery.isLoading} isError={serviceQuery.isError}>
+                        {(state) => (
+                            <>
+                                <State.Data state={state}>
+                                    <div className="w-full flex flex-col items-end h-fit">
+                                        <p className="text-2xl font-semibold text-center w-full">
+                                            {parseInt(serviceQuery.data?.price as string, 10)?.ToIndCurrency("Rp")}
+                                        </p>
+                                        <Space size={20}>
+                                            <CutTokenModal leftToken={12} total={parseInt(serviceQuery.data?.price as string, 10)}>
+                                                {(data) => (
+                                                    <Button
+                                                        onClick={data.showModal}
+                                                        disabled={serviceQuery.data?.status === "draft"}
+                                                        type="primary"
+                                                        size="large"
+                                                    >
+                                                        Order
+                                                    </Button>
+                                                )}
+                                            </CutTokenModal>
+                                            <button
+                                                className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
+                                                type="button"
+                                            >
+                                                <FaTelegramPlane className="text-primary text-2xl" />
+                                            </button>
+                                        </Space>
+                                    </div>
+                                </State.Data>
+                                <State.Loading state={state}>
+                                    <Skeleton paragraph={{ rows: 3 }} active />
+                                </State.Loading>
+                                <State.Error state={state}>
+                                    <Alert message={(serviceQuery.error as any)?.message || serviceQuery.error} />
+                                </State.Error>
+                            </>
+                        )}
+                    </State>
+                </Card>
             </div>
         </Layout>
     );
