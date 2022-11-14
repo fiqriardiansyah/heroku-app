@@ -9,8 +9,8 @@ module.exports = {
             },
             colors: {
                 primary: "#3498FF",
-                secondary: "#333354",
-                tertiary: "#7c7cb7",
+                secondary: "rgba(28,150,162,0.5)", // default:
+                tertiary: "rgba(201,55, 157, 0.5)", // default:
                 base: "#F7F7FB",
             },
             boxShadow: {
