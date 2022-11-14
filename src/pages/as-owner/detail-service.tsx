@@ -48,7 +48,7 @@ function DetailServiceOwner() {
                                                 <p className="capitalize font-medium">tags</p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {serviceQuery.data?.tags?.map((tag) => (
-                                                        <Chip text={tag} />
+                                                        <Chip text={tag} key={tag} />
                                                     ))}
                                                 </div>
                                             </div>

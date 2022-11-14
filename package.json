@@ -5,8 +5,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
+        "start": "craco start",
+        "build": "craco build",
         "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
         "lint-fix": "eslint --ignore-path .eslintignore --fix --ext .js,.jsx .",
         "test": "react-scripts test",
@@ -46,6 +46,7 @@
         "autolinker": "^4.0.0",
         "axios": "^0.27.2",
         "classnames": "^2.3.2",
+        "craco-less": "^2.0.0",
         "firebase": "^9.13.0",
         "html-react-parser": "^3.0.4",
         "js-cookie": "^3.0.1",

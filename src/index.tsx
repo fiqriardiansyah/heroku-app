@@ -7,7 +7,7 @@ import { StateProvider } from "context/state";
 import "utils/extension";
 import App from "./app";
 import "./style/index.css";
-import "antd/dist/antd.min.css";
+import "./style/theme.less";
 
 const queryClient = new QueryClient();
 

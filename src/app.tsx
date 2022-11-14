@@ -71,8 +71,8 @@ function App() {
                         <>
                             <Route path={MY_SERVICE_PATH} element={<MyService />} />
                             <Route path={MY_JOB_PATH} element={<MyJob />} />
-                            <Route path={`${SERVICE_HERO_PATH}/:uid/:id`} element={<DetailServiceHero />} />
-                            <Route path={DETAIL_JOB_PATH} element={<DetailJob />} />
+                            <Route path={`${SERVICE_HERO_PATH}/:id`} element={<DetailServiceHero />} />
+                            <Route path={`${DETAIL_JOB_PATH}/:id`} element={<DetailJob />} />
                             <Route path={CREATE_SERVICE_PATH} element={<CreateService />} />
                         </>
                     )}

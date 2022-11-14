@@ -219,9 +219,17 @@ class RealtimeDatabase extends BaseService {
 
     _getAllShowPoster(callback: (data: Poster[]) => void) {
         onValue(query(ref(this.db, this.pstr), orderByChild("status"), equalTo("open")), (snapshot) => {
-            if (!snapshot.exists()) return;
+            if (!snapshot.exists()) {
+                callback([]);
+                return;
+            };
             callback(Utils.parseTreeObjectToArray<Poster>(snapshot.val()) || []);
         });
+    }
+
+    getAllShowPoster() {
+        const queryRef = query(ref(this.db, this.pstr), orderByChild("status"), equalTo("open"))
+        return get(queryRef);
     }
 
     _searchShowPoster(key: string, callback: (data: Poster[]) => void) {

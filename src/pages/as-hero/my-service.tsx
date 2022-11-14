@@ -1,32 +1,18 @@
 /* eslint-disable no-prototype-builtins */
-import { AutoComplete, Button, Card, Table, Tabs } from "antd";
+import { AutoComplete, Button, Card, Input, Table, Tabs } from "antd";
 import Layout from "components/common/layout";
 import { UserContext } from "context/user";
+import { ServiceData } from "models";
+import ActiveServiceTable from "module/my-service/active-service-table";
+import DraftServiceTable from "module/my-service/draft-service-table";
 import React, { useContext, useState } from "react";
+import { AiFillQuestionCircle } from "react-icons/ai";
+import { useQuery } from "react-query";
+import { Link } from "react-router-dom";
+import authService from "services/auth";
+import heroService from "services/hero";
 import Swal from "sweetalert2";
-
-interface ServiceActiveDataSource {
-    key: any;
-    no: number;
-    title: string;
-    finish: string;
-    order: any;
-    request: any;
-    view: number;
-}
-
-interface ServiceDraftDataSource {
-    key: any;
-    no: number;
-    created: string;
-    title: string;
-}
-
-interface ServiceListProps {
-    activeData: ServiceActiveDataSource[];
-    draftData: ServiceDraftDataSource[];
-    tab: "active" | "draft";
-}
+import { CREATE_SERVICE_PATH } from "utils/routes";
 
 const mockVal = (data: string[], query: string) => {
     const filteredTitle = data.filter((val) => val.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
@@ -34,182 +20,64 @@ const mockVal = (data: string[], query: string) => {
     return result;
 };
 
-function ServicesList({ activeData = [], draftData = [], tab }: ServiceListProps) {
-    let columns;
-    if (tab === "active") {
-        columns = [
-            {
-                title: "No",
-                dataIndex: "no",
-                key: "no",
-            },
-            {
-                title: "Service",
-                dataIndex: "title",
-                key: "title",
-            },
-            {
-                title: "Finish",
-                dataIndex: "finish",
-                key: "finish",
-            },
-            {
-                title: "Order",
-                dataIndex: "order",
-                key: "order",
-            },
-            {
-                title: "View",
-                dataIndex: "view",
-                key: "view",
-            },
-            {
-                title: "Request",
-                dataIndex: "request",
-                key: "request",
-            },
-        ];
-
-        return (
-            <Card>
-                <Table dataSource={activeData} pagination={{ position: [] }} columns={columns} />
-            </Card>
-        );
-    }
-
-    columns = [
-        {
-            title: "No",
-            dataIndex: "no",
-            key: "no",
-        },
-        {
-            title: "Service",
-            dataIndex: "title",
-            key: "title",
-        },
-        {
-            title: "Created",
-            dataIndex: "created",
-            key: "created",
-        },
-        {
-            title: "Action",
-            dataIndex: "action",
-            key: "action",
-        },
-    ];
-
-    return (
-        <Card>
-            <Table dataSource={draftData} pagination={{ position: [] }} columns={columns} />
-        </Card>
-    );
-}
-
 function MyService() {
-    const [value, setValue] = useState("");
-    const [tab, setTab] = useState<"active" | "draft">("active");
-    const [options, setOptions] = useState<{ value: string }[]>([]);
+    const user = authService.CurrentUser();
+    const [tab, setTab] = useState<ServiceData["status"]>("active");
+    const [services, setServices] = useState<ServiceData[]>([]);
 
     const inActiveButtonStyle = { border: "none", backgroundColor: "inherit" };
 
-    const onSelect = (data: string) => {
-        console.log("onSelect", data);
-    };
-
-    const onChange = (data: string) => {
-        setValue(data);
-    };
+    const servicesQuery = useQuery(
+        ["services"],
+        async () => {
+            const res = heroService.GetAllMyServicesData({ uid: user?.uid as any });
+            return res;
+        },
+        {
+            onSuccess: (srvcs) => {
+                if (!srvcs || srvcs.length === 0) return;
+                setServices(srvcs?.filter((service) => service.status === tab));
+            },
+        }
+    );
 
     const myServicesOnClick = () => {
         Swal.fire("Apa itu My Services?", "That thing is still around?", "question");
     };
 
     const onDraftBtnClick = () => {
+        setServices(servicesQuery.data?.filter((service) => service.status === "draft") || []);
         setTab("draft");
     };
 
     const onActiveBtnClick = () => {
+        setServices(servicesQuery.data?.filter((service) => service.status === "active") || []);
         setTab("active");
     };
 
-    const activeDataSource: ServiceActiveDataSource[] = [
-        {
-            key: "1",
-            no: 1,
-            title: "Saya bisa membuat animasi 3d menggunakan blender, adobe family dan lainnya",
-            finish: "1",
-            order: 1,
-            request: 1,
-            view: 1,
-        },
-        {
-            key: "2",
-            no: 2,
-            title: "Saya bisa mengedit fotomu disamping pohon",
-            finish: "2",
-            order: 2,
-            request: 2,
-            view: 2,
-        },
-    ];
+    const clickServiceDraftHandler = (service: ServiceData) => {
+        console.log(service);
+    };
 
-    const draftDataSource: ServiceDraftDataSource[] = [
-        {
-            created: "12 February 2022",
-            key: "1",
-            no: 1,
-            title: "Saya menggambar",
-        },
-    ];
-
-    const onSearch = (searchText: string) => {
-        if (!searchText) {
-            setOptions([]);
-            return;
-        }
-
-        setOptions(
-            tab === "active"
-                ? mockVal(
-                      activeDataSource.map((data) => data.title),
-                      searchText
-                  )
-                : mockVal(
-                      draftDataSource.map((data) => data.title),
-                      searchText
-                  )
-        );
+    const onSearchChange = (e: any) => {
+        const query = e.target.value;
+        setServices([...(servicesQuery.data || [])].filter((service) => service.title.includes(query) && service.status === tab));
     };
 
     return (
         <Layout>
             <br />
-            <div className="flex flex-row space-x-2">
-                <div className="flex flex-0 flex-row md:flex-1">
-                    <h3 style={{ fontFamily: "Montserrat, sans-serif" }} className="text-xl font-">
-                        My Services{" "}
-                    </h3>
-                    <div>
-                        <button type="button" className="rounded-full bg-gray border-0" onClick={myServicesOnClick}>
-                            ?
-                        </button>
-                    </div>
+            <div className="flex flex-row space-x-2 justify-between">
+                <div className="flex items-center">
+                    <p className="m-0 mr-2 font-semibold text-xl capitalize">create service</p>
+                    <AiFillQuestionCircle className="text-gray-400 text-xl cursor-pointer" onClick={myServicesOnClick} />
                 </div>
-                <div className="flex flex-1 flex-row gap-1">
-                    <AutoComplete
-                        options={options}
-                        onSearch={onSearch}
-                        style={{ width: "95%" }}
-                        onChange={onChange}
-                        onSelect={onSelect}
-                        placeholder="Search Service"
-                    />
+                <div className="flex flex-row gap-1">
+                    <Input placeholder="Search service" onChange={onSearchChange} />
                     <br />
-                    <button type="button" className="bg-primary border-0 text-white md:w-1/3 w-fit" onClick={myServicesOnClick}>
-                        Create New Service
-                    </button>
+                    <Link to={CREATE_SERVICE_PATH}>
+                        <Button type="primary">Create New Service</Button>
+                    </Link>
                 </div>
             </div>
             <br />
@@ -229,8 +97,11 @@ function MyService() {
                     </Button>
                 )}
             </div>
-
-            <ServicesList tab={tab} draftData={draftDataSource} activeData={activeDataSource} />
+            {tab === "active" ? (
+                <ActiveServiceTable fetcher={servicesQuery} services={services} />
+            ) : (
+                <DraftServiceTable onClickDelete={clickServiceDraftHandler} fetcher={servicesQuery} services={services} />
+            )}
         </Layout>
     );
 }
