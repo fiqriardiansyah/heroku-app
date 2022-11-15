@@ -48,11 +48,12 @@ export interface ServiceData {
     uid?: string;
     post_date: any;
     poster_image: string;
+    price: string | number;
     title: string;
     status: "active" | "draft";
     flag?: string;
     finish?: string[];
-    orders?: ServiceRequest[];
+    orders?: ServiceOrder[];
     request?: ServiceRequest[];
     viewed?: number;
 }

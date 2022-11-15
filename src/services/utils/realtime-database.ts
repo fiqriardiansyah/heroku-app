@@ -83,21 +83,17 @@ class RealtimeDatabase extends BaseService {
 
     _getAllShowServicesData(callback: (data: ServiceData[]) => void) {
         onValue(query(ref(this.db, this.servDt), orderByChild("status"), equalTo("active")), (snapshot) => {
-            if (!snapshot.exists()) return;
+            if (!snapshot.exists()) {
+                callback([]);
+                return;
+            };
             callback(Utils.parseTreeObjectToArray<ServiceData>(snapshot.val()) || []);
         });
     }
 
-    _searchShowServicesData(key: string, callback: (data: ServiceData[]) => void) {
-        const keyString = key.trim().toLocaleLowerCase();
-        if (!keyString) return;
-        const onSubscribe = onValue(query(ref(this.db, this.servDt), orderByChild("flag"), startAt(keyString)), (snapshot) => {
-            if (!snapshot.exists()) return;
-            callback(Utils.parseTreeObjectToArray<ServiceData>(snapshot.val()).filter((el) => el.flag?.includes(keyString)) || []);
-        });
-        if (!keyString) {
-            onSubscribe();
-        }
+    getAllShowServiceData() {
+        const queryRef = query(ref(this.db, this.servDt), orderByChild("status"), equalTo("active"))
+        return get(queryRef);
     }
 
     deleteServiceData({ sid }: Pick<IDs, "sid">) {
@@ -223,9 +219,17 @@ class RealtimeDatabase extends BaseService {
 
     _getAllShowPoster(callback: (data: Poster[]) => void) {
         onValue(query(ref(this.db, this.pstr), orderByChild("status"), equalTo("open")), (snapshot) => {
-            if (!snapshot.exists()) return;
+            if (!snapshot.exists()) {
+                callback([]);
+                return;
+            };
             callback(Utils.parseTreeObjectToArray<Poster>(snapshot.val()) || []);
         });
+    }
+
+    getAllShowPoster() {
+        const queryRef = query(ref(this.db, this.pstr), orderByChild("status"), equalTo("open"))
+        return get(queryRef);
     }
 
     _searchShowPoster(key: string, callback: (data: Poster[]) => void) {

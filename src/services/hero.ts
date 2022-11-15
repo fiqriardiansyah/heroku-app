@@ -12,6 +12,7 @@ import {
     Application,
     Bid,
     IDs,
+    Poster,
     Service,
     ServiceData,
     ServiceDetail,
@@ -50,6 +51,7 @@ class HeroService extends HeroServiceSupport {
                     id,
                     uid,
                     post_date: serverTimestamp(),
+                    price: service.price,
                     status,
                     viewed: 0,
                     poster_image: service?.images ? service?.images[0] : '',
@@ -59,6 +61,14 @@ class HeroService extends HeroServiceSupport {
             });
             return id;
         })
+    }
+
+    async SearchPoster(key: string) {
+        return this.ProxyRequest(async () => {
+            const req = await this.getAllShowPoster();
+            const posters = Utils.parseTreeObjectToArray<Poster>(req.val() || {});
+            return posters.filter((poster) => poster.flag?.includes(key));
+        });
     }
 
     async GetDetailService({ sid, uid }: { sid: string; uid: string }) {

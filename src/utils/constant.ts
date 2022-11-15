@@ -31,6 +31,8 @@ export const DOCUMENTS = {
 export const SERVICE_ACTIVE = "1";
 export const SERVICE_DRAFT = "0";
 
+export const VALUE_TOKEN = 1000;
+
 export const TYPE_OF_JOBS = [
     {
         value: 1,

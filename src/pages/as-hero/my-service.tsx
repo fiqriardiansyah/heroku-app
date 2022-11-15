@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-import { AutoComplete, Button, Card, Table, Tabs } from "antd";
+import { AutoComplete, Button, Card, Input, Table, Tabs } from "antd";
 import Layout from "components/common/layout";
 import { getDatabase } from "firebase/database";
 import React, { useContext, useState } from "react";
@@ -9,6 +9,14 @@ import Swal from "sweetalert2";
 import NoJobs from "assets/svgs/no-jobs.svg";
 import { useNavigate } from "react-router-dom";
 import { CREATE_SERVICE_PATH, SERVICE_HERO_PATH } from "utils/routes";
+import { UserContext } from "context/user";
+import { ServiceData } from "models";
+import ActiveServiceTable from "module/my-service/active-service-table";
+import DraftServiceTable from "module/my-service/draft-service-table";
+import { AiFillQuestionCircle } from "react-icons/ai";
+import { useQuery } from "react-query";
+import { Link } from "react-router-dom";
+import heroService from "services/hero";
 
 interface ServiceActiveDataSource {
     id: any;
@@ -135,6 +143,7 @@ function MyService() {
 
     const [value, setValue] = useState("");
     const [tab, setTab] = useState<"active" | "draft">("active");
+    const [services, setServices] = useState<ServiceData[]>([]);
     const [options, setOptions] = useState<{ value: string }[]>([]);
     const [draftDataSource, setDraftDataSource] = useState<ServiceDraftDataSource[]>([]);
 
@@ -155,14 +164,6 @@ function MyService() {
 
     const onCreateServiceBtnClick = () => {
         navigate(`${CREATE_SERVICE_PATH}`);
-    };
-
-    const onDraftBtnClick = () => {
-        setTab("draft");
-    };
-
-    const onActiveBtnClick = () => {
-        setTab("active");
     };
 
     React.useEffect(() => {
@@ -189,6 +190,20 @@ function MyService() {
     const onChange = (data: string) => {
         setValue(data);
     };
+
+    const servicesQuery = useQuery(
+        ["services"],
+        async () => {
+            const res = heroService.GetAllMyServicesData({ uid: user?.uid as any });
+            return res;
+        },
+        {
+            onSuccess: (srvcs) => {
+                if (!srvcs || srvcs.length === 0) return;
+                setServices(srvcs?.filter((service) => service.status === tab));
+            },
+        }
+    );
 
     const myServicesOnClick = () => {
         Swal.fire("Apa itu My Services?", "That thing is still around?", "question");
@@ -236,33 +251,39 @@ function MyService() {
         );
     };
 
+    const onDraftBtnClick = () => {
+        setServices(servicesQuery.data?.filter((service) => service.status === "draft") || []);
+        setTab("draft");
+    };
+
+    const onActiveBtnClick = () => {
+        setServices(servicesQuery.data?.filter((service) => service.status === "active") || []);
+        setTab("active");
+    };
+
+    const clickServiceDraftHandler = (service: ServiceData) => {
+        console.log(service);
+    };
+
+    const onSearchChange = (e: any) => {
+        const query = e.target.value;
+        setServices([...(servicesQuery.data || [])].filter((service) => service.title.includes(query) && service.status === tab));
+    };
+
     return (
         <Layout>
             <br />
-            <div className="flex flex-row space-x-2">
-                <div className="flex flex-0 flex-row md:flex-1">
-                    <h3 style={{ fontFamily: "Montserrat, sans-serif" }} className="text-xl font-">
-                        My Services{" "}
-                    </h3>
-                    <div>
-                        <button type="button" className="rounded-full bg-gray border-0" onClick={myServicesOnClick}>
-                            ?
-                        </button>
-                    </div>
+            <div className="flex flex-row space-x-2 justify-between">
+                <div className="flex items-center">
+                    <p className="m-0 mr-2 font-semibold text-xl capitalize">create service</p>
+                    <AiFillQuestionCircle className="text-gray-400 text-xl cursor-pointer" onClick={myServicesOnClick} />
                 </div>
-                <div className="flex flex-1 flex-row gap-1">
-                    <AutoComplete
-                        options={options}
-                        onSearch={onSearch}
-                        style={{ width: "95%" }}
-                        onChange={onChange}
-                        onSelect={onSelect}
-                        placeholder="Search Service"
-                    />
+                <div className="flex flex-row gap-1">
+                    <Input placeholder="Search service" onChange={onSearchChange} />
                     <br />
-                    <Button type="primary" className=" md:w-1/3 w-fit" onClick={onCreateServiceBtnClick}>
-                        Create New Service
-                    </Button>
+                    <Link to={CREATE_SERVICE_PATH}>
+                        <Button type="primary">Create New Service</Button>
+                    </Link>
                 </div>
             </div>
             <br />
@@ -291,6 +312,11 @@ function MyService() {
                 onActiveServiceClick={onActiveServiceClick}
                 onDraftServiceClick={onDraftServiceClick}
             />
+            {tab === "active" ? (
+                <ActiveServiceTable fetcher={servicesQuery} services={services} />
+            ) : (
+                <DraftServiceTable onClickDelete={clickServiceDraftHandler} fetcher={servicesQuery} services={services} />
+            )}
         </Layout>
     );
 }

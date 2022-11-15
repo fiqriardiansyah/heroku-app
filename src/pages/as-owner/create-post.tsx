@@ -79,7 +79,10 @@ function CreatePost() {
     const typeOfJob = watch("type_of_job");
 
     const onSubmitHandler = handleSubmit((data) => {
-        createPostMutation.mutate(data as Poster);
+        createPostMutation.mutate({
+            ...data,
+            type_of_job: data.type_of_job === "1" ? "task" : "hiring",
+        } as Poster);
     });
 
     const onClickGuide = () => {};
@@ -170,7 +173,7 @@ function CreatePost() {
                             name="skills"
                             labelCol={{ xs: 5 }}
                             label="Skills"
-                            placeholder="Write your skills"
+                            placeholder="Skills needed"
                             className=""
                             options={[]}
                         />

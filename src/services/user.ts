@@ -27,13 +27,10 @@ class UserService extends RealtimeDatabase {
     }
 
     async GetUser(uid: string): Promise<User> {
-        try {
+        return this.ProxyRequest(async () => {
             const request = await get(child(ref(this.database), `${DOCUMENTS.users}/${uid}`));
             return request.val();
-        } catch (error: any) {
-            const message = error?.message || DEFAULT_ERROR;
-            throw new Error(message);
-        }
+        });
     }
 }
 
