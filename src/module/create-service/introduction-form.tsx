@@ -1,7 +1,7 @@
 import { Button, Form, Space } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import ControlledInputText from "components/form/controlled-inputs/controlled-input-text";
 import ControlledInputNumber from "components/form/controlled-inputs/controlled-input-number";
@@ -40,6 +40,8 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
         handleSubmit,
         control,
         formState: { isValid },
+        setValue,
+        watch,
     } = useForm<FDataIntroduction>({
         mode: "onChange",
         resolver: yupResolver(schema),
@@ -50,10 +52,28 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
             : {},
     });
 
+    const watchAll = watch();
+
+    useEffect(() => {
+        if (currentData) {
+            setValue("title", currentData.title);
+            setValue("price", currentData.price);
+            setValue("category", currentData.category);
+            setValue("sub_category", currentData.sub_category);
+            setValue("tags", currentData.tags);
+        }
+    }, [currentData]);
+
     const onSubmitHandler = handleSubmit((data) => {
         onSubmit(data);
         nextStep();
     });
+
+    const isAllValid = useMemo(() => {
+        const { title, category, price, sub_category: subCategory, tags } = watchAll;
+        if (!title || !category || !subCategory || !tags || tags.length === 0 || !price) return false;
+        return true;
+    }, [watchAll]);
 
     return (
         <div className="w-full">
@@ -118,7 +138,7 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
                         </div>
                     </div>
                 </div>
-                <Button htmlType="submit" disabled={!isValid} type="primary" className="BUTTON-PRIMARY">
+                <Button htmlType="submit" disabled={!isAllValid} type="primary" className="BUTTON-PRIMARY">
                     next
                 </Button>
             </Form>

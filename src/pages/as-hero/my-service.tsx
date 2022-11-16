@@ -7,7 +7,7 @@ import ActiveServiceTable from "module/my-service/active-service-table";
 import DraftServiceTable from "module/my-service/draft-service-table";
 import React, { useContext, useState } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import authService from "services/auth";
 import heroService from "services/hero";
@@ -30,13 +30,25 @@ function MyService() {
     const servicesQuery = useQuery(
         ["services"],
         async () => {
-            const res = heroService.GetAllMyServicesData({ uid: user?.uid as any });
+            const res = await heroService.GetAllMyServicesData({ uid: user?.uid as any });
             return res;
         },
         {
             onSuccess: (srvcs) => {
                 if (!srvcs || srvcs.length === 0) return;
                 setServices(srvcs?.filter((service) => service.status === tab));
+            },
+        }
+    );
+
+    const deleteMutation = useMutation(
+        async ({ id, callback }: { id: string; callback: () => void }) => {
+            await heroService.DeleteMyService(id);
+            callback();
+        },
+        {
+            onSuccess: () => {
+                servicesQuery.refetch();
             },
         }
     );
@@ -55,8 +67,11 @@ function MyService() {
         setTab("active");
     };
 
-    const clickServiceDraftHandler = (service: ServiceData) => {
-        console.log(service);
+    const clickServiceDraftHandler = (service: ServiceData, callback: () => void) => {
+        deleteMutation.mutate({
+            id: service.id as any,
+            callback,
+        });
     };
 
     const onSearchChange = (e: any) => {

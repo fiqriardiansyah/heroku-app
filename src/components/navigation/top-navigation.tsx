@@ -15,7 +15,7 @@ function TopNavigation() {
     const { state } = useContext(StateContext);
 
     return (
-        <div className=" bg-white sticky top-0 left-0 z-100">
+        <div className=" bg-white sticky top-0 left-0 z-200">
             <div className="CONTAINER flex items-center justify-between h-16">
                 <div className="flex items-center">
                     <Link to={HOME_PATH}>

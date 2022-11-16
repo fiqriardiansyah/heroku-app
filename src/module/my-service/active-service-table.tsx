@@ -1,11 +1,12 @@
-import React from "react";
-import { Image,Table } from "antd";
+import React, { useMemo } from "react";
+import { Image, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { UseQueryResult } from "react-query";
 import { Link } from "react-router-dom";
-import { ServiceData } from "models";
+import { ServiceData, ServiceFinish, ServiceOrder, ServiceRequest } from "models";
 import { IMAGE_FALLBACK } from "utils/constant";
 import { SERVICE_HERO_PATH } from "utils/routes";
+import Utils from "utils";
 
 type Props<T> = {
     fetcher: UseQueryResult<T[], unknown>;
@@ -13,6 +14,17 @@ type Props<T> = {
 };
 
 function ActiveServiceTable<T extends ServiceData>({ services, fetcher }: Props<T>) {
+    const parseServices = useMemo(() => {
+        return services.map((service) => {
+            return {
+                ...service,
+                request: Utils.parseTreeObjectToArray<ServiceRequest>(service.request),
+                orders: Utils.parseTreeObjectToArray<ServiceOrder>(service.orders),
+                finish: Utils.parseTreeObjectToArray<ServiceFinish>(service.finish),
+            };
+        });
+    }, [services]);
+
     const columns: ColumnsType<T> = [
         {
             title: "No",
@@ -62,7 +74,7 @@ function ActiveServiceTable<T extends ServiceData>({ services, fetcher }: Props<
         },
     ];
 
-    return <Table loading={fetcher.isLoading} columns={columns} dataSource={services as any} className="w-full" pagination={false} />;
+    return <Table loading={fetcher.isLoading} columns={columns} dataSource={parseServices as any} className="w-full" pagination={false} />;
 }
 
 export default ActiveServiceTable;

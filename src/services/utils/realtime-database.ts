@@ -20,6 +20,7 @@ import {
     Service,
     ServiceData,
     ServiceOrder,
+    ServiceOwnerFinish,
     ServiceOwnerOrder,
     ServiceOwnerRequest,
     ServiceRequest,
@@ -58,8 +59,8 @@ class RealtimeDatabase extends BaseService {
         return get(queryRef);
     }
 
-    getOneService(ids: Pick<IDs, "sid">) {
-        return get(ref(this.db, `${this.serv}/${ids.sid}`));
+    getOneService({ sid }: Pick<IDs, "sid">) {
+        return get(ref(this.db, `${this.serv}/${sid}`));
     }
 
     addService({
@@ -131,8 +132,21 @@ class RealtimeDatabase extends BaseService {
         return push(ref(this.db, `${this.servDt}/${ids.sid}/orders`), data);
     }
 
+    addServiceDataFinish({
+        data,
+        ...ids
+    }: Pick<IDs, "sid"> & {
+        data: ServiceOrder;
+    }) {
+        return push(ref(this.db, `${this.servDt}/${ids.sid}/finish`), data);
+    }
+
     deleteServiceDataRequest(ids: Pick<IDs, "sid" | "rid">) {
         return remove(ref(this.db, `${this.servDt}/${ids.sid}/request/${ids.rid}`));
+    }
+
+    deleteServiceDataOrder(ids: Pick<IDs, "sid" | "rid">) {
+        return remove(ref(this.db, `${this.servDt}/${ids.sid}/orders/${ids.rid}`));
     }
 
     updateServiceDataOrder({
@@ -153,6 +167,16 @@ class RealtimeDatabase extends BaseService {
     }) {
         return push(ref(this.db, `${this.asg}/${ids.uid}/request`), data);
     }
+
+    addAssignmentFinish({
+        data,
+        ...ids
+    }: Pick<IDs, "uid"> & {
+        data: ServiceOwnerFinish;
+    }) {
+        return push(ref(this.db, `${this.asg}/${ids.uid}/finish`), data);
+    }
+
 
     updateAssignmentOrder({
         uid,
@@ -195,6 +219,11 @@ class RealtimeDatabase extends BaseService {
 
     deleteAssignmentRequest(ids: Pick<IDs, "sid" | "uid">) {
         const queryRef = query(ref(this.db, `${this.asg}/${ids.uid}/request`), orderByChild("sid"), equalTo(ids.sid));
+        return remove(queryRef.ref);
+    }
+
+    deleteAssignmentOrder(ids: Pick<IDs, "sid" | "uid">) {
+        const queryRef = query(ref(this.db, `${this.asg}/${ids.uid}/orders`), orderByChild("sid"), equalTo(ids.sid));
         return remove(queryRef.ref);
     }
 

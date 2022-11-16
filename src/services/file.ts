@@ -41,6 +41,15 @@ class FileService extends StorageFirebase {
         });
     }
 
+    async UploadFileAndGetDownloadUrl(file: File) {
+        return this.ProxyRequest(async () => {
+            const path = `${this.files}/${Utils.generateFileName({ file })}`;
+            const task = await this.uploadFile({ file, path });
+            const url = await getDownloadURL(task.ref);
+            return url;
+        });
+    }
+
 }
 
 const fileService = new FileService({

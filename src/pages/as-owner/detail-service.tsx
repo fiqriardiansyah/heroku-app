@@ -1,19 +1,29 @@
+/* eslint-disable no-shadow */
 import Layout from "components/common/layout";
-import React, { Children, useState } from "react";
-import { Alert, Button, Card, Image, Skeleton, Space } from "antd";
+import React, { Children, useContext, useState } from "react";
+import { Alert, Button, Card, Image, message, Modal, Skeleton, Space } from "antd";
 import parser from "html-react-parser";
-import { useParams } from "react-router-dom";
-import { CHAT_PATH } from "utils/routes";
+import { useNavigate, useParams } from "react-router-dom";
+import { CHAT_PATH, MY_ASSIGNMENT_PATH, SERVICE_HERO_PATH } from "utils/routes";
 import { FaTelegramPlane } from "react-icons/fa";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import ownerService from "services/owner";
 import State from "components/common/state";
 import { IMAGE_FALLBACK } from "utils/constant";
 import Chip from "components/common/chip";
 import ButtonFileDownload from "components/button/file-download";
 import CutTokenModal from "components/modal/cut-token-modal";
+import { ServiceDetail } from "models";
+import authService from "services/auth";
+import { IoMdWarning } from "react-icons/io";
+import { StateContext } from "context/state";
+import userService from "services/user";
 
 function DetailServiceOwner() {
+    const navigate = useNavigate();
+    const { changeRole } = useContext(StateContext);
+
+    const user = authService.CurrentUser();
     const { uid, id } = useParams();
 
     const serviceQuery = useQuery(
@@ -27,9 +37,60 @@ function DetailServiceOwner() {
         }
     );
 
+    const userQuery = useQuery(
+        ["user", uid],
+        async () => {
+            const usr = await userService.GetUser(uid as any);
+            return usr;
+        },
+        {
+            enabled: !!uid,
+        }
+    );
+
+    const orderServiceMutation = useMutation(
+        async (service: ServiceDetail) => {
+            await ownerService.OrderService({ sid: service.id as any, hid: service.uid as any, uid: user?.uid as any });
+        },
+        {
+            onSuccess: () => {
+                message.success("The request will be submitted to the hero");
+                navigate(MY_ASSIGNMENT_PATH);
+            },
+        }
+    );
+
+    const onPayClickHandler = (totalToken: number) => {
+        // [IMPORTANT] potong token owner sebelum order
+        if (!serviceQuery.data) return;
+        orderServiceMutation.mutate(serviceQuery.data);
+    };
+
+    const onClickDetailHandler = () => {
+        Modal.confirm({
+            title: "Switch?",
+            icon: <IoMdWarning className="text-yellow-400" />,
+            content: `You need switch role to get to your detail service, switch?`,
+            onOk() {
+                if (changeRole) {
+                    changeRole();
+                    navigate(`${SERVICE_HERO_PATH}/${serviceQuery.data?.id}`);
+                }
+            },
+            onCancel() {},
+            okButtonProps: {
+                danger: true,
+            },
+            cancelButtonProps: {
+                type: "text",
+            },
+        });
+    };
+
     return (
         <Layout>
             <br />
+            {orderServiceMutation.isError && <Alert message={(orderServiceMutation.error as any)?.message} type="error" />}
             <div className="flex flex-col md:flex-row gap-4">
                 <Card className="flex-2">
                     <State data={serviceQuery.data} isLoading={serviceQuery.isLoading} isError={serviceQuery.isError}>
@@ -37,6 +98,36 @@ function DetailServiceOwner() {
                             <>
                                 <State.Data state={state}>
                                     <div className="w-full">
+                                        <State data={userQuery.data} isLoading={userQuery.isLoading} isError={userQuery.isError}>
+                                            {(state) => (
+                                                <>
+                                                    <State.Data state={state}>
+                                                        <div className="w-full flex mb-5">
+                                                            <Image
+                                                                preview={false}
+                                                                referrerPolicy="no-referrer"
+                                                                fallback={IMAGE_FALLBACK}
+                                                                src={userQuery.data?.profile}
+                                                                width={40}
+                                                                height={40}
+                                                                className="flex-1 bg-gray-300 rounded-full object-cover"
+                                                            />
+                                                            <div className="flex flex-col ml-3">
+                                                                <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
+                                                                <p className="m-0 text-gray-400 text-xs capitalize">programmer</p>
+                                                                {/* [IMPORTANT] ubah pekerjaan user nanti */}
+                                                            </div>
+                                                        </div>
+                                                    </State.Data>
+                                                    <State.Loading state={state}>
+                                                        <Skeleton paragraph={{ rows: 2 }} avatar />
+                                                    </State.Loading>
+                                                    <State.Error state={state}>
+                                                        <Alert message={(userQuery.error as any)?.message} type="error" />
+                                                    </State.Error>
+                                                </>
+                                            )}
+                                        </State>
                                         <h1 className="text-lg font-semibold">{serviceQuery.data?.title}</h1>
                                         <div className="">{parser(serviceQuery.data?.description || "")}</div>
                                         <div className="w-full flex">
@@ -94,26 +185,38 @@ function DetailServiceOwner() {
                                         <p className="text-2xl font-semibold text-center w-full">
                                             {parseInt(serviceQuery.data?.price as string, 10)?.ToIndCurrency("Rp")}
                                         </p>
-                                        <Space size={20}>
-                                            <CutTokenModal leftToken={12} total={parseInt(serviceQuery.data?.price as string, 10)}>
-                                                {(data) => (
-                                                    <Button
-                                                        onClick={data.showModal}
-                                                        disabled={serviceQuery.data?.status === "draft"}
-                                                        type="primary"
-                                                        size="large"
-                                                    >
-                                                        Order
-                                                    </Button>
-                                                )}
-                                            </CutTokenModal>
-                                            <button
-                                                className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                                type="button"
-                                            >
-                                                <FaTelegramPlane className="text-primary text-2xl" />
-                                            </button>
-                                        </Space>
+                                        {serviceQuery.data?.uid === user?.uid ? (
+                                            <Button onClick={onClickDetailHandler} type="text">
+                                                To Detail
+                                            </Button>
+                                        ) : (
+                                            <Space size={20}>
+                                                <CutTokenModal
+                                                    onPayClick={onPayClickHandler}
+                                                    leftToken={12}
+                                                    total={parseInt(serviceQuery.data?.price as string, 10)}
+                                                >
+                                                    {(data) => (
+                                                        <Button
+                                                            loading={orderServiceMutation.isLoading}
+                                                            onClick={data.showModal}
+                                                            disabled={serviceQuery.data?.status === "draft" || orderServiceMutation.isLoading}
+                                                            type="primary"
+                                                            size="large"
+                                                        >
+                                                            Order
+                                                        </Button>
+                                                    )}
+                                                </CutTokenModal>
+                                                <button
+                                                    disabled={orderServiceMutation.isLoading}
+                                                    className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
+                                                    type="button"
+                                                >
+                                                    <FaTelegramPlane className="text-primary text-2xl" />
+                                                </button>
+                                            </Space>
+                                        )}
                                     </div>
                                 </State.Data>
                                 <State.Loading state={state}>

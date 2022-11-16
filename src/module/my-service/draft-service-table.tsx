@@ -5,7 +5,7 @@ import { UseQueryResult } from "react-query";
 import { Link } from "react-router-dom";
 import { ServiceData } from "models";
 import { IMAGE_FALLBACK } from "utils/constant";
-import { SERVICE_HERO_PATH } from "utils/routes";
+import { CREATE_SERVICE_PATH, SERVICE_HERO_PATH } from "utils/routes";
 import { IoMdWarning } from "react-icons/io";
 import moment from "moment";
 
@@ -23,12 +23,17 @@ function DraftServiceTable<T extends ServiceData>({ services, fetcher, onClickDe
             content: `Hapus service '${data.title}' ?`,
             onOk() {
                 return new Promise((resolve, reject) => {
-                    onClickDelete(data, () => resolve);
+                    onClickDelete(data, () => {
+                        resolve(true);
+                    });
                 });
             },
             onCancel() {},
             okButtonProps: {
                 danger: true,
+            },
+            cancelButtonProps: {
+                type: "text",
             },
         });
     };
@@ -43,18 +48,20 @@ function DraftServiceTable<T extends ServiceData>({ services, fetcher, onClickDe
             title: "Service",
             render: (text, record) => {
                 return (
-                    <div className="flex items-start text-gray-600">
-                        <Image
-                            preview={false}
-                            fallback={IMAGE_FALLBACK}
-                            loading="lazy"
-                            className="rounded-md bg-gray-200 object-cover "
-                            src={record?.poster_image || undefined}
-                            width={100}
-                            height={60}
-                        />
-                        <p className="m-0 ml-2 capitalize">{record?.title}</p>
-                    </div>
+                    <Link to={`${CREATE_SERVICE_PATH}?edit=${record.id}`}>
+                        <div className="flex items-start text-gray-600">
+                            <Image
+                                preview={false}
+                                fallback={IMAGE_FALLBACK}
+                                loading="lazy"
+                                className="rounded-md bg-gray-200 object-cover "
+                                src={record?.poster_image || undefined}
+                                width={100}
+                                height={60}
+                            />
+                            <p className="m-0 ml-2 capitalize">{record?.title}</p>
+                        </div>
+                    </Link>
                 );
             },
         },

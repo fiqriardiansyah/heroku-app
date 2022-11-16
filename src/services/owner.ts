@@ -6,6 +6,7 @@ import { Bid, IDs, Poster, Service, ServiceData, ServiceDetail, ServiceOwnerOrde
 import { DEFAULT_ERROR, DOCUMENTS } from "utils/constant";
 import Utils from "utils";
 import OwnerServiceSupport from "./support/owner";
+import heroService from "./hero";
 
 class OwnerService extends OwnerServiceSupport {
     config: FirebaseApp;
@@ -16,6 +17,13 @@ class OwnerService extends OwnerServiceSupport {
         super(database);
         this.config = config;
         this.database = database;
+    }
+
+    async GetOneService({ sid }: Pick<IDs, "sid">) {
+        return this.ProxyRequest(async () => {
+            const service = await this.getOneService({ sid });
+            return service.val() as Service;
+        });
     }
 
     async GetDetailService({ sid, hid }: Pick<IDs, "sid" | "hid">) {
@@ -30,21 +38,22 @@ class OwnerService extends OwnerServiceSupport {
     async OrderService({ sid, uid, hid }: Pick<IDs, "sid" | "uid" | "hid">) {
         return this.ProxyRequest(async () => {
             const date = serverTimestamp();
+            const assignments = await this.GetMyAssigments({ uid: uid as any });
+            const waitingForRequest = assignments.request?.find((req) => req.sid === sid && req.status === 'waiting');
+            const orderProcess = assignments.orders?.find((order) => order.sid === sid);
+            if (waitingForRequest) {
+                throw new Error("You have already made a request for this service");
+            }
+            if (orderProcess) {
+                throw new Error("Your previous order has not been completed");
+            }
             await this.addServiceDataRequest({
                 sid,
-                data: {
-                    uid,
-                    date,
-                },
+                data: { hid, uid, date },
             });
             await this.addAssignmentRequest({
                 uid,
-                data: {
-                    sid,
-                    uid: hid,
-                    date,
-                    status: "waiting",
-                },
+                data: { sid, uid: hid, date, status: "waiting" },
             });
             return date;
         });
@@ -94,6 +103,49 @@ class OwnerService extends OwnerServiceSupport {
             return services.filter((service) => service.flag?.includes(key));
         });
     }
+
+    async ApproveOrderService({
+        uid,
+        order,
+    }: Pick<IDs, 'uid'> & {
+        order: ServiceOwnerOrder;
+    }) {
+        return this.ProxyRequest(async () => {
+            const date = serverTimestamp();
+            const orderData = await this.GetOneServiceOrder({ sid: order.sid, uid });
+            if (!orderData) {
+                throw new Error('assignment order not found!');
+            }
+            await Promise.all([
+                this.addServiceDataFinish({
+                    sid: order.sid,
+                    data: {
+                        ...orderData,
+                        status: orderData.status + 1,
+                        progress: [...orderData!.progress!, {
+                            status: orderData.status + 1,
+                            date,
+                        }],
+                    }
+                }), this.addAssignmentFinish({
+                    uid: uid as any,
+                    data: {
+                        ...order,
+                        status: order.status + 1,
+                        progress: [...order!.progress!, {
+                            status: order.status + 1,
+                            date,
+                        }],
+                    }
+                })])
+            await Promise.all([
+                this.deleteAssignmentOrder({ sid: order.sid, uid }),
+                this.deleteServiceDataOrder({ rid: orderData.id as any, sid: order.sid })
+            ]);
+            return null;
+        });
+    }
+
 }
 
 const ownerService = new OwnerService({

@@ -1,9 +1,10 @@
 import { Button, Form, Space } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import ControlledInputRichText from "components/form/controlled-inputs/controlled-input-rich-text";
+import Utils from "utils";
 import { FDataExplainIt } from "./models";
 
 const schema: yup.SchemaOf<FDataExplainIt> = yup.object().shape({
@@ -24,6 +25,8 @@ function ExplainitForm({ nextStep, prevStep, onSubmit, currentData }: Props) {
         handleSubmit,
         control,
         formState: { isValid },
+        setValue,
+        watch,
     } = useForm<FDataExplainIt>({
         mode: "onChange",
         resolver: yupResolver(schema),
@@ -33,6 +36,14 @@ function ExplainitForm({ nextStep, prevStep, onSubmit, currentData }: Props) {
               }
             : {},
     });
+
+    const description = watch("description");
+
+    useEffect(() => {
+        if (currentData) {
+            setValue("description", currentData.description);
+        }
+    }, [currentData]);
 
     const onSubmitHandler = handleSubmit((data) => {
         onSubmit(data);
@@ -64,7 +75,7 @@ function ExplainitForm({ nextStep, prevStep, onSubmit, currentData }: Props) {
                     <Button htmlType="submit" type="primary" className="BUTTON-PRIMARY" onClick={prevStep}>
                         prev
                     </Button>
-                    <Button htmlType="submit" type="primary" disabled={!isValid} className="BUTTON-PRIMARY">
+                    <Button htmlType="submit" type="primary" disabled={!isValid || !Utils.stripHtml(description)} className="BUTTON-PRIMARY">
                         next
                     </Button>
                 </div>

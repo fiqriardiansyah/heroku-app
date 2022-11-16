@@ -8,7 +8,7 @@ import ExplainitForm from "module/create-service/explainit-form";
 import ConvinceForm from "module/create-service/convince-form";
 import AnnounceService from "module/create-service/announce";
 import { FDataConvince, FDataExplainIt, FDataIntroduction } from "module/create-service/models";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Service, ServiceData } from "models";
 import fileService from "services/file";
 import heroService from "services/hero";
@@ -16,7 +16,7 @@ import authService from "services/auth";
 import { StorageReference } from "firebase/storage";
 import JsonAdminAnim from "assets/animation/admin.json";
 import { DEFAULT_ERROR } from "utils/constant";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { SERVICE_HERO_PATH } from "utils/routes";
 
 const steps = [
@@ -45,6 +45,8 @@ const defaultOptions = {
 
 function CreateService() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const editIdService = searchParams.get("edit");
     const user = authService.CurrentUser();
 
     const [currentStep, setCurrentStep] = useState(0);
@@ -114,6 +116,31 @@ function CreateService() {
         }
     );
 
+    const getServiceQuery = useQuery(
+        [editIdService],
+        async () => {
+            const service = await heroService.GetDetailService({ sid: editIdService as any });
+            return service;
+        },
+        {
+            enabled: !!editIdService,
+            refetchOnWindowFocus: false,
+            refetchInterval: false,
+            onSuccess: (service) => {
+                setIntroductionData({
+                    title: service.title,
+                    category: service.category,
+                    sub_category: service.sub_category,
+                    price: service.price,
+                    tags: service.tags,
+                });
+                setExplainItData({
+                    description: service.description,
+                });
+            },
+        }
+    );
+
     const onClickGuide = () => {};
 
     const prevStep = () => {
@@ -129,6 +156,7 @@ function CreateService() {
     const createService = (status: ServiceData["status"]) => {
         if (!introductionData || !explainItData) return;
         const service = {
+            id: getServiceQuery.data ? getServiceQuery.data.id : "",
             ...introductionData,
             ...explainItData,
             ...convinceData,
@@ -140,7 +168,8 @@ function CreateService() {
     };
 
     return (
-        <Layout>
+        <Layout loading={getServiceQuery.isLoading}>
+            {getServiceQuery.isError && <Alert message={(getServiceQuery.error as any)?.message} type="error" />}
             <div className="w-full">
                 <div className="w-full flex items-center justify-between">
                     <div className="flex items-center my-4">
@@ -173,7 +202,7 @@ function CreateService() {
                 {createMutation.isLoading && (
                     <div className="w-full mt-10 bg-white min-h-[400px] flex items-center justify-center flex-col rounded-md border-solid border border-gray-300 p-6">
                         <Lottie isClickToPauseDisabled options={defaultOptions} height={350} width={350} />
-                        <p className="m-0 capitalize text-xl mt-2 text-gray-400 font-semibold">wait, creating your service post</p>
+                        <p className="m-0 capitalize text-xl mt-2 text-gray-400 font-medium">wait, creating your service post</p>
                     </div>
                 )}
             </div>

@@ -1,6 +1,20 @@
 import { serverTimestamp } from "firebase/database";
 import { StorageError, UploadTask } from "firebase/storage";
 
+export interface IDs {
+    uid: string; // user id
+    uid2: string; // other user id
+    sid: string; // service id
+    hid: string; // hero id
+    oid: string; // order id
+    rid: string; // request id
+    pid: string; // poster id
+    biid: string; // bid id
+    apcid: string; // aplication id;
+    anyid: string; // any other id;
+    cid: string; // chat id
+    mid: string; // message id
+}
 export interface SignUpEmail {
     name: string;
     email: string;
@@ -17,7 +31,7 @@ export interface Service {
     uid?: string;
     title: string;
     category: string;
-    subcategory: string;
+    sub_category: string;
     price: string | number;
     tags: string[];
     description: string;
@@ -25,15 +39,13 @@ export interface Service {
     pdfs: string[];
 }
 
-export interface ServiceRequest {
+export interface ServiceRequest extends Pick<IDs, 'uid' | 'hid'> {
     id?: string;
-    uid: string;
     date: any;
 }
 
-export interface ServiceOrder {
+export interface ServiceOrder extends Pick<IDs, 'uid' | 'hid'> {
     id?: string;
-    uid: string;
     date: any;
     status: number;
     progress?: {
@@ -42,6 +54,8 @@ export interface ServiceOrder {
     }[];
     files?: string[];
 }
+
+export interface ServiceFinish extends ServiceOrder { }
 
 export interface ServiceData {
     id?: string;
@@ -58,18 +72,14 @@ export interface ServiceData {
     viewed?: number;
 }
 
-export interface ServiceOwnerRequest {
+export interface ServiceOwnerRequest extends Pick<IDs, 'uid' | 'sid'> {
     id?: string;
-    sid: string;
-    uid: string;
     date: any;
     status: "waiting" | "rejected";
 }
 
-export interface ServiceOwnerOrder {
+export interface ServiceOwnerOrder extends Pick<IDs, 'uid' | 'hid' | 'sid'> {
     id?: string;
-    sid: string;
-    uid: string;
     heroId?: string;
     date: any;
     status: number;
@@ -79,6 +89,8 @@ export interface ServiceOwnerOrder {
         date: any;
     }[];
 }
+
+export interface ServiceOwnerFinish extends ServiceOwnerOrder { }
 
 export interface ServiceDetail extends Service, ServiceData {
     _?: any;
@@ -98,20 +110,6 @@ export interface Assignments {
     finish: any[];
 }
 
-export interface IDs {
-    uid: string; // user id
-    uid2: string; // other user id
-    sid: string; // service id
-    hid: string; // hero id
-    oid: string; // order id
-    rid: string; // request id
-    pid: string; // poster id
-    biid: string; // bid id
-    apcid: string; // aplication id;
-    anyid: string; // any other id;
-    cid: string; // chat id
-    mid: string; // message id
-}
 
 export interface Bid extends Pick<IDs, "pid" | "hid" | "uid"> {
     id?: string;

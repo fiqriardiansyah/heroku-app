@@ -1,118 +1,26 @@
 import Layout from "components/common/layout";
-import { Card, AutoComplete, Steps, Tabs } from "antd";
+import { Alert, Card, Skeleton, Tabs } from "antd";
 import React, { useState } from "react";
-import WaitingResponseImage from "assets/svgs/waiting-response.svg";
-import { FaPaperPlane } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { CHAT_PATH } from "utils/routes";
+import { AiFillQuestionCircle } from "react-icons/ai";
+import OrderList from "module/my-assignment/order-list";
+import FinishList from "module/my-assignment/finish-list";
+import RequestList from "module/my-assignment/request-list";
+import { useQuery } from "react-query";
+import authService from "services/auth";
+import ownerService from "services/owner";
+import State from "components/common/state";
 
 const Swal = require("sweetalert2");
 
-const mockVal = (str: string, repeat = 1) => ({
-    value: str.repeat(repeat),
-});
-
-const { Step } = Steps;
-
-function MyAssignmentHero() {
-    return (
-        <div className="p-2 flex flex-col justify-center pb-10 bg-white rounded-lg border border-gray-300">
-            <div className="flex flex-row">
-                <img className="w-12 h-12 rounded-full shadow-lg" src="user?.photoURL" alt="" />
-                <div className="ml-3">
-                    <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">user?.displayName</h5>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {/* {user?.workField}  */}
-                        Saya bisa membuat animasi 3D menggunakan blender, adobe family dan lainnya
-                    </span>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function MyAssignmentProcess() {
-    return (
-        <Card>
-            <MyAssignmentHero />
-            <Steps>
-                <Step title="Start" description="Starting on project at 10 Nov 2022" />
-                <Step title="Process" description="Hero, process service" />
-                <Step title="Deliver" description="Hero sends work" />
-                <Step title="Checking" description="Owner checks the work" />
-                <Step title="Finish" description="This work has been completed" />
-            </Steps>
-        </Card>
-    );
-}
-
-function MyAssignmentRequest() {
-    const confirmationRequestOnClick = () => {
-        Swal.fire({
-            title: "Do you want to accept the request?",
-            showDenyButton: true,
-            confirmButtonText: "Accept",
-            denyButtonText: "Decline",
-            customClass: {
-                actions: "my-actions",
-                confirmButton: "order-1",
-                denyButton: "order-2",
-            },
-        }).then((result: any) => {
-            if (result.isConfirmed) {
-                Swal.fire("You accept this Hero to do your work!", "", "success");
-            } else if (result.isDenied) {
-                Swal.fire("You decline this Hero to do your work!", "", "error");
-            }
-        });
-    };
-
-    return (
-        <Card className="flex flex-col">
-            <MyAssignmentHero />
-            <div className="flex flex-col justify-center items-center">
-                <div>
-                    <img src={WaitingResponseImage} alt="Waiting Response" className="w-36 h-36" />
-                </div>
-                <p>Waiting for Owner Confirmation...</p>
-                <button type="button" className="rounded bg-primary text-base border-0 h-12" onClick={confirmationRequestOnClick}>
-                    Confirmation
-                </button>
-            </div>
-            <Link to={CHAT_PATH}>
-                <div className="mt-4 flex place-items-end">
-                    <button type="button" className=" px-2 h-12 rounded bg-primary text-base border-0">
-                        <FaPaperPlane /> Chat?
-                    </button>
-                </div>
-            </Link>
-        </Card>
-    );
-}
-
-const itemsTabs = [
-    { label: "Order", key: "torder-tabs", children: <MyAssignmentProcess /> }, // remember to pass the key prop
-    { label: "Finish", key: "finish-tabs", children: <MyAssignmentProcess /> },
-    { label: "Request", key: "request-tabs", children: <MyAssignmentRequest /> },
-];
-
 function MyAssignment() {
-    const [value, setValue] = useState("");
-    const [options, setOptions] = useState<{ value: string }[]>([]);
+    const user = authService.CurrentUser();
 
-    const onSearch = (searchText: string) => {
-        setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
-    };
+    const assignmentQuery = useQuery(["assignment"], async () => {
+        const assigments = await ownerService.GetMyAssigments({ uid: user?.uid as any });
+        return assigments;
+    });
 
-    const onSelect = (data: string) => {
-        console.log("onSelect", data);
-    };
-
-    const onChange = (data: string) => {
-        setValue(data);
-    };
-
-    const myPostOnClick = () => {
+    const myServicesOnClick = () => {
         Swal.fire(
             "What is My Assignment?",
             "My Assignment is a page that tracks the process of determining how much work the Hero has accomplished.",
@@ -120,25 +28,43 @@ function MyAssignment() {
         );
     };
 
+    const refetchFetcher = () => {
+        assignmentQuery.refetch();
+    };
+
+    const itemsTabs = [
+        { label: "Order", key: "torder-tabs", children: <OrderList refetchFetcher={refetchFetcher} data={assignmentQuery.data?.orders || []} /> }, // remember to pass the key prop
+        { label: "Finish", key: "finish-tabs", children: <FinishList data={assignmentQuery.data?.finish || []} /> },
+        { label: "Request", key: "request-tabs", children: <RequestList data={assignmentQuery.data?.request || []} /> },
+    ];
+
     return (
         <Layout>
             <br />
-            <div className="flex flex-row space-x-2">
-                <div className="flex flex-0 flex-row md:flex-1">
-                    <h3>My Assignment </h3>
-                    <div>
-                        <button type="button" className="rounded-full bg-gray border-0" onClick={myPostOnClick}>
-                            ?
-                        </button>
-                    </div>
-                </div>
-                <div className="flex flex-1 flex-row">
-                    <AutoComplete options={options} style={{ width: "100%" }} onSelect={onSelect} onSearch={onSearch} placeholder="Search Service" />
+            <div className="flex flex-row space-x-2 justify-between">
+                <div className="flex items-center">
+                    <p className="m-0 mr-2 font-semibold text-xl capitalize">My Assigment</p>
+                    <AiFillQuestionCircle className="text-gray-400 text-xl cursor-pointer" onClick={myServicesOnClick} />
                 </div>
             </div>
             <br />
             <Card>
-                <Tabs items={itemsTabs} />
+                <State data={assignmentQuery.data} isLoading={assignmentQuery.isLoading} isError={assignmentQuery.isError}>
+                    {(state) => (
+                        <>
+                            <State.Data state={state}>
+                                <Tabs items={itemsTabs} />
+                            </State.Data>
+                            <State.Loading state={state}>
+                                <Skeleton paragraph={{ rows: 4 }} avatar active />
+                                <Skeleton paragraph={{ rows: 4 }} avatar active className="mt-4" />
+                            </State.Loading>
+                            <State.Error state={state}>
+                                <Alert message={(assignmentQuery.error as any)?.message} type="error" />
+                            </State.Error>
+                        </>
+                    )}
+                </State>
             </Card>
         </Layout>
     );

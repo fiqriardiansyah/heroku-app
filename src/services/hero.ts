@@ -36,7 +36,7 @@ class HeroService extends HeroServiceSupport {
 
     async CreateService({ service, uid, status }: { service: Service; uid: string, status: ServiceData['status'] }) {
         return this.ProxyRequest(async () => {
-            const id = uuidv4();
+            const id = service?.id || uuidv4();
             await this.addService({
                 data: {
                     ...service,
@@ -71,40 +71,33 @@ class HeroService extends HeroServiceSupport {
         });
     }
 
-    async GetDetailService({ sid, uid }: { sid: string; uid: string }) {
+    async GetDetailService({ sid }: { sid: string }) {
         return this.ProxyRequest(async () => {
-            const services = await (await this.getOneService({ sid })).val();
-            const servicesData = await (await this.getOneServiceData({ sid })).val();
-            return { ...services, ...servicesData } as ServiceDetail;
+            const service = await (await this.getOneService({ sid })).val();
+            const serviceData = await (await this.getOneServiceData({ sid })).val();
+            if (!service || !serviceData) {
+                throw new Error(`Service width id ${sid} not found`);
+            }
+            return { ...service, ...serviceData } as ServiceDetail;
         });
     }
 
     async AcceptRequestService({
         sid,
         uid,
+        hid,
         request,
-    }: {
-        uid: string;
-        sid: string;
-        request: ServiceRequest;
+    }: Pick<IDs, 'sid' | 'uid' | 'hid'> & {
+        request: ServiceRequest
     }) {
         return this.ProxyRequest(async () => {
             const date = serverTimestamp();
             await this.addServiceDataOrder({
-                data: {
-                    uid: request.uid,
-                    date,
-                    status: 0,
-                },
+                data: { hid, uid: request.uid, date, status: 0 },
                 sid,
             })
             await this.addAssignmentOrder({
-                data: {
-                    sid,
-                    uid,
-                    date,
-                    status: 0,
-                },
+                data: { hid, sid, uid, date, status: 0 },
                 uid: request.uid,
             })
             await this.deleteAssignmentRequest({ sid, uid: request.uid });
@@ -115,10 +108,8 @@ class HeroService extends HeroServiceSupport {
 
     async DeclineRequestService({
         sid,
-        uid,
         request,
     }: {
-        uid: string;
         sid: string;
         request: ServiceRequest;
     }) {
@@ -140,63 +131,62 @@ class HeroService extends HeroServiceSupport {
 
     async SetJourneyServiceOrder({
         sid,
-        uid,
         order,
+        urlFile,
     }: {
-        uid: string;
         sid: string;
         order: ServiceOrder;
+        urlFile: string;
     }) {
         return this.ProxyRequest(async () => {
             const date = serverTimestamp();
-            await this.updateServiceDataOrder({
-                sid,
-                oid: order.id as any,
-                data: {
-                    ...order,
-                    status: order.status + 1,
-                    progress: !order.progress ? [{
-                        status: order.status + 1,
-                        date,
-                    }] : [...order.progress, {
-                        status: order.status + 1,
-                        date,
-                    }]
-                }
-            })
-            const orderData = await this.GetOneAssignmentOrder({ uid: order.uid as any, sid, date: order.date });
+            const orderData = await this.GetOneAssignmentOrder({ uid: order.uid as any, sid });
             if (!orderData) {
                 throw new Error('assignment order not found!');
             }
-            await this.updateAssignmentOrder({
-                uid: order.uid as any,
-                data: {
-                    ...orderData,
-                    status: orderData.status + 1,
-                    progress: !orderData.progress ? [{
+            await Promise.all([
+                this.updateServiceDataOrder({
+                    sid,
+                    oid: order.id as any,
+                    data: {
+                        ...order,
+                        status: order.status + 1,
+                        progress: !order.progress ? [{
+                            status: 0,
+                            date,
+                        }] : [...order.progress, {
+                            status: order.status + 1,
+                            date,
+                        }],
+                        files: !order.files ? [urlFile] : [...order.files, urlFile]
+                    }
+                }), this.updateAssignmentOrder({
+                    uid: order.uid as any,
+                    data: {
+                        ...orderData,
                         status: orderData.status + 1,
-                        date,
-                    }] : [...orderData.progress, {
-                        status: orderData.status + 1,
-                        date,
-                    }]
-                }
-            })
+                        progress: !orderData.progress ? [{
+                            status: 0,
+                            date,
+                        }] : [...orderData.progress, {
+                            status: orderData.status + 1,
+                            date,
+                        }],
+                        files: !order.files ? [urlFile] : [...order.files, urlFile]
+                    }
+                })])
             return null;
         });
     }
 
-    async DeleteMyService(service: ServiceDetail) {
-        if (!service) {
+    async DeleteMyService(id: string) {
+        if (!id) {
             throw new Error("Service can't empty");
         }
         return this.ProxyRequest(async () => {
-            if (service.request?.length === 0 && service.orders?.length === 0) {
-                await this.deleteService({ sid: service.id as any });
-                await this.deleteServiceData({ sid: service.id as any });
-                return true;
-            }
-            throw new Error("There is still activity,  Can't remove this service");
+            await this.deleteService({ sid: id });
+            await this.deleteServiceData({ sid: id });
+            return true;
         });
     }
 
@@ -243,6 +233,7 @@ class HeroService extends HeroServiceSupport {
             return Utils.parseTreeObjectToArray<Application>(bids.val()) || [];
         });
     }
+
 }
 
 const heroService = new HeroService({ config: configFirebase.app, database: getDatabase(configFirebase.app) });

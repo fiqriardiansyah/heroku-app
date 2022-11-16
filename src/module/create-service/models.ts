@@ -13,6 +13,6 @@ export interface FDataExplainIt {
 }
 
 export interface FDataConvince {
-    images: File[];
-    pdfs: File[];
+    images: File[] | any[];
+    pdfs: File[] | any[];
 }

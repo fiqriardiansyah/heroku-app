@@ -7,10 +7,11 @@ import { VALUE_TOKEN } from "utils/constant";
 type Props = {
     leftToken: number;
     total: number;
+    onPayClick: (token: number) => void;
     children: (dt: { showModal: () => void; handleCancel: () => void }) => any;
 };
 
-function CutTokenModal({ children, total, leftToken }: Props) {
+function CutTokenModal({ children, total, leftToken, onPayClick }: Props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const showModal = () => {
@@ -23,6 +24,11 @@ function CutTokenModal({ children, total, leftToken }: Props) {
 
     const handleCancel = () => {
         setIsModalOpen(false);
+    };
+
+    const onPayClickHandler = () => {
+        onPayClick(Utils.convertToToken(total));
+        handleCancel();
     };
 
     return (
@@ -39,7 +45,9 @@ function CutTokenModal({ children, total, leftToken }: Props) {
                         <p className="text-gray-400 m-0">
                             <RiErrorWarningFill className="mr-2" />1 token represents Rp.{VALUE_TOKEN}
                         </p>
-                        <Button type="primary">Pay</Button>
+                        <Button onClick={onPayClickHandler} type="primary">
+                            Pay
+                        </Button>
                     </div>
                 </div>
             </Modal>
