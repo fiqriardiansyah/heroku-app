@@ -1,28 +1,26 @@
 /* eslint-disable no-prototype-builtins */
 import { AutoComplete, Button, Card, Input, Table, Tabs } from "antd";
 import Layout from "components/common/layout";
+import { getDatabase } from "firebase/database";
+import React, { useContext, useState } from "react";
+import authService from "services/auth";
+import HeroServiceSupport from "services/support/hero";
+import Swal from "sweetalert2";
+import NoJobs from "assets/svgs/no-jobs.svg";
+import { useNavigate, Link } from "react-router-dom";
+import { CREATE_SERVICE_PATH, SERVICE_HERO_PATH } from "utils/routes";
 import { UserContext } from "context/user";
 import { ServiceData } from "models";
 import ActiveServiceTable from "module/my-service/active-service-table";
 import DraftServiceTable from "module/my-service/draft-service-table";
-import React, { useContext, useState } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { useQuery } from "react-query";
-import { Link } from "react-router-dom";
-import authService from "services/auth";
 import heroService from "services/hero";
-import Swal from "sweetalert2";
-import { CREATE_SERVICE_PATH } from "utils/routes";
-
-const mockVal = (data: string[], query: string) => {
-    const filteredTitle = data.filter((val) => val.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
-    const result = filteredTitle.map((value) => ({ value }));
-    return result;
-};
 
 function MyService() {
     const user = authService.CurrentUser();
-    const [tab, setTab] = useState<ServiceData["status"]>("active");
+
+    const [tab, setTab] = useState<"active" | "draft">("active");
     const [services, setServices] = useState<ServiceData[]>([]);
 
     const inActiveButtonStyle = { border: "none", backgroundColor: "inherit" };
@@ -97,6 +95,7 @@ function MyService() {
                     </Button>
                 )}
             </div>
+
             {tab === "active" ? (
                 <ActiveServiceTable fetcher={servicesQuery} services={services} />
             ) : (

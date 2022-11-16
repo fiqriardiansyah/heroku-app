@@ -40,8 +40,6 @@ function HomeAsHero() {
         });
     };
 
-    console.log(loading, searchMutation.isLoading);
-
     return (
         <div className="grid">
             <br />
