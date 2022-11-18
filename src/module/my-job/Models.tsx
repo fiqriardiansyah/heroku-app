@@ -1,4 +1,4 @@
-export interface JobsData {
+export interface MyJobData {
     id: string;
     uid?: string;
     title: string;
@@ -7,7 +7,8 @@ export interface JobsData {
     price?: string | number;
     date: any;
     description?: string;
-    status: "ongoing" | "inbid" | "finish";
     owner?: string;
+
     current?: number;
+    status: "ongoing" | "inbid" | "finish";
 }

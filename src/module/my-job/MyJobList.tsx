@@ -1,8 +1,8 @@
 import React from "react";
-import { JobsData } from "./Models";
+import { MyJobData } from "./Models";
 import MyJobCard from "./MyJobCard";
 
-function MyJobList({ jobs, fetcher, onFinishStep }: { jobs: JobsData[]; fetcher: any; onFinishStep: any }) {
+function MyJobList({ jobs, fetcher, onFinishStep }: { jobs: MyJobData[]; fetcher: any; onFinishStep: any }) {
     return (
         <div className="flex flex-col gap-6">
             {jobs.map((job) => (

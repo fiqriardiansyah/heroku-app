@@ -1,28 +1,15 @@
 import { Button, Input } from "antd";
 import Layout from "components/common/layout";
 import MyContractList from "module/my-job/ContractList";
+import { MyJobData } from "module/my-job/Models";
 import MyJobList from "module/my-job/MyJobList";
 import React, { useState } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
-interface JobsData {
-    id: string;
-    uid?: string;
-    title: string;
-    type_of_job: "task" | "hiring";
-    company?: string;
-    price?: string | number;
-    date: any;
-    description?: string;
-    status: "ongoing" | "inbid" | "finish";
-    owner?: string;
-    current?: number;
-}
-
 function MyJob() {
-    const myjobs: JobsData[] = [
+    const myjobs: MyJobData[] = [
         {
             title: "Convert Excel/PDF layout to HTML",
             owner: "Lucinta luna",
@@ -67,7 +54,7 @@ function MyJob() {
         },
     ];
 
-    const [jobs, setJobs] = useState<JobsData[]>(myjobs.filter((job) => job.type_of_job === "task"));
+    const [jobs, setJobs] = useState<MyJobData[]>(myjobs.filter((job) => job.type_of_job === "task"));
     const [tab, setTab] = useState<"bidding" | "contracts">("bidding");
 
     const jobsQuery = () => {};
