@@ -2,7 +2,7 @@ import { Menu } from "antd";
 import React, { useContext, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import authService from "services/auth";
-import { AiOutlineLogout } from "react-icons/ai";
+import { AiOutlineLogout, AiOutlineUserSwitch } from "react-icons/ai";
 import { MY_ASSIGNMENT_PATH, MY_JOB_PATH, MY_POST_PATH, MY_SERVICE_PATH, PROFILE_PATH } from "utils/routes";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import { StateContext } from "context/state";
@@ -85,7 +85,12 @@ function MenuNavigation() {
         };
         const roleMenu: ItemType = {
             key: "2",
-            label: <p className="text-primary capitalize m-0">{`switch to be ${state?.role === "hero" ? "owner" : "hero"}`}</p>,
+            label: (
+                <div className="text-primary bg-white capitalize flex items-center m-0 w-full px-4 py-2 border border-solid border-primary rounded-md ">
+                    <AiOutlineUserSwitch className="text-primary mr-2 text-xl" />
+                    {`switch to ${state?.role === "hero" ? "owner" : "hero"}`}
+                </div>
+            ),
             onClick: switchRoleHandler,
         };
         const signoutMenu: ItemType = {

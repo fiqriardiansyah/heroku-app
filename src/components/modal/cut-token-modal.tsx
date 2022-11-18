@@ -7,7 +7,7 @@ import { VALUE_TOKEN } from "utils/constant";
 type Props = {
     leftToken: number;
     total: number;
-    onPayClick: (token: number) => void;
+    onPayClick: (token: number, callback?: () => void) => void;
     children: (dt: { showModal: () => void; handleCancel: () => void }) => any;
 };
 
@@ -27,7 +27,9 @@ function CutTokenModal({ children, total, leftToken, onPayClick }: Props) {
     };
 
     const onPayClickHandler = () => {
-        onPayClick(Utils.convertToToken(total));
+        onPayClick(Utils.convertToToken(total), () => {
+            handleCancel();
+        });
         handleCancel();
     };
 
@@ -35,8 +37,7 @@ function CutTokenModal({ children, total, leftToken, onPayClick }: Props) {
         <>
             <Modal footer={null} title="Payment" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <div className="w-full flex flex-col">
-                    <p className="capitalize text-gray-300">payment</p>
-                    <h1 className="text-primary text-3xl text-center mt-10">{total.ToIndCurrency("Rp")}</h1>
+                    <h1 className="text-primary text-3xl text-center mt-5">{total.ToIndCurrency("Rp")}</h1>
                     <p className="text-gray-400 capitalize text-center mb-10">
                         it will be {Utils.convertToToken(total)} token <br />
                         you have {leftToken} token left

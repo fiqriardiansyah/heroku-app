@@ -33,7 +33,7 @@ function MyAssignment() {
     };
 
     const itemsTabs = [
-        { label: "Order", key: "torder-tabs", children: <OrderList refetchFetcher={refetchFetcher} data={assignmentQuery.data?.orders || []} /> }, // remember to pass the key prop
+        { label: "Order", key: "order-tabs", children: <OrderList refetchFetcher={refetchFetcher} data={assignmentQuery.data?.orders || []} /> }, // remember to pass the key prop
         { label: "Finish", key: "finish-tabs", children: <FinishList data={assignmentQuery.data?.finish || []} /> },
         { label: "Request", key: "request-tabs", children: <RequestList data={assignmentQuery.data?.request || []} /> },
     ];

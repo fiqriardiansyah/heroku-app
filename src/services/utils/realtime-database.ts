@@ -46,7 +46,7 @@ class RealtimeDatabase extends BaseService {
 
     appl = DOCUMENTS.applications;
 
-    users = DOCUMENTS.users
+    users = DOCUMENTS.users;
 
     constructor(db: Database) {
         super();
@@ -217,8 +217,8 @@ class RealtimeDatabase extends BaseService {
         return push(ref(this.db, `${this.asg}/${uid}/orders`), data);
     }
 
-    deleteAssignmentRequest(ids: Pick<IDs, "sid" | "uid">) {
-        const queryRef = query(ref(this.db, `${this.asg}/${ids.uid}/request`), orderByChild("sid"), equalTo(ids.sid));
+    deleteAssignmentRequest({ uid, rid }: Pick<IDs, "uid" | 'rid'>) {
+        const queryRef = query(ref(this.db, `${this.asg}/${uid}/request/${rid}`));
         return remove(queryRef.ref);
     }
 
@@ -244,6 +244,12 @@ class RealtimeDatabase extends BaseService {
 
     getOnePoster({ pid }: Pick<IDs, "pid">) {
         return get(ref(this.db, `${this.pstr}/${pid}`));
+    }
+
+    updatePoster({ pid, data }: Pick<IDs, "pid"> & {
+        data: Partial<Poster>
+    }) {
+        return update(ref(this.db, `${this.pstr}/${pid}`), data);
     }
 
     _getAllShowPoster(callback: (data: Poster[]) => void) {
@@ -273,6 +279,12 @@ class RealtimeDatabase extends BaseService {
         }
     }
 
+    addBidIdToPoster({ pid, biid }: Pick<IDs, 'pid' | 'biid'>) {
+        return push(ref(this.db, `${this.pstr}/${pid}/bids`), {
+            biid,
+        });
+    }
+
     // bids
     addBids({
         data,
@@ -284,8 +296,23 @@ class RealtimeDatabase extends BaseService {
     }
 
     myBids({ uid }: Pick<IDs, "uid">) {
-        const queryRef = query(ref(this.db, this.bids), orderByChild("hid"), equalTo(uid));
+        const queryRef = query(ref(this.db, this.bids), orderByChild("uid"), equalTo(uid));
         return get(queryRef);
+    }
+
+    updateBid({ biid, data }: Pick<IDs, "biid"> & {
+        data: Partial<Bid>
+    }) {
+        return update(ref(this.db, `${this.bids}/${biid}`), data);
+    }
+
+    posterBids({ pid }: Pick<IDs, "pid">) {
+        const queryRef = query(ref(this.db, this.bids), orderByChild("pid"), equalTo(pid));
+        return get(queryRef);
+    }
+
+    getBid({ biid }: Pick<IDs, "biid">) {
+        return get(ref(this.db, `${this.bids}/${biid}`));
     }
 
     // aplications
@@ -298,9 +325,30 @@ class RealtimeDatabase extends BaseService {
         return update(ref(this.db, `${this.appl}/${apcid}`), data);
     }
 
+    updateApplication({ apcid, data }: Pick<IDs, "apcid"> & {
+        data: Partial<Application>
+    }) {
+        return update(ref(this.db, `${this.appl}/${apcid}`), data);
+    }
+
     myApplications({ uid }: Pick<IDs, "uid">) {
         const queryRef = query(ref(this.db, this.appl), orderByChild("hid"), equalTo(uid));
         return get(queryRef);
+    }
+
+    posterApplications({ pid }: Pick<IDs, "pid">) {
+        const queryRef = query(ref(this.db, this.appl), orderByChild("pid"), equalTo(pid));
+        return get(queryRef);
+    }
+
+    addApplicationIdToPoster({ pid, apcid }: Pick<IDs, 'pid' | 'apcid'>) {
+        return push(ref(this.db, `${this.pstr}/${pid}/applications`), {
+            apcid,
+        });
+    }
+
+    getApplication({ apcid }: Pick<IDs, "apcid">) {
+        return get(ref(this.db, `${this.appl}/${apcid}`));
     }
 
     // user

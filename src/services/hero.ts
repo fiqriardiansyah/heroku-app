@@ -92,6 +92,10 @@ class HeroService extends HeroServiceSupport {
     }) {
         return this.ProxyRequest(async () => {
             const date = serverTimestamp();
+            const assignmentReq = await this.GetOneAssignmentRequest({ key: request?.key as any, uid })
+            if (!assignmentReq) {
+                throw new Error("Assignment request not found")
+            }
             await this.addServiceDataOrder({
                 data: { hid, uid: request.uid, date, status: 0 },
                 sid,
@@ -100,7 +104,7 @@ class HeroService extends HeroServiceSupport {
                 data: { hid, sid, uid, date, status: 0 },
                 uid: request.uid,
             })
-            await this.deleteAssignmentRequest({ sid, uid: request.uid });
+            await this.deleteAssignmentRequest({ rid: assignmentReq.id as any, uid: request.uid });
             await this.deleteServiceDataRequest({ sid, rid: request.id as any });
             return date;
         });
@@ -115,7 +119,7 @@ class HeroService extends HeroServiceSupport {
     }) {
         return this.ProxyRequest(async () => {
             await this.deleteServiceDataRequest({ sid, rid: request.id as any })
-            const requestData = await this.GetOneAssignmentRequest({ uid: request.uid, sid });
+            const requestData = await this.GetOneAssignmentRequest({ uid: request.uid, key: request?.key as any });
             if (!requestData) {
                 throw new Error('request data not found!');
             }
@@ -179,6 +183,33 @@ class HeroService extends HeroServiceSupport {
         });
     }
 
+    async SetJourneyPoster({
+        data,
+        urlFile,
+    }: {
+        data: Bid;
+        urlFile: string;
+    }) {
+        return this.ProxyRequest(async () => {
+            const date = serverTimestamp();
+            await this.updateBid({
+                biid: data.id as any, data: {
+                    ...data,
+                    status: data.status! + 1,
+                    progress: !data.progress ? [{
+                        status: 0,
+                        date,
+                    }] : [...data.progress, {
+                        status: data.status! + 1,
+                        date,
+                    }],
+                    files: !data.files ? [urlFile] : [...data.files, urlFile]
+                }
+            });
+            return null;
+        });
+    }
+
     async DeleteMyService(id: string) {
         if (!id) {
             throw new Error("Service can't empty");
@@ -227,10 +258,79 @@ class HeroService extends HeroServiceSupport {
         });
     }
 
+    async GetMyBidInPoster({ uid, pid }: Pick<IDs, "uid" | "pid">) { // myjob - bidding
+        return this.ProxyRequest(async () => {
+            const bid = await this.myBids({ uid });
+            const bids = Utils.parseTreeObjectToArray<Bid>(bid.val()) || [];
+            return bids.find((bd) => bd.pid === pid);
+        });
+    }
+
+    async GetPosterBid({ pid }: Pick<IDs, "pid">) { // myjob - bidding
+        return this.ProxyRequest(async () => {
+            const bid = await this.posterBids({ pid });
+            const bids = Utils.parseTreeObjectToArray<Bid>(bid.val()) || [];
+            return bids
+        });
+    }
+
+    async GetPosterApplication({ pid }: Pick<IDs, "pid">) { // myjob - apply
+        return this.ProxyRequest(async () => {
+            const bid = await this.posterApplications({ pid });
+            const bids = Utils.parseTreeObjectToArray<Application>(bid.val()) || [];
+            return bids
+        });
+    }
+
     async GetAllMyApplication({ uid }: Pick<IDs, "uid">) { // myjob - contracts
         return this.ProxyRequest(async () => {
             const bids = await this.myApplications({ uid });
             return Utils.parseTreeObjectToArray<Application>(bids.val()) || [];
+        });
+    }
+
+    async SendBid({ pid, uid, data }: Pick<IDs, 'pid' | 'uid'> & { data: Bid }) {
+        return this.ProxyRequest(async () => {
+            const id = uuidv4();
+            const bids = await this.GetPosterBid({ pid });
+            const alreadyBid = bids.find((bid) => bid.uid === uid);
+            if (alreadyBid) {
+                throw new Error("You already bid this post");
+            }
+            const newData: Bid = {
+                ...data,
+                id,
+                pid,
+                uid,
+                date: serverTimestamp(),
+                accept: false,
+                status: 0,
+            }
+            await this.addBids({ data: newData, biid: id });
+            await this.addBidIdToPoster({ pid, biid: id });
+            return null
+        });
+    }
+
+    async SendApplication({ pid, uid, data }: Pick<IDs, 'pid' | 'uid'> & { data: Application }) {
+        return this.ProxyRequest(async () => {
+            const id = uuidv4();
+            const appplications = await this.GetPosterApplication({ pid });
+            const alreadyApply = appplications.find((app) => app.uid === uid);
+            if (alreadyApply) {
+                throw new Error("You already apply this post");
+            }
+            const newData: Application = {
+                ...data,
+                id,
+                pid,
+                uid,
+                date: serverTimestamp(),
+                accept: false,
+            }
+            await this.addApplications({ data: newData, apcid: id });
+            await this.addApplicationIdToPoster({ pid, apcid: id });
+            return null
         });
     }
 

@@ -48,13 +48,13 @@ function OrderCard({ data, refetchFetcher }: Props) {
     const user = authService.CurrentUser();
 
     const userQuery = useQuery(
-        ["user", data.uid],
+        ["user", data.hid],
         async () => {
-            const usr = await userService.GetUser(data.uid as any);
+            const usr = await userService.GetUser(data.hid as any);
             return usr;
         },
         {
-            enabled: !!data.uid,
+            enabled: !!data.hid,
         }
     );
 
@@ -117,7 +117,7 @@ function OrderCard({ data, refetchFetcher }: Props) {
     }, [data]);
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col !mb-4">
             <State data={userQuery.data} isLoading={userQuery.isLoading} isError={userQuery.isError}>
                 {(state) => (
                     <>
@@ -166,9 +166,11 @@ function OrderCard({ data, refetchFetcher }: Props) {
             </div>
             <div className="w-full flex justify-between">
                 <Space direction="vertical">
-                    {data.files?.map((fl, i) => (
-                        <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
-                    ))}
+                    {data.files
+                        ?.filter((file) => file)
+                        ?.map((fl, i) => (
+                            <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
+                        ))}
                 </Space>
                 <Space>
                     {actions?.find((act) => act.status === data.status)?.button}

@@ -33,14 +33,18 @@ export const SERVICE_DRAFT = "0";
 
 export const VALUE_TOKEN = 1000;
 export const LIMIT_REVISION = 2;
+export const FINISH_WORK = 4;
+
+export const TASK_JOB = 1;
+export const HIRING_JOB = 2;
 
 export const TYPE_OF_JOBS = [
     {
-        value: 1,
+        value: TASK_JOB,
         label: 'Task'
     },
     {
-        value: 2,
+        value: HIRING_JOB,
         label: 'Hiring'
     }
 ]

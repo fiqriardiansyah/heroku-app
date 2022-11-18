@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-nested-ternary */
 import { Alert, Image, Skeleton, Space, Button, Modal, message, Steps } from "antd";
 import State from "components/common/state";
@@ -218,9 +219,11 @@ function OrderCard({ data, sid, refetchService }: Props) {
                 </div>
                 <div className="w-full flex flex-col">
                     <Space direction="vertical">
-                        {data.files?.map((fl, i) => (
-                            <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
-                        ))}
+                        {data.files
+                            ?.filter((file) => file)
+                            ?.map((fl, i) => (
+                                <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
+                            ))}
                     </Space>
                 </div>
             </div>

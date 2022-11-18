@@ -1,5 +1,5 @@
 import { Database, get, ref } from "firebase/database";
-import { Assignments, IDs, Service, ServiceData, ServiceOrder } from "models";
+import { Assignments, IDs, Poster, Service, ServiceData, ServiceOrder, ServiceOwnerRequest } from "models";
 import RealtimeDatabase from "services/utils/realtime-database";
 import Utils from "utils";
 import { DEFAULT_ERROR, DOCUMENTS } from "utils/constant";
@@ -35,6 +35,22 @@ class OwnerServiceSupport extends RealtimeDatabase {
             }
             return order;
         });
+    }
+
+    async GetOnePoster({ pid }: Pick<IDs, "pid">) {
+        return this.ProxyRequest(async () => {
+            return (await this.getOnePoster({ pid })).val() as Poster;
+        })
+    }
+
+    async GetOneAssignmentRequestWithKey({ uid, key }: Pick<IDs, "uid"> & {
+        key: string;
+    }) {
+        return this.ProxyRequest(async () => {
+            const res = (await this.getAssignmentRequests({ uid })).val();
+            const requests = Utils.parseTreeObjectToArray<ServiceOwnerRequest>(res || {})
+            return requests.find((request) => request?.key === key);
+        })
     }
 }
 

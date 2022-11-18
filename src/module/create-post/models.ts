@@ -9,5 +9,6 @@ export interface FDataPost {
     description: string;
     category: string;
     skills: string[];
-    number_of_hero: number;
+    number_of_hero?: number;
+    limit_applicant?: number;
 }

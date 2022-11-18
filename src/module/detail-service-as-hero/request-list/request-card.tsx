@@ -32,7 +32,7 @@ function RequestCard({ data, sid, refetchService }: Props) {
 
     const acceptMutation = useMutation(
         async (callback: () => void) => {
-            await heroService.AcceptRequestService({ sid, uid: user?.uid as any, request: data, hid: data.hid });
+            await heroService.AcceptRequestService({ sid, uid: data?.uid as any, request: data, hid: data.hid });
             callback();
         },
         {

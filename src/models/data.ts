@@ -42,6 +42,7 @@ export interface Service {
 export interface ServiceRequest extends Pick<IDs, 'uid' | 'hid'> {
     id?: string;
     date: any;
+    key?: string;
 }
 
 export interface ServiceOrder extends Pick<IDs, 'uid' | 'hid'> {
@@ -76,6 +77,7 @@ export interface ServiceOwnerRequest extends Pick<IDs, 'uid' | 'sid'> {
     id?: string;
     date: any;
     status: "waiting" | "rejected";
+    key?: string;
 }
 
 export interface ServiceOwnerOrder extends Pick<IDs, 'uid' | 'hid' | 'sid'> {
@@ -113,11 +115,13 @@ export interface Assignments {
 
 export interface Bid extends Pick<IDs, "pid" | "hid" | "uid"> {
     id?: string;
+    uid: string;
+    pid: string;
     date: any;
-    description: string;
-    price: string | number;
+    letter: string;
+    price: string;
     accept: boolean;
-    status: number;
+    status?: number;
     files?: string[];
     progress?: {
         status: number;
@@ -131,12 +135,9 @@ export interface Application extends Pick<IDs, "pid" | "hid" | "uid"> {
     cv?: string;
     description: string;
     accept: boolean;
-    status: number;
     files?: string[];
-    progress?: {
-        status: number;
-        date: any;
-    }[];
+    offering_letter?: string;
+    offering_date?: any;
 }
 
 export interface Poster {
@@ -151,8 +152,10 @@ export interface Poster {
     category: string;
     skills: string[];
     number_of_hero?: number;
-    bids?: Bid[];
-    applications?: Application[];
+    accepted_hero?: number;
+    limit_applicant?: number;
+    bids?: { biid: string }[];
+    applications?: { apcid: string }[];
     status?: "open" | "close";
     date?: any;
     flag?: string;

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import configFirebase from "config/firebase";
 import { FirebaseApp } from "firebase/app";
 import { Database, get, getDatabase, push, query, ref, set, serverTimestamp } from "firebase/database";
-import { Bid, IDs, Poster, Service, ServiceData, ServiceDetail, ServiceOwnerOrder, ServiceOwnerRequest, ServiceRequest } from "models";
+import { Application, Bid, IDs, Poster, Service, ServiceData, ServiceDetail, ServiceOwnerOrder, ServiceOwnerRequest, ServiceRequest } from "models";
 import { DEFAULT_ERROR, DOCUMENTS } from "utils/constant";
 import Utils from "utils";
 import OwnerServiceSupport from "./support/owner";
@@ -38,6 +38,7 @@ class OwnerService extends OwnerServiceSupport {
     async OrderService({ sid, uid, hid }: Pick<IDs, "sid" | "uid" | "hid">) {
         return this.ProxyRequest(async () => {
             const date = serverTimestamp();
+            const key = uuidv4();
             const assignments = await this.GetMyAssigments({ uid: uid as any });
             const waitingForRequest = assignments.request?.find((req) => req.sid === sid && req.status === 'waiting');
             const orderProcess = assignments.orders?.find((order) => order.sid === sid);
@@ -49,11 +50,11 @@ class OwnerService extends OwnerServiceSupport {
             }
             await this.addServiceDataRequest({
                 sid,
-                data: { hid, uid, date },
+                data: { hid, uid, date, key },
             });
             await this.addAssignmentRequest({
                 uid,
-                data: { sid, uid: hid, date, status: "waiting" },
+                data: { sid, uid: hid, date, status: "waiting", key },
             });
             return date;
         });
@@ -85,7 +86,7 @@ class OwnerService extends OwnerServiceSupport {
     async GetAllMyPoster({ uid }: Pick<IDs, "uid">) {
         return this.ProxyRequest(async () => {
             const posters = await this.myPosters({ uid });
-            return Utils.parseTreeObjectToArray<Poster>(posters);
+            return Utils.parseTreeObjectToArray<Poster>(posters.val());
         });
     }
 
@@ -146,6 +147,68 @@ class OwnerService extends OwnerServiceSupport {
         });
     }
 
+    async ApproveTaskPoster({ data }: { data: Bid }) {
+        return this.ProxyRequest(async () => {
+            await heroService.SetJourneyPoster({ data, urlFile: '' });
+            // [IMPORTANT] pekerjaan selesai, pindahkan uang ke hero
+            return null;
+        });
+    }
+
+    async GetOneBid({ biid }: Pick<IDs, "biid">) {
+        return this.ProxyRequest(async () => {
+            return (await this.getBid({ biid })).val() as Bid;
+        })
+    }
+
+    async GetOneApplication({ apcid }: Pick<IDs, "apcid">) {
+        return this.ProxyRequest(async () => {
+            return (await this.getApplication({ apcid })).val() as Application;
+        })
+    }
+
+    async AcceptBidHero({ biid, data }: Pick<IDs, "biid"> & {
+        data: Poster
+    }) {
+        return this.ProxyRequest(async () => {
+            await this.updateBid({
+                biid, data: {
+                    accept: true
+                }
+            });
+            await this.updatePoster({
+                pid: data.id as any, data: {
+                    ...data,
+                    accepted_hero: data.accepted_hero ? data.accepted_hero + 1 : 1
+                }
+            })
+            return null;
+        })
+    }
+
+    async SendOffering({ apcid, application, poster }: Pick<IDs, "apcid"> & {
+        application: Partial<Application>;
+        poster: Poster;
+    }) {
+        return this.ProxyRequest(async () => {
+            const date = serverTimestamp();
+            await this.updateApplication({
+                apcid, data: {
+                    ...application,
+                    offering_date: date,
+                    accept: true,
+                }
+            });
+            await this.updatePoster({
+                pid: poster.id as any,
+                data: {
+                    ...poster,
+                    accepted_hero: poster.accepted_hero ? poster.accepted_hero + 1 : 1
+                }
+            })
+            return null;
+        });
+    }
 }
 
 const ownerService = new OwnerService({

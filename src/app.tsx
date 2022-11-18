@@ -21,6 +21,7 @@ import DetailPost from "pages/as-owner/detail-post";
 import DetailServiceOwner from "pages/as-owner/detail-service";
 import MyAssignment from "pages/as-owner/my-assignment";
 import MyPost from "pages/as-owner/my-post";
+import PostProgress from "pages/as-owner/post-progress";
 
 import HerokuImage from "assets/svgs/heroku-image.svg";
 import {
@@ -82,7 +83,8 @@ function App() {
                             <Route path={MY_POST_PATH} element={<MyPost />} />
                             <Route path={MY_ASSIGNMENT_PATH} element={<MyAssignment />} />
                             <Route path={CREATE_POST_PATH} element={<CreatePost />} />
-                            <Route path={DETAIL_POST_PATH} element={<DetailPost />} />
+                            <Route path={`${DETAIL_POST_PATH}/:id`} element={<DetailPost />} />
+                            <Route path={`${DETAIL_POST_PATH}/:id/progress`} element={<PostProgress />} />
                             <Route path={`${SERVICE_OWNER_PATH}/:uid/:id`} element={<DetailServiceOwner />} />
                         </>
                     )}

@@ -8,7 +8,7 @@ import { AiFillQuestionCircle } from "react-icons/ai";
 import { FDataPost } from "module/create-post/models";
 import ControlledInputText from "components/form/controlled-inputs/controlled-input-text";
 import ControlledRadioInput from "components/form/controlled-inputs/controlled-input-radio";
-import { DEFAULT_ERROR, TYPE_OF_JOBS, TYPE_PRICES } from "utils/constant";
+import { DEFAULT_ERROR, TASK_JOB, TYPE_OF_JOBS, TYPE_PRICES } from "utils/constant";
 import ControlledInputNumber from "components/form/controlled-inputs/controlled-input-number";
 import ControlledInputRichText from "components/form/controlled-inputs/controlled-input-rich-text";
 import ControlledSelectInput from "components/form/controlled-inputs/controlled-input-select";
@@ -27,7 +27,8 @@ const schema: yup.SchemaOf<FDataPost> = yup.object().shape({
     description: yup.string().required("Description is required!"),
     skills: yup.array().required("Skills is required!"),
     type_of_job: yup.string().required("Type of job is required!"),
-    number_of_hero: yup.number().required("Type of job is required!"),
+    number_of_hero: yup.number(),
+    limit_applicant: yup.number(),
 });
 
 const optionsCategory = [
@@ -52,13 +53,17 @@ function CreatePost() {
         control,
         formState: { isValid },
         watch,
+        setError,
     } = useForm<FDataPost>({
         mode: "onChange",
         resolver: yupResolver(schema),
         defaultValues: {
             number_of_hero: 1,
+            limit_applicant: 1,
         },
     });
+
+    const typeOfJob = watch("type_of_job");
 
     const createPostMutation = useMutation(
         async (data: Poster) => {
@@ -76,12 +81,10 @@ function CreatePost() {
         }
     );
 
-    const typeOfJob = watch("type_of_job");
-
     const onSubmitHandler = handleSubmit((data) => {
         createPostMutation.mutate({
             ...data,
-            type_of_job: data.type_of_job === "1" ? "task" : "hiring",
+            type_of_job: parseInt(data.type_of_job, 10) === TASK_JOB ? "task" : "hiring",
         } as Poster);
     });
 
@@ -120,7 +123,7 @@ function CreatePost() {
                             className=""
                             options={TYPE_OF_JOBS}
                         />
-                        {parseInt(typeOfJob, 10) === 1 ? (
+                        {parseInt(typeOfJob, 10) === TASK_JOB ? (
                             <>
                                 <ControlledInputNumber
                                     control={control}
@@ -177,15 +180,28 @@ function CreatePost() {
                             className=""
                             options={[]}
                         />
-                        <ControlledInputText
-                            type="number"
-                            control={control}
-                            labelCol={{ xs: 5 }}
-                            name="number_of_hero"
-                            label="Number of hero"
-                            placeholder=""
-                            className=""
-                        />
+                        {parseInt(typeOfJob, 10) === TASK_JOB ? (
+                            <ControlledInputText
+                                type="number"
+                                control={control}
+                                labelCol={{ xs: 5 }}
+                                name="number_of_hero"
+                                label="Number of hero"
+                                placeholder=""
+                                className=""
+                            />
+                        ) : (
+                            <ControlledInputText
+                                type="number"
+                                control={control}
+                                labelCol={{ xs: 5 }}
+                                name="limit_applicant"
+                                label="Limit Applicant"
+                                placeholder=""
+                                className=""
+                            />
+                        )}
+
                         <Button loading={createPostMutation.isLoading} htmlType="submit" type="primary" className="mt-10">
                             Post
                         </Button>

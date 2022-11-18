@@ -51,7 +51,7 @@ function RequestCard({ data }: Props) {
     );
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col !mb-4">
             <State data={userQuery.data} isLoading={userQuery.isLoading} isError={userQuery.isError}>
                 {(state) => (
                     <>

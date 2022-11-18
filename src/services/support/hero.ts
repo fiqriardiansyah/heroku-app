@@ -33,10 +33,12 @@ class HeroServiceSupport extends RealtimeDatabase {
         });
     }
 
-    async GetOneAssignmentRequest({ uid, sid }: Pick<IDs, "uid" | "sid">) {
+    async GetOneAssignmentRequest({ uid, key }: Pick<IDs, "uid"> & {
+        key: string;
+    }) {
         return this.ProxyRequest(async () => {
             const requests = await this.getAssignmentRequests({ uid });
-            return Utils.parseTreeObjectToArray<ServiceOwnerRequest>(requests.val())?.find((el) => el.sid === sid);
+            return Utils.parseTreeObjectToArray<ServiceOwnerRequest>(requests.val() || {})?.find((el) => el?.key === key);
         });
     }
 }
