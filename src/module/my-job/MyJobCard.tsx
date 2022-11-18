@@ -2,7 +2,7 @@ import { Button, Card, Collapse, Steps } from "antd";
 import React from "react";
 import { Link } from "react-router-dom";
 import { DETAIL_JOB_PATH } from "utils/routes";
-import { JobsData } from "./Models";
+import { MyJobData } from "./Models";
 
 interface MyJobHeaderData {
     owner: string | undefined;
@@ -29,7 +29,7 @@ function MyJobCard({
 }: {
     status: "ongoing" | "inbid" | "finish";
     current: number | undefined;
-    job: JobsData;
+    job: MyJobData;
     description?: string;
     onFinishStep?: any;
 }) {

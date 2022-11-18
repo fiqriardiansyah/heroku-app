@@ -1,9 +1,9 @@
 import { Card } from "antd";
 import React from "react";
-import { JobsData } from "./Models";
+import { MyJobData } from "./Models";
 import MyJobCard from "./MyJobCard";
 
-function MyContractList({ jobs, fetcher }: { jobs: JobsData[]; fetcher: any }) {
+function MyContractList({ jobs, fetcher }: { jobs: MyJobData[]; fetcher: any }) {
     return (
         <div className="flex flex-col gap-6">
             {jobs.map((job) => (
