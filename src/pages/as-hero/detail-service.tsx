@@ -12,7 +12,7 @@ import authService from "services/auth";
 import heroService from "services/hero";
 import Utils from "utils";
 import { IMAGE_FALLBACK } from "utils/constant";
-import { MY_SERVICE_PATH } from "utils/routes";
+import { CREATE_SERVICE_PATH, MY_SERVICE_PATH } from "utils/routes";
 import OrderList from "module/detail-service-as-hero/order-list";
 import FinishList from "module/detail-service-as-hero/finish-list";
 
@@ -97,6 +97,20 @@ function DetailServiceHero() {
         });
     };
 
+    const onClickEdit = (data: ServiceDetail | undefined) => {
+        if (!data) return;
+        if (data.orders && data.orders?.length !== 0) {
+            message.warning("You can not edit this service, you have some order to finish");
+            return;
+        }
+        if (data.request && data.request?.length !== 0) {
+            message.warning("You can not edit this service, you have some request");
+            return;
+        }
+
+        navigate(`${CREATE_SERVICE_PATH}?edit=${data.id}`);
+    };
+
     const onChangeTab = (key: string) => {
         setActiveTab(key);
     };
@@ -123,7 +137,7 @@ function DetailServiceHero() {
                                     {activeTab === "2" && <FinishList sid={sid as any} data={finish} />}
                                     {activeTab === "3" && <RequestList refetchService={refetchService} sid={sid as any} data={request} />}
                                 </Card>
-                                <Card className="flex-1 h-fit">
+                                <Card className="flex-1 h-fit !w-[300px]">
                                     <Image
                                         preview={false}
                                         referrerPolicy="no-referrer"
@@ -147,7 +161,9 @@ function DetailServiceHero() {
                                             <Button onClick={() => onClickDelete(serviceQuery.data)} type="text">
                                                 Delete service
                                             </Button>
-                                            <Button type="primary">Edit Service</Button>
+                                            <Button onClick={() => onClickEdit(serviceQuery.data)} type="primary">
+                                                Edit Service
+                                            </Button>
                                         </Space>
                                     </div>
                                 </Card>

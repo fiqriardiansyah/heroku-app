@@ -117,9 +117,10 @@ function FinishCard({ data, sid }: Props) {
                 <div className="w-full flex justify-between items-start mt-5">
                     <div className=" flex flex-col">
                         <Space direction="vertical">
-                            {data.files?.map((fl, i) => (
-                                <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
-                            ))}
+                            {data.files?.map((fl, i) => {
+                                if (!fl) return null;
+                                return <ButtonFileDownload url={fl} name={`document-${i + 1}`} />;
+                            })}
                         </Space>
                     </div>
                     <button

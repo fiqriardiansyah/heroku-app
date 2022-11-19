@@ -14,8 +14,8 @@ function ContractDetail({ job, bidLetter }: { job: Poster; bidLetter: Bid }) {
     const [currentStep, setCurrentStep] = useState(bidLetter.status);
 
     const onFinishStep = () => {
-        if (currentStep >= 4) return;
-        setCurrentStep(currentStep + 1);
+        // if (currentStep >= 4) return;
+        // setCurrentStep(currentStep + 1);
     };
 
     const { Step } = Steps;
@@ -61,7 +61,7 @@ function ContractDetail({ job, bidLetter }: { job: Poster; bidLetter: Bid }) {
                         <br />
                         <Card>
                             <p className="text-16 font-medium mb-2">Application Letter</p>
-                            <p className="text-gray-400">{bidLetter.description}</p>
+                            {/* <p className="text-gray-400">{bidLetter.description}</p> */}
                         </Card>
                         <br />
                         <Card>
@@ -124,7 +124,7 @@ function ContractDetail({ job, bidLetter }: { job: Poster; bidLetter: Bid }) {
                     <br />
                     <Card>
                         <p className="text-16 font-medium mb-2">Bid Letter</p>
-                        <p className="text-gray-400">{bidLetter.description}</p>
+                        {/* <p className="text-gray-400">{bidLetter.description}</p> */}
                     </Card>
                 </div>
                 <Card className="h-fit w-4/12">

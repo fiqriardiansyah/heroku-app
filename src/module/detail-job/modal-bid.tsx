@@ -1,4 +1,4 @@
-import { Button, Form, message, Modal } from "antd";
+import { Button, Checkbox, Form, message, Modal, Space } from "antd";
 import ControlledInputRichText from "components/form/controlled-inputs/controlled-input-rich-text";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,8 @@ import ControlledInputNumber from "components/form/controlled-inputs/controlled-
 import { useMutation } from "react-query";
 import heroService from "services/hero";
 import authService from "services/auth";
+import { CheckboxChangeEvent } from "antd/lib/checkbox";
+import Utils from "utils";
 
 type Props = {
     idPoster: string;
@@ -31,15 +33,21 @@ function ModalBid({ children, isFixedPrice, idPoster, refetchQuery }: Props) {
     const user = authService.CurrentUser();
     const [form] = Form.useForm();
 
+    const [bargain, setBargain] = useState<boolean>(false);
+
     const {
         handleSubmit,
         control,
         formState: { isValid },
         watch,
+        setError,
     } = useForm<BidLetter>({
         mode: "onChange",
         resolver: yupResolver(schema),
     });
+
+    const letter = watch("letter");
+    const price = watch("price");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -73,8 +81,29 @@ function ModalBid({ children, isFixedPrice, idPoster, refetchQuery }: Props) {
     };
 
     const onSubmitHandler = handleSubmit((data) => {
-        bidMutation.mutate(data);
+        if (!Utils.stripHtml(letter)) {
+            setError("letter", {
+                message: "Letter is required!",
+                type: "required",
+            });
+            return;
+        }
+        if (bargain && !price) {
+            setError("price", {
+                message: "Bargain price is required!",
+                type: "required",
+            });
+            return;
+        }
+        bidMutation.mutate({
+            ...data,
+            price: bargain ? data.price : null,
+        });
     });
+
+    const onChange = (e: CheckboxChangeEvent) => {
+        setBargain(e.target.checked);
+    };
 
     return (
         <>
@@ -93,7 +122,12 @@ function ModalBid({ children, isFixedPrice, idPoster, refetchQuery }: Props) {
                         {isFixedPrice ? (
                             <p className="m-0 capitalize text-gray-400">the price is fixed</p>
                         ) : (
-                            <ControlledInputNumber control={control} name="price" label="" placeholder="" className="!w-[300px]" />
+                            <Space direction="vertical">
+                                <Checkbox checked={bargain} onChange={onChange}>
+                                    Bargain
+                                </Checkbox>
+                                {bargain && <ControlledInputNumber control={control} name="price" label="" placeholder="" className="!w-[300px]" />}
+                            </Space>
                         )}
                         <Button loading={bidMutation.isLoading} disabled={bidMutation.isLoading} htmlType="submit" type="primary">
                             Send

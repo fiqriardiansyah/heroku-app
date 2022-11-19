@@ -2,7 +2,7 @@ import { Alert, Button, Card, Collapse, message, Skeleton, Space, Steps } from "
 import State from "components/common/state";
 import EllipsisMiddle from "components/ellipsis-text/ellipsis-middle";
 import InputFile from "components/form/inputs/input-file";
-import { Bid } from "models";
+import { Application, Bid } from "models";
 import moment from "moment";
 import React, { useMemo, useState } from "react";
 import { AiFillFile } from "react-icons/ai";
@@ -19,36 +19,13 @@ import { FINISH_WORK } from "utils/constant";
 import { MyJobData } from "./Models";
 
 interface Props {
-    bid: Bid;
+    application: Application;
 }
 interface MyJobHeaderData {
     owner: string | undefined;
     created: any | undefined;
     company?: any;
 }
-
-const steps = [
-    {
-        title: "Start",
-        description: "Starting on project",
-        subTitle: "",
-    },
-    {
-        title: "Processing",
-        description: "In the process of services",
-        subTitle: "",
-    },
-    {
-        title: "Deliver",
-        description: "Send work",
-        subTitle: "",
-    },
-    {
-        title: "Checking",
-        description: "Check work results",
-        subTitle: "",
-    },
-];
 
 function MyJobHeader({ owner, created, company }: MyJobHeaderData) {
     return (
@@ -60,7 +37,7 @@ function MyJobHeader({ owner, created, company }: MyJobHeaderData) {
     );
 }
 
-function MyJobCard({ bid }: Props) {
+function MyContractCard({ application }: Props) {
     const { Panel } = Collapse;
 
     const userQuery = useMutation(async (uid: string) => {
@@ -69,9 +46,9 @@ function MyJobCard({ bid }: Props) {
     });
 
     const posterQuery = useQuery(
-        ["poster", bid.pid],
+        ["poster", application.pid],
         async () => {
-            const poster = await heroService.GetOnePoster({ pid: bid.pid });
+            const poster = await heroService.GetOnePoster({ pid: application.pid });
             return poster;
         },
         {
@@ -83,22 +60,6 @@ function MyJobCard({ bid }: Props) {
         }
     );
 
-    const mergeSteps = useMemo(() => {
-        return steps.map((step, i) => {
-            const date = (() => {
-                if (bid?.progress) {
-                    if (bid.progress[i]) return bid.progress[i].date;
-                    return "";
-                }
-                return "";
-            })();
-            return {
-                ...step,
-                subTitle: date,
-            };
-        });
-    }, [bid]);
-
     return (
         <Card>
             <State data={posterQuery.data} isLoading={posterQuery.isLoading} isError={posterQuery.isError}>
@@ -109,46 +70,24 @@ function MyJobCard({ bid }: Props) {
                                 <Link className="text-black hover:text-blue-900" to={`${DETAIL_JOB_PATH}/${posterQuery.data?.id}`}>
                                     <div className="m-0">
                                         {posterQuery.data?.title} <BiLink />
-                                        {bid.accept && bid.status !== FINISH_WORK && (
-                                            <span className="ml-5 text-xs text-gray-400">{mergeSteps[bid.status || 0]?.title}</span>
-                                        )}
-                                        {bid.status === FINISH_WORK && <span className="ml-5 text-xs text-green-400 capitalize">completed ✅</span>}
+                                        {application.accept && <span className="text-green-400 capitalize ml-4 text-xs">you got this job ✅</span>}
                                     </div>
                                 </Link>
-                                {posterQuery.data?.type_of_job === "task" && (
-                                    <div className="flex flex-col items-end">
-                                        <p className="m-0">{parseInt(posterQuery.data?.price?.toString() || "0", 10).ToIndCurrency("Rp")}</p>
-                                        {bid.price && (
-                                            <span className="text-primary text-xs m-0 ml-2">{parseInt(bid.price, 10).ToIndCurrency("Rp")}</span>
-                                        )}
-                                    </div>
-                                )}
                             </div>
                             <Collapse ghost>
                                 <Panel
                                     style={{ padding: "0px" }}
-                                    header={<MyJobHeader owner={userQuery.data?.name} created={moment(bid.date).format("DD MMM yyyy, LT")} />}
+                                    header={<MyJobHeader owner={userQuery.data?.name} created={moment(application.date).format("DD MMM yyyy, LT")} />}
                                     key={1}
                                 >
                                     <div className="my-4 px-5 ">
-                                        {bid.accept ? (
-                                            <Steps current={bid.status}>
-                                                {mergeSteps.map((step) => (
-                                                    <Steps.Step
-                                                        key={step.title}
-                                                        title={step.title}
-                                                        description={step.description}
-                                                        subTitle={step.subTitle ? moment(step.subTitle).format("DD MMM, LT") : ""}
-                                                    />
-                                                ))}
-                                            </Steps>
-                                        ) : (
-                                            <div className="bg-gray-100 rounded-md p-3">
-                                                {bid.price && (
-                                                    <span className="text-primary text-xs m-0">{parseInt(bid.price, 10).ToIndCurrency("Rp")}</span>
-                                                )}
-                                                {parser(bid.letter)}
+                                        {application.accept ? (
+                                            <div className="flex flex-col items-center">
+                                                <h1 className="capitalize font-semibold text-2xl">congratulations!</h1>
+                                                <p className="capitalize ">you got this job</p>
                                             </div>
+                                        ) : (
+                                            <div className="bg-gray-100 rounded-md p-3">{parser(application.description)}</div>
                                         )}
                                     </div>
                                     <div className="flex justify-end gap-2">
@@ -176,4 +115,4 @@ function MyJobCard({ bid }: Props) {
     );
 }
 
-export default MyJobCard;
+export default MyContractCard;

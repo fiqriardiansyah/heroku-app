@@ -45,13 +45,13 @@ const steps = [
 
 function FinishCard({ data }: Props) {
     const userQuery = useQuery(
-        ["user", data.uid],
+        ["user", data.hid],
         async () => {
-            const usr = await userService.GetUser(data.uid as any);
+            const usr = await userService.GetUser(data.hid as any);
             return usr;
         },
         {
-            enabled: !!data.uid,
+            enabled: !!data.hid,
         }
     );
 
@@ -132,9 +132,10 @@ function FinishCard({ data }: Props) {
             </div>
             <div className="w-full flex justify-between">
                 <Space direction="vertical">
-                    {data.files?.map((fl, i) => (
-                        <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
-                    ))}
+                    {data.files?.map((fl, i) => {
+                        if (!fl) return null;
+                        return <ButtonFileDownload url={fl} name={`document-${i + 1}`} />;
+                    })}
                 </Space>
                 <button
                     disabled={userQuery.isLoading}

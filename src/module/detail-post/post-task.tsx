@@ -24,47 +24,23 @@ type Props<T> = {
 function PostTask<T extends Poster>({ fetcher }: Props<T>) {
     const location = useLocation();
 
-    const userQuery = useMutation(async (uid: string) => {
-        const usr = await userService.GetUser(uid);
-        return usr;
-    });
+    const userQuery = useQuery(
+        ["user", fetcher.data?.uid],
+        async () => {
+            const usr = await userService.GetUser(fetcher.data?.uid as any);
+            return usr;
+        },
+        {
+            enabled: !!fetcher.data?.uid,
+        }
+    );
 
     const bids = Utils.parseTreeObjectToArray(fetcher.data?.bids || {});
 
     return (
         <Card className="">
-            <State data={userQuery.data} isLoading={userQuery.isLoading} isError={userQuery.isError}>
-                {(state) => (
-                    <>
-                        <State.Data state={state}>
-                            <div className="w-full flex mb-5">
-                                <Image
-                                    preview={false}
-                                    referrerPolicy="no-referrer"
-                                    fallback={IMAGE_FALLBACK}
-                                    src={userQuery.data?.profile}
-                                    width={40}
-                                    height={40}
-                                    className="flex-1 bg-gray-300 rounded-full object-cover"
-                                />
-                                <div className="flex flex-col ml-3">
-                                    <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
-                                    <p className="m-0 text-gray-400 text-xs capitalize">programmer</p>
-                                    {/* [IMPORTANT] ubah pekerjaan user nanti */}
-                                </div>
-                            </div>
-                        </State.Data>
-                        <State.Loading state={state}>
-                            <Skeleton paragraph={{ rows: 2 }} avatar />
-                        </State.Loading>
-                        <State.Error state={state}>
-                            <Alert message={(userQuery.error as any)?.message} type="error" />
-                        </State.Error>
-                    </>
-                )}
-            </State>
             <p className="m-0 capitalize font-semibold text-lg">{fetcher.data?.title}</p>
-            <p className="font-medium m-0 mt-4">Owner: Fiqri ardiansyah</p>
+            <p className="font-medium m-0 mt-4">Owner: {userQuery.data?.name || ""}</p>
             <span className="text-gray-400 text-xs">Post {moment(fetcher.data?.date).format("DD MMM yyyy")}</span>
             <p className="m-0">
                 {fetcher.data?.is_fixed_price ? "Fixed" : "Bargain"} price - {parseInt(fetcher.data?.price as string, 10).ToIndCurrency("Rp")}
@@ -90,9 +66,11 @@ function PostTask<T extends Poster>({ fetcher }: Props<T>) {
             </div>
             <div className="flex w-full items-center justify-between">
                 <p className="m-0 capitalize text-gray-700">{bids?.length || 0} Bids</p>
-                <Link to={`${location.pathname}/progress`}>
-                    <Button type="link">See progress</Button>
-                </Link>
+                {fetcher.data?.accepted_hero && (
+                    <Link to={`${location.pathname}/progress`}>
+                        <Button type="link">See progress</Button>
+                    </Link>
+                )}
             </div>
         </Card>
     );

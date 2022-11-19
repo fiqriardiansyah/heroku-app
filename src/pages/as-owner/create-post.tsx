@@ -8,7 +8,7 @@ import { AiFillQuestionCircle } from "react-icons/ai";
 import { FDataPost } from "module/create-post/models";
 import ControlledInputText from "components/form/controlled-inputs/controlled-input-text";
 import ControlledRadioInput from "components/form/controlled-inputs/controlled-input-radio";
-import { DEFAULT_ERROR, TASK_JOB, TYPE_OF_JOBS, TYPE_PRICES } from "utils/constant";
+import { DEFAULT_ERROR, FIXED_PRICE, TASK_JOB, TYPE_OF_JOBS, TYPE_PRICES } from "utils/constant";
 import ControlledInputNumber from "components/form/controlled-inputs/controlled-input-number";
 import ControlledInputRichText from "components/form/controlled-inputs/controlled-input-rich-text";
 import ControlledSelectInput from "components/form/controlled-inputs/controlled-input-select";
@@ -64,6 +64,14 @@ function CreatePost() {
     });
 
     const typeOfJob = watch("type_of_job");
+    const price = watch("price");
+    const isFixedPrice = watch("is_fixed_price");
+    const numberOfHero = watch("number_of_hero");
+
+    const description = watch("description");
+
+    const limitApplicant = watch("limit_applicant");
+    const company = watch("company");
 
     const createPostMutation = useMutation(
         async (data: Poster) => {
@@ -82,8 +90,56 @@ function CreatePost() {
     );
 
     const onSubmitHandler = handleSubmit((data) => {
+        if (parseInt(typeOfJob, 10) === TASK_JOB) {
+            if (!price) {
+                setError("price", {
+                    message: "Price is required!",
+                    type: "required",
+                });
+                return;
+            }
+            if (!isFixedPrice) {
+                setError("is_fixed_price", {
+                    message: "Price type is required!",
+                    type: "required",
+                });
+                return;
+            }
+            if (!numberOfHero) {
+                setError("number_of_hero", {
+                    message: "Number of hero is required!",
+                    type: "required",
+                });
+                return;
+            }
+        } else {
+            if (!limitApplicant) {
+                setError("limit_applicant", {
+                    message: "Price type is required!",
+                    type: "required",
+                });
+                return;
+            }
+            if (!company) {
+                setError("company", {
+                    message: "Company is required!",
+                    type: "required",
+                });
+                return;
+            }
+        }
+
+        if (!description) {
+            setError("description", {
+                message: "Description is required!",
+                type: "required",
+            });
+            return;
+        }
+
         createPostMutation.mutate({
             ...data,
+            is_fixed_price: data.is_fixed_price ? parseInt(data.is_fixed_price, 10) === FIXED_PRICE : false,
             type_of_job: parseInt(data.type_of_job, 10) === TASK_JOB ? "task" : "hiring",
         } as Poster);
     });

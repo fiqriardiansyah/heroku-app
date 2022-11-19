@@ -17,23 +17,23 @@ function BiddingDetail({ job, bid }: Props) {
     const [loadingModal, setLoadingModal] = useState<boolean>(false);
 
     const handleOk = (description: any, price: any) => {
-        const letter: Bid = {
-            accept: false,
-            date: new Date(),
-            description,
-            price,
-            id: "testing",
-            hid: "",
-            pid: "",
-            status: 1,
-            uid: "uidtesting",
-        };
-        setLoadingModal(true);
-        setTimeout(() => {
-            setBidLetter(letter);
-            setLoadingModal(false);
-            setOpenModal(false);
-        }, 3000);
+        // const letter: Bid = {
+        //     accept: false,
+        //     date: new Date().getTime(),
+        //     description: description as any,
+        //     price,
+        //     id: "testing",
+        //     hid: "",
+        //     pid: "",
+        //     status: 1,
+        //     uid: "uidtesting",
+        // };
+        // setLoadingModal(true);
+        // setTimeout(() => {
+        //     setBidLetter(letter);
+        //     setLoadingModal(false);
+        //     setOpenModal(false);
+        // }, 3000);
     };
 
     const handleCancel = () => {
@@ -94,7 +94,7 @@ function BiddingDetail({ job, bid }: Props) {
                 {bidLetter && (
                     <Card>
                         <p className="text-16 font-medium mb-2">Application Letter</p>
-                        <p className="text-gray-400">{`${bidLetter.description}`}</p>
+                        {/* <p className="text-gray-400">{`${bidLetter.description}`}</p> */}
                     </Card>
                 )}
             </>
@@ -153,7 +153,7 @@ function BiddingDetail({ job, bid }: Props) {
             {bidLetter && (
                 <Card>
                     <p className="text-16 font-medium mb-2">Bid Letter</p>
-                    <p className="text-gray-400">{`${bidLetter.description}`}</p>
+                    {/* <p className="text-gray-400">{`${bidLetter.description}`}</p> */}
                 </Card>
             )}
         </>

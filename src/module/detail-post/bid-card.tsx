@@ -104,9 +104,10 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
                                     </State>
                                     <p>{moment(bidQuery.data?.date).format("DD MMM yyyy, LT")}</p>
                                 </div>
-                                {!fetcher.data?.is_fixed_price && (
+                                {bidQuery.data?.price && (
                                     <p className="m-0 text-primary font-semibold mt-2">
                                         {parseInt(bidQuery.data?.price || "0", 10).ToIndCurrency("Rp")}
+                                        <span className="text-gray-400 text-xs ml-2 font-normal capitalize">Bargain price</span>
                                     </p>
                                 )}
                                 <div className="break-words text-gray-500 text-sm my-3 bg-gray-100 p-2 px-4 rounded-md">
@@ -120,7 +121,7 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
                                             <CutTokenModal
                                                 onPayClick={onPayClickHandler}
                                                 leftToken={12}
-                                                total={parseInt(fetcher.data?.price?.toString() || "0", 10)}
+                                                total={parseInt(bidQuery.data?.price || fetcher.data?.price?.toString() || "0", 10)}
                                             >
                                                 {(dt) => (
                                                     <Button

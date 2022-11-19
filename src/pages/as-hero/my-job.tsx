@@ -79,11 +79,6 @@ function MyJob() {
         Swal.fire("Apa itu My Services?", "That thing is still around?", "question");
     };
 
-    const onSearchChange = (e: any) => {
-        // const query = e.target.value;
-        // setServices([...(servicesQuery.data || [])].filter((service) => service.title.includes(query) && service.status === tab));
-    };
-
     const inactiveButtonStyle = { border: "none", backgroundColor: "inherit" };
 
     return (
@@ -93,13 +88,6 @@ function MyJob() {
                 <div className="flex items-center">
                     <p className="m-0 mr-2 font-semibold text-xl capitalize">My Job</p>
                     <AiFillQuestionCircle className="text-gray-400 text-xl cursor-pointer" onClick={myJobsQuestionOnClick} />
-                </div>
-                <div className="flex flex-row gap-1 basis-2/6">
-                    {tab === "bidding" ? (
-                        <Input placeholder="Search Bid" onChange={onSearchChange} />
-                    ) : (
-                        <Input placeholder="Search Contracts" onChange={onSearchChange} />
-                    )}
                 </div>
             </div>
             <br />

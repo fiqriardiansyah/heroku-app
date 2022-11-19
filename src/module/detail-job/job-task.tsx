@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from "react";
 
 /* eslint-disable no-shadow */
-import { Alert, Button, Card, Image, message, Modal, Skeleton, Space, Steps } from "antd";
+import { Affix, Alert, Button, Card, Image, message, Modal, Skeleton, Space, Steps } from "antd";
 import State from "components/common/state";
 import { useMutation, useQuery, UseQueryResult } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -66,10 +66,20 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
         return usr;
     });
 
-    const posterBidsQuery = useQuery(["bids", id], async () => {
-        const bids = await heroService.GetPosterBid({ pid: id as any });
-        return bids;
-    });
+    const posterBidsQuery = useQuery(
+        ["bids", id],
+        async () => {
+            const bids = await heroService.GetPosterBid({ pid: id as any });
+            return bids;
+        },
+        {
+            onSuccess: () => {
+                if (!userQuery.data) {
+                    userQuery.mutate(fetcher.data?.uid as any);
+                }
+            },
+        }
+    );
 
     const myBid = (() => {
         if (posterBidsQuery.isLoading) return null;
@@ -203,44 +213,13 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
         <div className="flex">
             <div className="flex-2">
                 <Card className="">
-                    <State data={userQuery.data} isLoading={userQuery.isLoading} isError={userQuery.isError}>
-                        {(state) => (
-                            <>
-                                <State.Data state={state}>
-                                    <div className="w-full flex mb-5">
-                                        <Image
-                                            preview={false}
-                                            referrerPolicy="no-referrer"
-                                            fallback={IMAGE_FALLBACK}
-                                            src={userQuery.data?.profile}
-                                            width={40}
-                                            height={40}
-                                            className="flex-1 bg-gray-300 rounded-full object-cover"
-                                        />
-                                        <div className="flex flex-col ml-3">
-                                            <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
-                                            <p className="m-0 text-gray-400 text-xs capitalize">programmer</p>
-                                            {/* [IMPORTANT] ubah pekerjaan user nanti */}
-                                        </div>
-                                    </div>
-                                </State.Data>
-                                <State.Loading state={state}>
-                                    <Skeleton paragraph={{ rows: 2 }} avatar />
-                                </State.Loading>
-                                <State.Error state={state}>
-                                    <Alert message={(userQuery.error as any)?.message} type="error" />
-                                </State.Error>
-                            </>
-                        )}
-                    </State>
-
                     <p className="m-0 capitalize font-semibold text-lg">
                         {fetcher.data?.title}{" "}
                         {myBid?.status === FINISH_WORK && (
                             <span className="m-0 text-green-300 capitalize font-normal text-sm ml-5">Completed ✅</span>
                         )}
                     </p>
-                    <p className="font-medium m-0 mt-4">Owner: Fiqri ardiansyah</p>
+                    <p className="font-medium m-0 mt-4 capitalize">Owner: {userQuery.data?.name || ""}</p>
                     <span className="text-gray-400 text-xs">Post {moment(fetcher.data?.date).format("DD MMM yyyy")}</span>
                     <p className="m-0">
                         {fetcher.data?.is_fixed_price ? "Fixed" : "Bargain"} price - {parseInt(fetcher.data?.price as string, 10).ToIndCurrency("Rp")}
@@ -290,8 +269,13 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                         <br />
                         {myBid && (
                             <Card>
-                                <div className="w-full flex items-center justify-between">
-                                    <p className="capitalize font-semibold">bid letter</p>
+                                <div className="w-full flex items-start justify-between">
+                                    <div className="">
+                                        <p className="capitalize font-semibold m-0">bid letter</p>
+                                        {myBid?.price && (
+                                            <p className="capitalize m-0 text-xs font-normal">Bid: {parseInt(myBid.price, 10).ToIndCurrency("Rp")}</p>
+                                        )}
+                                    </div>
                                     <p>{moment(myBid?.date).format("DD MMM yyyy, LT")}</p>
                                 </div>
                                 <div className="mt-5 text-gray-400 text-sm">{parser(myBid?.letter || "")}</div>
@@ -302,44 +286,47 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
             </div>
             {!posterBidsQuery.isLoading && myBid?.accept && (
                 <div className="flex-1 ml-4">
-                    <Card>
-                        <p className="capitalize font-semibold">status</p>
-                        <Steps current={myBid?.status} direction="vertical">
-                            {mergeSteps.map((step) => (
-                                <Steps.Step
-                                    key={step.title}
-                                    title={step.title}
-                                    description={step.description}
-                                    subTitle={step.subTitle ? moment(step.subTitle).format("DD MMM, LT") : ""}
-                                />
-                            ))}
-                        </Steps>
-                        <p className="text-gray-300 capitalize m-0 text-xs">If you have multiple file, you can archive those file first</p>
-                        <div className="w-full flex justify-end items-center mt-2">
-                            <Space>
-                                {actions?.find((act) => act.status === myBid?.status)?.button}
-                                <button
-                                    disabled={userQuery.isLoading}
-                                    className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                    type="button"
-                                >
-                                    <FaTelegramPlane className="text-primary text-2xl" />
-                                </button>
-                            </Space>
-                        </div>
-                    </Card>
-                    <br />
-                    {myBid?.files && (
+                    <div className="sticky top-20">
                         <Card>
-                            <Space direction="vertical">
-                                {myBid?.files
-                                    ?.filter((file) => file)
-                                    ?.map((fl, i) => (
-                                        <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
-                                    ))}
-                            </Space>
+                            <p className="capitalize font-semibold">status</p>
+                            <Steps current={myBid?.status} direction="vertical">
+                                {mergeSteps.map((step) => (
+                                    <Steps.Step
+                                        key={step.title}
+                                        title={step.title}
+                                        description={step.description}
+                                        subTitle={step.subTitle ? moment(step.subTitle).format("DD MMM, LT") : ""}
+                                    />
+                                ))}
+                            </Steps>
+                            <p className="text-gray-300 capitalize m-0 text-xs">If you have multiple file, you can archive those file first</p>
+                            <div className="w-full flex justify-end items-center mt-2">
+                                <Space>
+                                    {actions?.find((act) => act.status === myBid?.status)?.button}
+                                    <button
+                                        disabled={userQuery.isLoading}
+                                        className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
+                                        type="button"
+                                    >
+                                        <FaTelegramPlane className="text-primary text-2xl" />
+                                    </button>
+                                </Space>
+                            </div>
                         </Card>
-                    )}
+                        <br />
+                        {myBid?.files && (
+                            <Card>
+                                <p className="capitalize font-semibold">Files</p>
+                                <Space direction="vertical">
+                                    {myBid?.files
+                                        ?.filter((file) => file)
+                                        ?.map((fl, i) => (
+                                            <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
+                                        ))}
+                                </Space>
+                            </Card>
+                        )}
+                    </div>
                 </div>
             )}
         </div>

@@ -38,6 +38,9 @@ export const FINISH_WORK = 4;
 export const TASK_JOB = 1;
 export const HIRING_JOB = 2;
 
+export const FIXED_PRICE = 1;
+export const BARGAI_PRICE = 2;
+
 export const TYPE_OF_JOBS = [
     {
         value: TASK_JOB,
@@ -51,11 +54,11 @@ export const TYPE_OF_JOBS = [
 
 export const TYPE_PRICES = [
     {
-        value: 1,
+        value: FIXED_PRICE,
         label: 'Fixed Price'
     },
     {
-        value: 2,
+        value: BARGAI_PRICE,
         label: 'Bargain'
     }
 ]

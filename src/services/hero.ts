@@ -258,7 +258,7 @@ class HeroService extends HeroServiceSupport {
         });
     }
 
-    async GetMyBidInPoster({ uid, pid }: Pick<IDs, "uid" | "pid">) { // myjob - bidding
+    async GetMyBidInPoster({ uid, pid }: Pick<IDs, "uid" | "pid">) {
         return this.ProxyRequest(async () => {
             const bid = await this.myBids({ uid });
             const bids = Utils.parseTreeObjectToArray<Bid>(bid.val()) || [];
@@ -266,7 +266,7 @@ class HeroService extends HeroServiceSupport {
         });
     }
 
-    async GetPosterBid({ pid }: Pick<IDs, "pid">) { // myjob - bidding
+    async GetPosterBid({ pid }: Pick<IDs, "pid">) {
         return this.ProxyRequest(async () => {
             const bid = await this.posterBids({ pid });
             const bids = Utils.parseTreeObjectToArray<Bid>(bid.val()) || [];
@@ -332,6 +332,12 @@ class HeroService extends HeroServiceSupport {
             await this.addApplicationIdToPoster({ pid, apcid: id });
             return null
         });
+    }
+
+    async GetOnePoster({ pid }: Pick<IDs, "pid">) {
+        return this.ProxyRequest(async () => {
+            return (await this.getOnePoster({ pid })).val() as Poster;
+        })
     }
 
 }

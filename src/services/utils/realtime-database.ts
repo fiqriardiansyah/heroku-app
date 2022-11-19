@@ -258,7 +258,7 @@ class RealtimeDatabase extends BaseService {
                 callback([]);
                 return;
             };
-            callback(Utils.parseTreeObjectToArray<Poster>(snapshot.val()) || []);
+            callback(Utils.parseTreeObjectToArray<Poster>(snapshot.val()).sort((a, b) => b.date - a.date) || []);
         });
     }
 
@@ -272,7 +272,7 @@ class RealtimeDatabase extends BaseService {
         if (!keyString) return;
         const onSubscribe = onValue(query(ref(this.db, this.pstr), orderByChild("flag"), startAt(keyString)), (snapshot) => {
             if (!snapshot.exists()) return;
-            callback(Utils.parseTreeObjectToArray<Poster>(snapshot.val()).filter((el) => el.flag?.includes(keyString)) || []);
+            callback(Utils.parseTreeObjectToArray<Poster>(snapshot.val()).filter((el) => el.flag?.includes(keyString)).sort((a, b) => b.date - a.date) || []);
         });
         if (!keyString) {
             onSubscribe();
@@ -332,7 +332,7 @@ class RealtimeDatabase extends BaseService {
     }
 
     myApplications({ uid }: Pick<IDs, "uid">) {
-        const queryRef = query(ref(this.db, this.appl), orderByChild("hid"), equalTo(uid));
+        const queryRef = query(ref(this.db, this.appl), orderByChild("uid"), equalTo(uid));
         return get(queryRef);
     }
 
