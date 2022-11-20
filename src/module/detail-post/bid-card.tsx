@@ -8,9 +8,12 @@ import ownerService from "services/owner";
 import userService from "services/user";
 import { IMAGE_FALLBACK } from "utils/constant";
 import parser from "html-react-parser";
-import { FaTelegramPlane } from "react-icons/fa";
+import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
 import CutTokenModal from "components/modal/cut-token-modal";
-import { Poster } from "models";
+import { ChatInfo, Poster } from "models";
+import ButtonChat from "components/button/chat";
+import Utils from "utils";
+import authService from "services/auth";
 
 type Props<T> = {
     fetcher: UseQueryResult<T, unknown>;
@@ -18,6 +21,8 @@ type Props<T> = {
 };
 
 function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
+    const user = authService.CurrentUser();
+
     const bidQuery = useQuery(["bid", biid], async () => {
         const bid = await ownerService.GetOneBid({ biid });
         return bid;
@@ -64,6 +69,16 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
         });
     };
 
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: fetcher.data?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: fetcher.data?.id as any,
+        anytitle: fetcher.data?.title as any,
+        type_work: "poster",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
+    };
+
     return (
         <div className="w-full pb-2 mb-4" style={{ borderBottom: "1px solid #e3e3e3" }}>
             <State data={bidQuery.data} isLoading={bidQuery.isLoading} isError={bidQuery.isError}>
@@ -84,6 +99,11 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
                                                             src={userQuery.data?.profile}
                                                             width={40}
                                                             height={40}
+                                                            placeholder={
+                                                                <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                                                                    <FaUserAlt className="text-2xl text-gray-400" />
+                                                                </div>
+                                                            }
                                                             className="flex-1 bg-gray-300 rounded-full object-cover"
                                                         />
                                                         <div className="flex flex-col ml-3">
@@ -135,12 +155,7 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
                                                 )}
                                             </CutTokenModal>
                                         )}
-                                        <button
-                                            className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                            type="button"
-                                        >
-                                            <FaTelegramPlane className="text-primary text-2xl" />
-                                        </button>
+                                        <ButtonChat chatInfo={chatInfo} disabled={userQuery.isLoading} />
                                     </Space>
                                 </div>
                             </div>

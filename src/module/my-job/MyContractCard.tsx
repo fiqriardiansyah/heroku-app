@@ -2,7 +2,7 @@ import { Alert, Button, Card, Collapse, message, Skeleton, Space, Steps } from "
 import State from "components/common/state";
 import EllipsisMiddle from "components/ellipsis-text/ellipsis-middle";
 import InputFile from "components/form/inputs/input-file";
-import { Application, Bid } from "models";
+import { Application, Bid, ChatInfo } from "models";
 import moment from "moment";
 import React, { useMemo, useState } from "react";
 import { AiFillFile } from "react-icons/ai";
@@ -16,6 +16,9 @@ import userService from "services/user";
 import { DETAIL_JOB_PATH } from "utils/routes";
 import parser from "html-react-parser";
 import { FINISH_WORK } from "utils/constant";
+import ButtonChat from "components/button/chat";
+import Utils from "utils";
+import authService from "services/auth";
 import { MyJobData } from "./Models";
 
 interface Props {
@@ -38,6 +41,7 @@ function MyJobHeader({ owner, created, company }: MyJobHeaderData) {
 }
 
 function MyContractCard({ application }: Props) {
+    const user = authService.CurrentUser();
     const { Panel } = Collapse;
 
     const userQuery = useMutation(async (uid: string) => {
@@ -59,6 +63,16 @@ function MyContractCard({ application }: Props) {
             },
         }
     );
+
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: posterQuery.data?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: posterQuery.data?.id as any,
+        anytitle: posterQuery.data?.title as any,
+        type_work: "poster",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
+    };
 
     return (
         <Card>
@@ -91,13 +105,7 @@ function MyContractCard({ application }: Props) {
                                         )}
                                     </div>
                                     <div className="flex justify-end gap-2">
-                                        <button
-                                            disabled={posterQuery.isLoading}
-                                            className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                            type="button"
-                                        >
-                                            <FaTelegramPlane className="text-primary text-2xl" />
-                                        </button>
+                                        <ButtonChat chatInfo={chatInfo} disabled={posterQuery.isLoading || userQuery.isLoading} />
                                     </div>
                                 </Panel>
                             </Collapse>

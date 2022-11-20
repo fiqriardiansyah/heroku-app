@@ -10,7 +10,7 @@ import { IMAGE_FALLBACK } from "utils/constant";
 import parser from "html-react-parser";
 import Chip from "components/common/chip";
 import moment from "moment";
-import { Poster } from "models";
+import { ChatInfo, Poster } from "models";
 import heroService from "services/hero";
 import { useNavigate, useParams } from "react-router-dom";
 import authService from "services/auth";
@@ -20,7 +20,9 @@ import ButtonFileDownload from "components/button/file-download";
 import { FaTelegramPlane } from "react-icons/fa";
 import { IoMdWarning } from "react-icons/io";
 import { StateContext } from "context/state";
-import { DETAIL_POST_PATH } from "utils/routes";
+import { CHAT_PATH, DETAIL_POST_PATH } from "utils/routes";
+import Utils from "utils";
+import ButtonChat from "components/button/chat";
 import ModalApplication from "./modal-application";
 
 type Props<T> = {
@@ -32,7 +34,7 @@ function JobHiring<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
     const navigate = useNavigate();
 
     const user = authService.CurrentUser();
-    const { changeRole } = useContext(StateContext);
+    const { changeRole, setChatActive } = useContext(StateContext);
 
     const { id } = useParams();
 
@@ -86,6 +88,16 @@ function JobHiring<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                 type: "text",
             },
         });
+    };
+
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: fetcher.data?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: fetcher.data?.id as any,
+        anytitle: fetcher.data?.title as any,
+        type_work: "poster",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
     };
 
     return (
@@ -154,13 +166,7 @@ function JobHiring<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                                     )}
                                 </ModalApplication>
                             )}
-                            <button
-                                disabled={userQuery.isLoading}
-                                className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                type="button"
-                            >
-                                <FaTelegramPlane className="text-primary text-2xl" />
-                            </button>
+                            <ButtonChat chatInfo={chatInfo} disabled={posterAppQuery.isLoading || userQuery.isLoading} />
                         </Space>
                     </div>
                     <br />

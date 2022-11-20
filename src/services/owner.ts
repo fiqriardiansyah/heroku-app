@@ -26,7 +26,7 @@ class OwnerService extends OwnerServiceSupport {
         });
     }
 
-    async GetDetailService({ sid, hid }: Pick<IDs, "sid" | "hid">) {
+    async GetDetailService({ sid }: Pick<IDs, "sid">) {
         return this.ProxyRequest(async () => {
             return {
                 ...(await this.getOneService({ sid })).val(),

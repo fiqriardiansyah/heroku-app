@@ -1,5 +1,6 @@
 import { Alert, Image, Skeleton } from "antd";
 import React from "react";
+import { FaUserAlt } from "react-icons/fa";
 import { useQuery } from "react-query";
 import userService from "services/user";
 import { IMAGE_FALLBACK } from "utils/constant";
@@ -34,6 +35,11 @@ function UserHeader({ uid }: Props) {
                                 src={userQuery.data?.profile}
                                 width={40}
                                 height={40}
+                                placeholder={
+                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                                        <FaUserAlt className="text-2xl text-gray-400" />
+                                    </div>
+                                }
                                 className="flex-1 bg-gray-300 rounded-full object-cover"
                             />
                             <div className="flex flex-col ml-3">

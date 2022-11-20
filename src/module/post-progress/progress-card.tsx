@@ -3,18 +3,22 @@ import { Alert, Button, Card, Collapse, Image, message, Skeleton, Space, Steps }
 import State from "components/common/state";
 import moment from "moment";
 import React, { useMemo } from "react";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, UseQueryResult } from "react-query";
 import ownerService from "services/owner";
 import userService from "services/user";
 import { FINISH_WORK, IMAGE_FALLBACK } from "utils/constant";
 import parser from "html-react-parser";
-import { FaTelegramPlane } from "react-icons/fa";
+import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
 import CutTokenModal from "components/modal/cut-token-modal";
-import { Poster } from "models";
+import { ChatInfo, Poster } from "models";
 import { useLocation, useNavigate } from "react-router-dom";
 import ButtonFileDownload from "components/button/file-download";
+import ButtonChat from "components/button/chat";
+import Utils from "utils";
+import authService from "services/auth";
+import heroService from "services/hero";
 
-type Props<T> = {
+type Props = {
     biid: string;
 };
 
@@ -43,11 +47,24 @@ const steps = [
     },
 ];
 
-function ProgressCard<T extends Poster>({ biid }: Props<T>) {
+function ProgressCard({ biid }: Props) {
+    const user = authService.CurrentUser();
+
     const bidQuery = useQuery(["bid", biid], async () => {
         const bid = await ownerService.GetOneBid({ biid });
         return bid;
     });
+
+    const posterQuery = useQuery(
+        ["poster", bidQuery.data?.pid],
+        async () => {
+            const poster = await ownerService.GetOnePoster({ pid: bidQuery.data?.pid as any });
+            return poster;
+        },
+        {
+            enabled: !!bidQuery.data?.pid,
+        }
+    );
 
     const userQuery = useQuery(
         ["user", bidQuery.data?.uid],
@@ -107,6 +124,16 @@ function ProgressCard<T extends Poster>({ biid }: Props<T>) {
         },
     ];
 
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: posterQuery.data?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: posterQuery.data?.id as any,
+        anytitle: posterQuery.data?.title as any,
+        type_work: "poster",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
+    };
+
     return (
         <Card className="!mb-4">
             <State data={bidQuery.data} isLoading={bidQuery.isLoading} isError={bidQuery.isError}>
@@ -127,6 +154,11 @@ function ProgressCard<T extends Poster>({ biid }: Props<T>) {
                                                             src={userQuery.data?.profile}
                                                             width={40}
                                                             height={40}
+                                                            placeholder={
+                                                                <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                                                                    <FaUserAlt className="text-2xl text-gray-400" />
+                                                                </div>
+                                                            }
                                                             className="flex-1 bg-gray-300 rounded-full object-cover"
                                                         />
                                                         <div className="flex flex-col ml-3">
@@ -178,13 +210,7 @@ function ProgressCard<T extends Poster>({ biid }: Props<T>) {
                                     </Space>
                                     <Space>
                                         {actions?.find((act) => act.status === bidQuery.data?.status)?.button}
-
-                                        <button
-                                            className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                            type="button"
-                                        >
-                                            <FaTelegramPlane className="text-primary text-2xl" />
-                                        </button>
+                                        <ButtonChat chatInfo={chatInfo} disabled={posterQuery.isLoading || userQuery.isLoading} />
                                     </Space>
                                 </div>
                                 {bidQuery.data?.status === FINISH_WORK && (

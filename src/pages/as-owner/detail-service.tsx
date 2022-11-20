@@ -5,7 +5,7 @@ import { Alert, Button, Card, Image, message, Modal, Skeleton, Space } from "ant
 import parser from "html-react-parser";
 import { useNavigate, useParams } from "react-router-dom";
 import { CHAT_PATH, MY_ASSIGNMENT_PATH, SERVICE_HERO_PATH } from "utils/routes";
-import { FaTelegramPlane } from "react-icons/fa";
+import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
 import { useMutation, useQuery } from "react-query";
 import ownerService from "services/owner";
 import State from "components/common/state";
@@ -13,38 +13,40 @@ import { IMAGE_FALLBACK } from "utils/constant";
 import Chip from "components/common/chip";
 import ButtonFileDownload from "components/button/file-download";
 import CutTokenModal from "components/modal/cut-token-modal";
-import { ServiceDetail } from "models";
+import { ChatInfo, ServiceDetail } from "models";
 import authService from "services/auth";
 import { IoMdWarning } from "react-icons/io";
 import { StateContext } from "context/state";
 import userService from "services/user";
+import ButtonChat from "components/button/chat";
+import Utils from "utils";
 
 function DetailServiceOwner() {
     const navigate = useNavigate();
     const { changeRole } = useContext(StateContext);
 
     const user = authService.CurrentUser();
-    const { uid, id } = useParams();
+    const { id } = useParams();
 
     const serviceQuery = useQuery(
-        ["service", uid, id],
+        ["service", id],
         async () => {
-            const serviceDetail = await ownerService.GetDetailService({ sid: id as any, hid: uid as any });
+            const serviceDetail = await ownerService.GetDetailService({ sid: id as any });
             return serviceDetail;
         },
         {
-            enabled: !!uid && !!id,
+            enabled: !!id,
         }
     );
 
     const userQuery = useQuery(
-        ["user", uid],
+        ["user", serviceQuery.data?.uid],
         async () => {
-            const usr = await userService.GetUser(uid as any);
+            const usr = await userService.GetUser(serviceQuery.data?.uid as any);
             return usr;
         },
         {
-            enabled: !!uid,
+            enabled: !!serviceQuery.data?.uid,
         }
     );
 
@@ -87,6 +89,16 @@ function DetailServiceOwner() {
         });
     };
 
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: serviceQuery.data?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: serviceQuery.data?.id as any,
+        anytitle: serviceQuery.data?.title as any,
+        type_work: "service",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
+    };
+
     return (
         <Layout>
             <br />
@@ -110,6 +122,11 @@ function DetailServiceOwner() {
                                                                 src={userQuery.data?.profile}
                                                                 width={40}
                                                                 height={40}
+                                                                placeholder={
+                                                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                                                                        <FaUserAlt className="text-2xl text-gray-400" />
+                                                                    </div>
+                                                                }
                                                                 className="flex-1 bg-gray-300 rounded-full object-cover"
                                                             />
                                                             <div className="flex flex-col ml-3">
@@ -208,13 +225,7 @@ function DetailServiceOwner() {
                                                         </Button>
                                                     )}
                                                 </CutTokenModal>
-                                                <button
-                                                    disabled={orderServiceMutation.isLoading}
-                                                    className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                                    type="button"
-                                                >
-                                                    <FaTelegramPlane className="text-primary text-2xl" />
-                                                </button>
+                                                <ButtonChat chatInfo={chatInfo} disabled={serviceQuery.isLoading || userQuery.isLoading} />
                                             </Space>
                                         )}
                                     </div>

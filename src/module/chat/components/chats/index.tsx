@@ -27,7 +27,7 @@ function Chats() {
             uid: state.user?.uid as any,
             callback: (chats) => {
                 setLoading(false);
-                setData(chats);
+                setData(chats?.sort((a, b) => b.last_chat - a.last_chat));
             },
         });
     }, state.user?.uid);
@@ -41,7 +41,7 @@ function Chats() {
     return (
         <div className="w-full overflow-y-auto h-full">
             {loading && [...new Array(3)].map((_, i) => <Skeleton active round avatar className="transform scale-90" key={i} />)}
-            {data && data?.map((chat) => <ChatItem onClick={onChatClickHandler} data={chat} key={chat.last_message + chat.type} />)}
+            {data && data?.map((chat) => <ChatItem onClick={onChatClickHandler} data={chat} key={chat.last_message + (chat?.type || "")} />)}
             {data?.length === 0 && !loading && (
                 <div className="w-full h-full flex justify-center items-center flex-col">
                     <Lottie isClickToPauseDisabled options={defaultOptions} height={150} width={150} />

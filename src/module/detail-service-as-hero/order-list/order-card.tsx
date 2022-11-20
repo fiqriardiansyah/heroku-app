@@ -2,10 +2,10 @@
 /* eslint-disable no-nested-ternary */
 import { Alert, Image, Skeleton, Space, Button, Modal, message, Steps } from "antd";
 import State from "components/common/state";
-import { IDs, ServiceOrder, ServiceRequest } from "models";
+import { ChatInfo, IDs, ServiceDetail, ServiceOrder, ServiceRequest } from "models";
 import moment from "moment";
 import React, { useMemo, useState } from "react";
-import { FaTelegramPlane } from "react-icons/fa";
+import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
 import { AiFillFile } from "react-icons/ai";
 import { IoMdWarning } from "react-icons/io";
 import { useMutation, useQuery } from "react-query";
@@ -17,9 +17,12 @@ import InputFile from "components/form/inputs/input-file";
 import EllipsisMiddle from "components/ellipsis-text/ellipsis-middle";
 import fileService from "services/file";
 import ButtonFileDownload from "components/button/file-download";
+import ButtonChat from "components/button/chat";
+import Utils from "utils";
 
 type Props = Pick<IDs, "sid"> & {
     data: ServiceOrder;
+    service: ServiceDetail | undefined;
     refetchService: () => void;
 };
 
@@ -46,7 +49,7 @@ const steps = [
     },
 ];
 
-function OrderCard({ data, sid, refetchService }: Props) {
+function OrderCard({ data, sid, refetchService, service }: Props) {
     const user = authService.CurrentUser();
 
     const [file, setFile] = useState<File | null>(null);
@@ -161,6 +164,16 @@ function OrderCard({ data, sid, refetchService }: Props) {
         });
     }, [data]);
 
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: service?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: service?.id as any,
+        anytitle: service?.title as any,
+        type_work: "service",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
+    };
+
     return (
         <div className="w-full flex flex-col p-4" style={{ borderBottom: "1px solid #c1c0c0" }}>
             {setJourneyMutation.isError && <Alert message={(setJourneyMutation.error as any)?.message} type="error" />}
@@ -176,6 +189,11 @@ function OrderCard({ data, sid, refetchService }: Props) {
                                     src={userQuery.data?.profile}
                                     width={40}
                                     height={40}
+                                    placeholder={
+                                        <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                                            <FaUserAlt className="text-2xl text-gray-400" />
+                                        </div>
+                                    }
                                     className="flex-1 bg-gray-300 rounded-full object-cover"
                                 />
                                 <div className="flex flex-col ml-3">
@@ -208,13 +226,7 @@ function OrderCard({ data, sid, refetchService }: Props) {
                     <p className="text-gray-300 capitalize m-0 text-xs">If you have multiple file, you can archive those file first</p>
                     <Space>
                         {actions?.find((act) => act.status === data.status)?.button}
-                        <button
-                            disabled={userQuery.isLoading}
-                            className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                            type="button"
-                        >
-                            <FaTelegramPlane className="text-primary text-2xl" />
-                        </button>
+                        <ButtonChat chatInfo={chatInfo} disabled={!service || userQuery.isLoading} />
                     </Space>
                 </div>
                 <div className="w-full flex flex-col">

@@ -84,8 +84,8 @@ function App() {
                             <Route path={MY_ASSIGNMENT_PATH} element={<MyAssignment />} />
                             <Route path={CREATE_POST_PATH} element={<CreatePost />} />
                             <Route path={`${DETAIL_POST_PATH}/:id`} element={<DetailPost />} />
+                            <Route path={`${SERVICE_OWNER_PATH}/:id`} element={<DetailServiceOwner />} />
                             <Route path={`${DETAIL_POST_PATH}/:id/progress`} element={<PostProgress />} />
-                            <Route path={`${SERVICE_OWNER_PATH}/:uid/:id`} element={<DetailServiceOwner />} />
                         </>
                     )}
                     <Route path="*" element={<Navigate to="/" replace />} />

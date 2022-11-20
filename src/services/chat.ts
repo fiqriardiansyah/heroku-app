@@ -2,7 +2,7 @@ import configFirebase from "config/firebase";
 import { v4 as uuid } from 'uuid';
 import { FirebaseApp } from "firebase/app";
 import { collection, Firestore, getDocs, getFirestore, query, where, serverTimestamp } from "firebase/firestore";
-import { IDs } from "models";
+import { ChatInfo, IDs } from "models";
 import { DataMessage } from "module/chat/models";
 import Utils from "utils";
 import { getDownloadURL, UploadTask } from "firebase/storage";
@@ -23,9 +23,11 @@ class ChatService extends CloudFirestore {
         uid2,
         anyid,
         anytitle,
+        typework,
     }: Pick<IDs, 'uid' | 'uid2' | 'anyid'> & {
         data: DataMessage,
         anytitle: string,
+        typework: ChatInfo['type_work'];
     }) {
         const uids = [uid, uid2];
         const chatId = Utils.createChatId({ uids, postfix: anyid })
@@ -44,7 +46,8 @@ class ChatService extends CloudFirestore {
                         last_chat: time,
                         last_message: data.message,
                         uid: i === 0 ? uids[1] : uids[0],
-                        type: data.typeFile || 'text'
+                        type: data.typeFile || 'text',
+                        type_work: typework,
                     }
                 })
             });
