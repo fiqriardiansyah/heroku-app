@@ -52,7 +52,7 @@ function MyService() {
     );
 
     const myServicesOnClick = () => {
-        Swal.fire("Apa itu My Services?", "That thing is still around?", "question");
+        Swal.fire("What is My Services?", "My Services is page of your service that you provide for people who needs");
     };
 
     const onDraftBtnClick = () => {

@@ -16,7 +16,6 @@ import userService from "services/user";
 import { DETAIL_JOB_PATH } from "utils/routes";
 import parser from "html-react-parser";
 import { FINISH_WORK } from "utils/constant";
-import { MyJobData } from "./Models";
 
 interface Props {
     bid: Bid;
@@ -54,8 +53,8 @@ function MyJobHeader({ owner, created, company }: MyJobHeaderData) {
     return (
         <div>
             {company && <p className="mb-0 font-medium">{company}</p>}
-            <p className="mb-0">{`Owner: ${owner}`}</p>
-            <p className="text-12 text-gray-400">{`Post: ${created}`}</p>
+            <p className="mb-0 text-12 sm:text-sm">{`Owner: ${owner}`}</p>
+            <p className="text-10 sm:text-12 text-gray-400">{`Post: ${created}`}</p>
         </div>
     );
 }
@@ -105,7 +104,7 @@ function MyJobCard({ bid }: Props) {
                 {(state) => (
                     <>
                         <State.Data state={state}>
-                            <div className="flex justify-between text-16 font-medium">
+                            <div className="flex justify-between sm:text-16 font-medium">
                                 <Link className="text-black hover:text-blue-900" to={`${DETAIL_JOB_PATH}/${posterQuery.data?.id}`}>
                                     <div className="m-0">
                                         {posterQuery.data?.title} <BiLink />

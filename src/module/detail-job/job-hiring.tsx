@@ -89,92 +89,105 @@ function JobHiring<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
     };
 
     return (
-        <div className="">
-            {myApplication?.accept && (
-                <Card className="!mb-4">
-                    <div className="w-full flex items-center justify-between">
-                        <p className="capitalize font-semibold">Offering letter</p>
-                        <p>{moment(myApplication?.offering_date).format("DD MMM yyyy, LT")}</p>
+        <div className="flex flex-wrap-reverse md:flex-nowrap">
+            <div className="flex-1 w-full md:w-2/3">
+                <Card>
+                    <p className="m-0 capitalize font-semibold text-lg">
+                        {fetcher.data?.title}{" "}
+                        {myApplication?.accept && <span className="m-0 text-green-300 capitalize font-normal text-sm ml-5">You got this job ✅</span>}
+                    </p>
+                    <p className="capitalize text-sm font-medium m-0">{fetcher.data?.company}</p>
+                    <p className="font-medium m-0 mt-4 capitalize">Owner: {userQuery.data?.name || ""}</p>
+                    <span className="text-gray-400 text-xs">Post {moment(fetcher.data?.date).format("DD MMM yyyy")}</span>
+                    <div className="my-4">{parser(fetcher.data?.description || "")}</div>
+                    <div className="mb-4">
+                        <p className="capitalize font-medium m-0">type of job</p>
+                        <p className="capitalize text-gray-400 text-sm m-0">{fetcher.data?.type_of_job}</p>
                     </div>
-                    <div className="mt-5 text-gray-600 text-sm mb-3">{parser(myApplication?.offering_letter || "")}</div>
-                    <Space direction="vertical">
-                        {myApplication.files?.map((fl, i) => (
-                            <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
-                        ))}
-                    </Space>
-                </Card>
-            )}
-            <Card>
-                <p className="m-0 capitalize font-semibold text-lg">
-                    {fetcher.data?.title}{" "}
-                    {myApplication?.accept && <span className="m-0 text-green-300 capitalize font-normal text-sm ml-5">You got this job ✅</span>}
-                </p>
-                <p className="capitalize text-sm font-medium m-0">{fetcher.data?.company}</p>
-                <p className="font-medium m-0 mt-4 capitalize">Owner: {userQuery.data?.name || ""}</p>
-                <span className="text-gray-400 text-xs">Post {moment(fetcher.data?.date).format("DD MMM yyyy")}</span>
-                <div className="my-4">{parser(fetcher.data?.description || "")}</div>
-                <div className="mb-4">
-                    <p className="capitalize font-medium m-0">type of job</p>
-                    <p className="capitalize text-gray-400 text-sm m-0">{fetcher.data?.type_of_job}</p>
-                </div>
-                <div className="w-full flex">
-                    <div className="flex-1">
-                        <p className="capitalize font-medium">category</p>
-                        <Chip text={fetcher.data?.category} />
-                    </div>
-                    <div className="flex-1">
-                        <p className="capitalize font-medium">skills</p>
-                        <div className="flex flex-wrap gap-2">
-                            {fetcher.data?.skills?.map((skill) => (
-                                <Chip text={skill} key={skill} />
-                            ))}
+                    <div className="w-full flex">
+                        <div className="flex-1">
+                            <p className="capitalize font-medium">category</p>
+                            <Chip text={fetcher.data?.category} />
+                        </div>
+                        <div className="flex-1">
+                            <p className="capitalize font-medium">skills</p>
+                            <div className="flex flex-wrap gap-2">
+                                {fetcher.data?.skills?.map((skill) => (
+                                    <Chip text={skill} key={skill} />
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
-                {fetcher.data?.uid === user?.uid && (
-                    <div className="w-full flex items-center justify-between mt-5">
-                        <p className="m-0 capitalize text-gray-400">{posterAppQuery.data?.length} People bid this post</p>
-                        <Button onClick={onClickDetailHandler} type="link">
-                            To Detail
-                        </Button>
-                    </div>
-                )}
-            </Card>
-            {fetcher.data?.uid !== user?.uid && (
-                <>
-                    <div className="w-full flex items-center justify-between my-5">
-                        <p className="m-0 capitalize text-gray-400">{posterAppQuery.data?.length} People apply this post</p>
-                        <Space>
-                            {!myApplication && !posterAppQuery.isLoading && (
-                                <ModalApplication refetchQuery={refetch} idPoster={id as any}>
-                                    {(param) => (
-                                        <Button type="primary" onClick={param.showModal}>
-                                            Apply
-                                        </Button>
-                                    )}
-                                </ModalApplication>
-                            )}
-                            <button
-                                disabled={userQuery.isLoading}
-                                className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                type="button"
-                            >
-                                <FaTelegramPlane className="text-primary text-2xl" />
-                            </button>
-                        </Space>
-                    </div>
-                    <br />
-                    {myApplication && (
-                        <Card>
-                            <div className="w-full flex items-center justify-between">
-                                <p className="capitalize font-semibold">Application letter</p>
-                                <p>{moment(myApplication?.date).format("DD MMM yyyy, LT")}</p>
-                            </div>
-                            <div className="mt-5 text-gray-400 text-sm mb-3">{parser(myApplication?.description || "")}</div>
-                            {myApplication.cv && <ButtonFileDownload url={myApplication.cv} name={`${user?.displayName}-CV`} />}
-                        </Card>
+                    {fetcher.data?.uid === user?.uid && (
+                        <div className="w-full flex items-center justify-between mt-5">
+                            <p className="m-0 capitalize text-gray-400">{posterAppQuery.data?.length} People bid this post</p>
+                            <Button onClick={onClickDetailHandler} type="link">
+                                To Detail
+                            </Button>
+                        </div>
                     )}
-                </>
+                </Card>
+                {fetcher.data?.uid !== user?.uid && (
+                    <>
+                        <div className="w-full flex items-center justify-between my-5">
+                            <p className="m-0 capitalize text-gray-400">{posterAppQuery.data?.length} People apply this post</p>
+                            <Space>
+                                {!myApplication && !posterAppQuery.isLoading && (
+                                    <ModalApplication refetchQuery={refetch} idPoster={id as any}>
+                                        {(param) => (
+                                            <Button type="primary" onClick={param.showModal}>
+                                                Apply
+                                            </Button>
+                                        )}
+                                    </ModalApplication>
+                                )}
+                                <button
+                                    disabled={userQuery.isLoading}
+                                    className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
+                                    type="button"
+                                >
+                                    <FaTelegramPlane className="text-primary text-2xl" />
+                                </button>
+                            </Space>
+                        </div>
+                        <br />
+                        {myApplication && (
+                            <Card>
+                                <div className="w-full flex items-center justify-between">
+                                    <p className="capitalize font-semibold">Application letter</p>
+                                    <p>{moment(myApplication?.date).format("DD MMM yyyy, LT")}</p>
+                                </div>
+                                <div className="mt-5 text-gray-400 text-sm mb-3">{parser(myApplication?.description || "")}</div>
+                                {myApplication.cv && <ButtonFileDownload url={myApplication.cv} name={`${user?.displayName}-CV`} />}
+                            </Card>
+                        )}
+                        <br />
+                        {myApplication?.accept && (
+                            <Card className="!mb-4">
+                                <div className="w-full flex items-center justify-between">
+                                    <p className="capitalize font-semibold">Offering letter</p>
+                                    <p>{moment(myApplication?.offering_date).format("DD MMM yyyy, LT")}</p>
+                                </div>
+                                <div className="mt-5 text-gray-600 text-sm mb-3">{parser(myApplication?.offering_letter || "")}</div>
+                                <Space direction="vertical">
+                                    {myApplication.files?.map((fl, i) => (
+                                        <ButtonFileDownload url={fl} name={`document-${i + 1}`} />
+                                    ))}
+                                </Space>
+                            </Card>
+                        )}
+                    </>
+                )}
+            </div>
+            {myApplication?.accept && (
+                <div className="w-full mb-3 md:ml-4 md:mb-0 md:w-1/3">
+                    <Card>
+                        <div className="flex flex-col items-center">
+                            <h1 className="capitalize font-semibold text-2xl">congratulations!</h1>
+                            <p className="capitalize ">you got this job</p>
+                        </div>
+                    </Card>
+                </div>
             )}
         </div>
     );
