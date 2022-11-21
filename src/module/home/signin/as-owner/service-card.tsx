@@ -1,6 +1,7 @@
 import { Image, Skeleton } from "antd";
 import { ServiceData } from "models";
 import React from "react";
+import { FaUserAlt } from "react-icons/fa";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import userService from "services/user";
@@ -33,7 +34,7 @@ function ServiceCard({ data }: Props) {
     );
 
     return (
-        <Link to={`${SERVICE_OWNER_PATH}/${data.uid}/${data.id}`}>
+        <Link to={`${SERVICE_OWNER_PATH}/${data.id}`}>
             <div className="flex flex-col justify-center bg-gray-50 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
                 {userQuery.isLoading && <Skeleton avatar paragraph={{ rows: 2 }} />}
                 {userQuery.data && (
@@ -47,6 +48,11 @@ function ServiceCard({ data }: Props) {
                             src={userQuery.data?.profile || undefined}
                             height={40}
                             width={40}
+                            placeholder={
+                                <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                                    <FaUserAlt className="text-2xl text-gray-400" />
+                                </div>
+                            }
                         />
                         <div className="ml-3">
                             <p style={{ lineHeight: "100%" }} className="capitalize text-lg font-medium m-0 text-gray-900 dark:text-white">

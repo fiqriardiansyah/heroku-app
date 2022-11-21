@@ -43,6 +43,7 @@ function Chat() {
             anyid: state?.chatActive?.anyid as any,
             uid2: state?.chatActive?.uid as any,
             uid: user?.uid as any,
+            typework: state?.chatActive?.type_work as any,
             data,
         });
         if (!data.file) return;

@@ -1,6 +1,6 @@
 import { Alert, Button, Card, Image, message, Modal, Skeleton, Space, Steps } from "antd";
 import State from "components/common/state";
-import { ServiceOwnerOrder } from "models";
+import { ChatInfo, ServiceOwnerOrder } from "models";
 import { BiLink } from "react-icons/bi";
 import moment from "moment";
 import { AiFillFile } from "react-icons/ai";
@@ -11,10 +11,12 @@ import ownerService from "services/owner";
 import userService from "services/user";
 import { IMAGE_FALLBACK, LIMIT_REVISION } from "utils/constant";
 import { SERVICE_OWNER_PATH } from "utils/routes";
-import { FaTelegramPlane } from "react-icons/fa";
+import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
 import ButtonFileDownload from "components/button/file-download";
 import { IoMdWarning } from "react-icons/io";
 import authService from "services/auth";
+import ButtonChat from "components/button/chat";
+import Utils from "utils";
 
 type Props = {
     data: ServiceOwnerOrder;
@@ -116,6 +118,16 @@ function OrderCard({ data, refetchFetcher }: Props) {
         });
     }, [data]);
 
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: serviceQuery.data?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: serviceQuery.data?.id as any,
+        anytitle: serviceQuery.data?.title as any,
+        type_work: "service",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
+    };
+
     return (
         <Card className="flex flex-col !mb-4">
             <State data={userQuery.data} isLoading={userQuery.isLoading} isError={userQuery.isError}>
@@ -130,6 +142,11 @@ function OrderCard({ data, refetchFetcher }: Props) {
                                     src={userQuery.data?.profile}
                                     width={40}
                                     height={40}
+                                    placeholder={
+                                        <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                                            <FaUserAlt className="text-2xl text-gray-400" />
+                                        </div>
+                                    }
                                     className="flex-1 bg-gray-300 rounded-full object-cover"
                                 />
                                 <div className="flex flex-col ml-3">
@@ -174,13 +191,7 @@ function OrderCard({ data, refetchFetcher }: Props) {
                 </Space>
                 <Space>
                     {actions?.find((act) => act.status === data.status)?.button}
-                    <button
-                        disabled={userQuery.isLoading}
-                        className="cursor-pointer justify-self-end rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                        type="button"
-                    >
-                        <FaTelegramPlane className="text-primary text-2xl" />
-                    </button>
+                    <ButtonChat chatInfo={chatInfo} disabled={serviceQuery.isLoading || userQuery.isLoading} />
                 </Space>
             </div>
         </Card>

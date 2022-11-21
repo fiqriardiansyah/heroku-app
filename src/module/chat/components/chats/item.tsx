@@ -11,6 +11,7 @@ import { BsCardImage } from "react-icons/bs";
 import { AiFillFile } from "react-icons/ai";
 import SkeletonInput from "antd/lib/skeleton/Input";
 import { StateContext } from "context/state";
+import { FaUserAlt } from "react-icons/fa";
 
 type Props = {
     data: ChatInfo;
@@ -34,9 +35,9 @@ function ChatItem({ data, onClick }: Props) {
 
     const lastMessage = useMemo(() => {
         if (data.type === "text") {
-            return <p className="m-0 text-xs text-left break-all">{Utils.stripHtml(data.last_message).CutText(40)}</p>;
+            return <p className="m-0 text-xs text-left break-all">{Utils.stripHtml(data?.last_message || "").CutText(40)}</p>;
         }
-        if (IMAGES_TYPE.includes(data.type)) {
+        if (IMAGES_TYPE.includes(data?.type || "")) {
             return <BsCardImage className="text-gray-400" />;
         }
         return <AiFillFile className="text-gray-400" />;
@@ -52,11 +53,11 @@ function ChatItem({ data, onClick }: Props) {
                 width={40}
                 height={40}
                 placeholder={
-                    <div className="w-full h-full flex items-center justify-center">
-                        <Spin />
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                        <FaUserAlt className="text-2xl text-gray-400" />
                     </div>
                 }
-                className="flex-1 bg-gray-300 rounded-full object-cover"
+                className="flex-1 bg-gray-200 rounded-full object-cover overflow-hidden"
             />
             <div className="flex flex-col flex-1 ml-2">
                 <div className="flex items-start justify-between">

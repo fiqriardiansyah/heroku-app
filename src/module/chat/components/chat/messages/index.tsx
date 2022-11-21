@@ -7,6 +7,7 @@ import { MessageBuble } from "models";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Lottie from "react-lottie";
 import JsonEmptyAnim from "assets/animation/empty.json";
+import JsonChatAnim from "assets/animation/chat.json";
 import chatService from "services/chat";
 import Utils from "utils";
 import moment from "moment";
@@ -15,7 +16,7 @@ import MessageItem from "./item";
 const defaultOptions = {
     loop: true,
     autoplay: true,
-    animationData: JsonEmptyAnim,
+    animationData: JsonChatAnim,
     rendererSettings: {
         preserveAspectRatio: "xMidYMid slice",
     },
@@ -37,6 +38,8 @@ function Messages() {
             },
         });
     }, state?.chatActive);
+
+    console.log(data, state?.chatActive);
 
     const scrollToBottomHandler = (isSmooth: any) => {
         if (scrollToBottom.current) scrollToBottom.current.scrollIntoView(isSmooth ? { behavior: "smooth" } : {});

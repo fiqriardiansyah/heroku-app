@@ -1,22 +1,25 @@
 import { Alert, Image, Skeleton, Space, Button, Modal, message } from "antd";
+import ButtonChat from "components/button/chat";
 import State from "components/common/state";
-import { IDs, ServiceRequest } from "models";
+import { ChatInfo, IDs, ServiceDetail, ServiceRequest } from "models";
 import moment from "moment";
 import React from "react";
-import { FaTelegramPlane } from "react-icons/fa";
+import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
 import { IoMdWarning } from "react-icons/io";
 import { useMutation, useQuery } from "react-query";
 import authService from "services/auth";
 import heroService from "services/hero";
 import userService from "services/user";
+import Utils from "utils";
 import { IMAGE_FALLBACK } from "utils/constant";
 
 type Props = Pick<IDs, "sid"> & {
     data: ServiceRequest;
+    service: ServiceDetail | undefined;
     refetchService: () => void;
 };
 
-function RequestCard({ data, sid, refetchService }: Props) {
+function RequestCard({ data, sid, refetchService, service }: Props) {
     const user = authService.CurrentUser();
 
     const userQuery = useQuery(
@@ -103,6 +106,16 @@ function RequestCard({ data, sid, refetchService }: Props) {
         });
     };
 
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: service?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: service?.id as any,
+        anytitle: service?.title as any,
+        type_work: "service",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
+    };
+
     return (
         <div className="w-full flex flex-col p-4" style={{ borderBottom: "1px solid #c1c0c0" }}>
             <State data={userQuery.data} isLoading={userQuery.isLoading} isError={userQuery.isError}>
@@ -117,6 +130,11 @@ function RequestCard({ data, sid, refetchService }: Props) {
                                     src={userQuery.data?.profile}
                                     width={40}
                                     height={40}
+                                    placeholder={
+                                        <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+                                            <FaUserAlt className="text-2xl text-gray-400" />
+                                        </div>
+                                    }
                                     className="flex-1 bg-gray-300 rounded-full object-cover"
                                 />
                                 <div className="flex flex-col ml-3">
@@ -143,13 +161,7 @@ function RequestCard({ data, sid, refetchService }: Props) {
                         Decline
                     </Button>
                 </Space>
-                <button
-                    disabled={userQuery.isLoading}
-                    className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                    type="button"
-                >
-                    <FaTelegramPlane className="text-primary text-2xl" />
-                </button>
+                <ButtonChat chatInfo={chatInfo} disabled={!service || userQuery.isLoading} />
             </div>
         </div>
     );

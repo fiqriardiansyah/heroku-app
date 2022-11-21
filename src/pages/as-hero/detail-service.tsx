@@ -133,9 +133,13 @@ function DetailServiceHero() {
                                 <Card className="flex-2 h-fit">
                                     <p className="capitalize text-gray-400 font-semibold">all your work for this service is here</p>
                                     <Tabs activeKey={activeTab} items={tabs} onChange={onChangeTab} />
-                                    {activeTab === "1" && <OrderList refetchService={refetchService} sid={sid as any} data={orders} />}
-                                    {activeTab === "2" && <FinishList sid={sid as any} data={finish} />}
-                                    {activeTab === "3" && <RequestList refetchService={refetchService} sid={sid as any} data={request} />}
+                                    {activeTab === "1" && (
+                                        <OrderList service={serviceQuery.data} refetchService={refetchService} sid={sid as any} data={orders} />
+                                    )}
+                                    {activeTab === "2" && <FinishList service={serviceQuery.data} sid={sid as any} data={finish} />}
+                                    {activeTab === "3" && (
+                                        <RequestList service={serviceQuery.data} refetchService={refetchService} sid={sid as any} data={request} />
+                                    )}
                                 </Card>
                                 <Card className="flex-1 h-fit !w-[300px]">
                                     <Image

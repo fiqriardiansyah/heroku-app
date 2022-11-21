@@ -11,7 +11,7 @@ import { FINISH_WORK, IMAGE_FALLBACK } from "utils/constant";
 import parser from "html-react-parser";
 import Chip from "components/common/chip";
 import moment from "moment";
-import { Poster } from "models";
+import { ChatInfo, Poster } from "models";
 import heroService from "services/hero";
 import authService from "services/auth";
 import { IoMdWarning } from "react-icons/io";
@@ -23,6 +23,8 @@ import { AiFillFile } from "react-icons/ai";
 import fileService from "services/file";
 import { FaTelegramPlane } from "react-icons/fa";
 import ButtonFileDownload from "components/button/file-download";
+import ButtonChat from "components/button/chat";
+import Utils from "utils";
 import ModalBid from "./modal-bid";
 
 type Props<T> = {
@@ -209,6 +211,16 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
         });
     }, [myBid]);
 
+    const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: fetcher.data?.id as any });
+    const chatInfo: ChatInfo = {
+        anyid: fetcher.data?.id as any,
+        anytitle: fetcher.data?.title as any,
+        type_work: "poster",
+        uid: userQuery.data?.uid as any,
+        cid: chatId,
+        id: chatId,
+    };
+
     return (
         <div className="flex flex-wrap-reverse md:flex-nowrap">
             <div className="flex-1 md:w-2/3 md:mt-0 mt-3">
@@ -256,15 +268,18 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                     <>
                         <div className="w-full flex items-center justify-between my-5">
                             <p className="m-0 capitalize text-gray-400">{posterBidsQuery.data?.length} People bid this post</p>
-                            {!myBid && !posterBidsQuery.isLoading && (
-                                <ModalBid refetchQuery={refetchQuery} idPoster={id as any} isFixedPrice={!!fetcher.data?.is_fixed_price}>
-                                    {(param) => (
-                                        <Button type="primary" onClick={param.showModal}>
-                                            Bid
-                                        </Button>
-                                    )}
-                                </ModalBid>
-                            )}
+                            <Space>
+                                {!myBid && !posterBidsQuery.isLoading && (
+                                    <ModalBid refetchQuery={refetchQuery} idPoster={id as any} isFixedPrice={!!fetcher.data?.is_fixed_price}>
+                                        {(param) => (
+                                            <Button type="primary" onClick={param.showModal}>
+                                                Bid
+                                            </Button>
+                                        )}
+                                    </ModalBid>
+                                )}
+                                <ButtonChat chatInfo={chatInfo} disabled={userQuery.isLoading} />
+                            </Space>
                         </div>
                         <br />
                         {myBid && (
@@ -303,13 +318,7 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                             <div className="w-full flex justify-end items-center mt-2">
                                 <Space>
                                     {actions?.find((act) => act.status === myBid?.status)?.button}
-                                    <button
-                                        disabled={userQuery.isLoading}
-                                        className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                        type="button"
-                                    >
-                                        <FaTelegramPlane className="text-primary text-2xl" />
-                                    </button>
+                                    <ButtonChat chatInfo={chatInfo} disabled={userQuery.isLoading} />
                                 </Space>
                             </div>
                         </Card>

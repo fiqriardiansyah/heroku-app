@@ -181,9 +181,10 @@ export interface ChatDoc extends Pick<IDs, 'anyid'> {
 export interface ChatInfo extends Pick<IDs, 'uid' | 'cid' | 'anyid'> {
     id?: string;
     anytitle: string;
-    last_chat: any;
-    last_message: string;
-    type: string;
+    type_work?: "service" | "poster";
+    last_chat?: any;
+    last_message?: string;
+    type?: string;
 };
 
 export interface TaskProgress extends Pick<IDs, 'mid'> {
