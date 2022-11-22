@@ -222,8 +222,8 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
     };
 
     return (
-        <div className="flex">
-            <div className="flex-2">
+        <div className="flex flex-wrap-reverse md:flex-nowrap">
+            <div className="flex-1 md:w-2/3 md:mt-0 mt-3">
                 <Card className="">
                     <p className="m-0 capitalize font-semibold text-lg">
                         {fetcher.data?.title}{" "}
@@ -300,8 +300,8 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                 )}
             </div>
             {!posterBidsQuery.isLoading && myBid?.accept && (
-                <div className="flex-1 ml-4">
-                    <div className="sticky top-20">
+                <div className="w-full md:w-1/3 md:ml-4">
+                    <div className="md:sticky md:top-20">
                         <Card>
                             <p className="capitalize font-semibold">status</p>
                             <Steps current={myBid?.status} direction="vertical">
