@@ -34,7 +34,6 @@ const tabs = [
 function DetailServiceHero() {
     const { id: sid } = useParams();
     const navigate = useNavigate();
-    const user = authService.CurrentUser();
 
     const [activeTab, setActiveTab] = useState("1");
 
@@ -125,7 +124,7 @@ function DetailServiceHero() {
 
     return (
         <Layout>
-            <div className="flex w-full mt-5 gap-4">
+            <div className="flex w-full mt-5 gap-4 flex-wrap items-center">
                 <State data={serviceQuery.data} isLoading={serviceQuery.isLoading} isError={serviceQuery.isError}>
                     {(state) => (
                         <>

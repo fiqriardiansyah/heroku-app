@@ -61,7 +61,7 @@ function HomeAsHero() {
                 </div>
                 {(!data || data.length === 0 || searchMutation.data?.length === 0) && (
                     <div className="w-full flex items-center justify-center flex-col">
-                        <img src={EmptyImage} alt="" />
+                        <img src={EmptyImage} alt="no job" className="w-11/12 h-full sm:w-96" />
                     </div>
                 )}
             </Card>

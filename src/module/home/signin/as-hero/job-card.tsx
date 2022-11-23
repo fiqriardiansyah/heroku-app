@@ -46,7 +46,7 @@ function JobCard({ poster }: Prop) {
                     </p>
                 )}
                 <div className="my-3">{Utils.stripHtml(poster.description).CutText(200)}</div>
-                <Space>
+                <Space className="flex flex-wrap">
                     {poster.skills?.map((skill) => (
                         <Chip text={skill} key={skill} />
                     ))}
