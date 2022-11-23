@@ -9,7 +9,6 @@ import userService from "services/user";
 import { FINISH_WORK, IMAGE_FALLBACK } from "utils/constant";
 import parser from "html-react-parser";
 import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
-import CutTokenModal from "components/modal/cut-token-modal";
 import { ChatInfo, Poster } from "models";
 import { useLocation, useNavigate } from "react-router-dom";
 import ButtonFileDownload from "components/button/file-download";
@@ -163,8 +162,9 @@ function ProgressCard({ biid }: Props) {
                                                         />
                                                         <div className="flex flex-col ml-3">
                                                             <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
-                                                            <p className="m-0 text-gray-400 text-xs capitalize">programmer</p>
-                                                            {/* [IMPORTANT] ubah pekerjaan user nanti */}
+                                                            {userQuery.data?.profession && (
+                                                                <p className="m-0 text-gray-400 text-xs capitalize">{userQuery.data?.profession}</p>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </State.Data>

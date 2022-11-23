@@ -44,8 +44,7 @@ function UserHeader({ uid }: Props) {
                             />
                             <div className="flex flex-col ml-3">
                                 <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
-                                <p className="m-0 text-gray-400 text-xs capitalize">programmer</p>
-                                {/* [IMPORTANT] ubah pekerjaan user nanti */}
+                                {userQuery.data?.profession && <p className="m-0 text-gray-400 text-xs capitalize">{userQuery.data?.profession}</p>}
                             </div>
                         </div>
                     </State.Data>

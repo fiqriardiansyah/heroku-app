@@ -1,9 +1,11 @@
 import { Button, Input } from "antd";
 import Layout from "components/common/layout";
+import WarningModal from "components/modal/warning-modal";
 import MyContractList from "module/my-job/ContractList";
 import MyJobList from "module/my-job/MyJobList";
 import React, { useState } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
+import { RiErrorWarningFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -24,6 +26,8 @@ function MyJob() {
 
     const inactiveButtonStyle = { border: "none", backgroundColor: "inherit" };
 
+    const clickWarningHandler = () => {};
+
     return (
         <Layout>
             <br />
@@ -32,6 +36,9 @@ function MyJob() {
                     <p className="m-0 mr-2 font-semibold text-xl capitalize">My Job</p>
                     <AiFillQuestionCircle className="text-gray-400 text-xl cursor-pointer" onClick={myJobsQuestionOnClick} />
                 </div>
+                <WarningModal onOk={clickWarningHandler}>
+                    {(dt) => <RiErrorWarningFill className="text-gray-400 text-xl cursor-pointer" onClick={dt.showModal} />}
+                </WarningModal>
             </div>
             <br />
             <div className="flex gap-2 mb-3">

@@ -1,4 +1,4 @@
-import { Spin } from "antd";
+import { Alert, Spin } from "antd";
 import InputFile from "components/form/inputs/input-file";
 import { StateContext } from "context/state";
 import useRealtimeValue from "hooks/useRealtimeValue";
@@ -39,8 +39,6 @@ function Messages() {
         });
     }, state?.chatActive);
 
-    console.log(data, state?.chatActive);
-
     const scrollToBottomHandler = (isSmooth: any) => {
         if (scrollToBottom.current) scrollToBottom.current.scrollIntoView(isSmooth ? { behavior: "smooth" } : {});
     };
@@ -56,6 +54,10 @@ function Messages() {
 
     return (
         <div className="h-full w-full overflow-y-auto flex-1 bg-gray-100 flex flex-col px-24">
+            <Alert
+                type="warning"
+                description="Be careful of fraud, do not provide personal information such as telephone numbers, id cards and others"
+            />
             {data?.length === 0 && !loading && (
                 <div className="w-full h-full flex justify-center items-center flex-col">
                     <Lottie isClickToPauseDisabled options={defaultOptions} height={150} width={150} />
@@ -72,7 +74,7 @@ function Messages() {
                     if (!Utils.isDifferentDate({ time: el.date, prevTime: data[i - 1]?.date })) {
                         return (
                             <>
-                                <p key={`date-${el.id}`} className="self-center bg-gray-300 px-4 py-1 rounded-md text-xs m-0">
+                                <p key={`date-${el.id}`} className="self-center bg-gray-300 px-4 py-1 rounded-md text-xs m-0 mt-2">
                                     {moment(el.date).format("DD MMM yyyy")}
                                 </p>
                                 <MessageItem data={el} key={el.id} />

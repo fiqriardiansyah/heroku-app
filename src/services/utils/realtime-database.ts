@@ -376,6 +376,10 @@ class RealtimeDatabase extends BaseService {
     }) {
         return update(ref(this.db, `${this.users}/${uid}/chats/${cid}`), data);
     }
+
+    udpateUser(user: User) {
+        return update(ref(this.db, `${this.users}/${user.uid}`), user);
+    }
 }
 
 export default RealtimeDatabase;

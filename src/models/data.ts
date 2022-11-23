@@ -102,6 +102,7 @@ export interface User {
     uid: string;
     name: string;
     profile: string;
+    profession?: string;
     services?: string[];
     chats?: string[];
 }

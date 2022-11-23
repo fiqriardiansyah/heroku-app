@@ -6,6 +6,7 @@ import { AiOutlineLogout, AiOutlineUserSwitch } from "react-icons/ai";
 import { MY_ASSIGNMENT_PATH, MY_JOB_PATH, MY_POST_PATH, MY_SERVICE_PATH, PROFILE_PATH } from "utils/routes";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import { StateContext } from "context/state";
+import { UserContext } from "context/user";
 
 const keys = [
     {
@@ -61,6 +62,7 @@ function MenuNavigation() {
 
     const user = authService.CurrentUser();
     const { state, changeRole } = useContext(StateContext);
+    const { state: userState } = useContext(UserContext);
 
     const logoutHandler = async () => {
         await authService.Logout();
@@ -77,7 +79,7 @@ function MenuNavigation() {
             label: (
                 <Link to={PROFILE_PATH}>
                     <div className="flex flex-col py-3 w-[220px]">
-                        <p className="capitalize text-gray-800 text-lg m-0">{user?.displayName}</p>
+                        <p className="capitalize text-gray-800 text-lg m-0">{userState.user?.name}</p>
                         <p className="text-gray-400 text-xs m-0">{user?.email}</p>
                     </div>
                 </Link>
