@@ -12,7 +12,7 @@ import State from "components/common/state";
 import { IMAGE_FALLBACK } from "utils/constant";
 import Chip from "components/common/chip";
 import ButtonFileDownload from "components/button/file-download";
-import CutTokenModal from "components/modal/cut-token-modal";
+import WarningModal from "components/modal/warning-modal";
 import { ChatInfo, ServiceDetail } from "models";
 import authService from "services/auth";
 import { IoMdWarning } from "react-icons/io";
@@ -62,8 +62,7 @@ function DetailServiceOwner() {
         }
     );
 
-    const onPayClickHandler = (totalToken: number) => {
-        // [IMPORTANT] potong token owner sebelum order
+    const onAcceptWarningHandler = () => {
         if (!serviceQuery.data) return;
         orderServiceMutation.mutate(serviceQuery.data);
     };
@@ -131,8 +130,11 @@ function DetailServiceOwner() {
                                                             />
                                                             <div className="flex flex-col ml-3">
                                                                 <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
-                                                                <p className="m-0 text-gray-400 text-xs capitalize">programmer</p>
-                                                                {/* [IMPORTANT] ubah pekerjaan user nanti */}
+                                                                {userQuery.data?.profession && (
+                                                                    <p className="m-0 text-gray-400 text-xs capitalize">
+                                                                        {userQuery.data?.profession}
+                                                                    </p>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </State.Data>
@@ -208,11 +210,7 @@ function DetailServiceOwner() {
                                             </Button>
                                         ) : (
                                             <Space size={20}>
-                                                <CutTokenModal
-                                                    onPayClick={onPayClickHandler}
-                                                    leftToken={12}
-                                                    total={parseInt(serviceQuery.data?.price as string, 10)}
-                                                >
+                                                <WarningModal onOk={onAcceptWarningHandler}>
                                                     {(data) => (
                                                         <Button
                                                             loading={orderServiceMutation.isLoading}
@@ -224,7 +222,7 @@ function DetailServiceOwner() {
                                                             Order
                                                         </Button>
                                                     )}
-                                                </CutTokenModal>
+                                                </WarningModal>
                                                 <ButtonChat chatInfo={chatInfo} disabled={serviceQuery.isLoading || userQuery.isLoading} />
                                             </Space>
                                         )}

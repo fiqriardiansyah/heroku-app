@@ -8,11 +8,13 @@ import { Link } from "react-router-dom";
 import ProfileImage from "assets/images/profile.webp";
 import { CHAT_PATH, HOME_PATH, SIGN_IN_PATH, SIGN_UP_PATH } from "utils/routes";
 import { StateContext } from "context/state";
+import { UserContext } from "context/user";
 import MenuNavigation from "./menu-navigation";
 
 function TopNavigation() {
     const { user } = useAuthChange();
     const { state } = useContext(StateContext);
+    const { state: userState } = useContext(UserContext);
 
     return (
         <div className=" bg-white sticky top-0 left-0 z-200">
@@ -51,7 +53,7 @@ function TopNavigation() {
                                 <Button size="large" shape="circle" className="!border-none !p-0 !overflow-hidden">
                                     <img
                                         referrerPolicy="no-referrer"
-                                        src={user?.photoURL || ProfileImage}
+                                        src={userState.user?.profile || user?.photoURL || ProfileImage}
                                         alt=""
                                         className="w-full h-full object-cover rounded-full bg-gray-500"
                                     />

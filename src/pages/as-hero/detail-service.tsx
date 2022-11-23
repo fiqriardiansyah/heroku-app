@@ -15,6 +15,9 @@ import { IMAGE_FALLBACK } from "utils/constant";
 import { CREATE_SERVICE_PATH, MY_SERVICE_PATH } from "utils/routes";
 import OrderList from "module/detail-service-as-hero/order-list";
 import FinishList from "module/detail-service-as-hero/finish-list";
+import { AiFillQuestionCircle } from "react-icons/ai";
+import { RiErrorWarningFill } from "react-icons/ri";
+import WarningModal from "components/modal/warning-modal";
 
 const tabs = [
     {
@@ -34,7 +37,6 @@ const tabs = [
 function DetailServiceHero() {
     const { id: sid } = useParams();
     const navigate = useNavigate();
-    const user = authService.CurrentUser();
 
     const [activeTab, setActiveTab] = useState("1");
 
@@ -123,6 +125,8 @@ function DetailServiceHero() {
         serviceQuery.refetch();
     };
 
+    const clickWarningHandler = () => {};
+
     return (
         <Layout>
             <div className="flex w-full mt-5 gap-4">
@@ -131,7 +135,12 @@ function DetailServiceHero() {
                         <>
                             <State.Data state={state}>
                                 <Card className="flex-2 h-fit">
-                                    <p className="capitalize text-gray-400 font-semibold">all your work for this service is here</p>
+                                    <div className="w-full flex items-center justify-between">
+                                        <p className="capitalize text-gray-400 font-semibold">all your work for this service is here</p>
+                                        <WarningModal onOk={clickWarningHandler}>
+                                            {(dt) => <RiErrorWarningFill className="text-gray-400 text-xl cursor-pointer" onClick={dt.showModal} />}
+                                        </WarningModal>
+                                    </div>
                                     <Tabs activeKey={activeTab} items={tabs} onChange={onChangeTab} />
                                     {activeTab === "1" && (
                                         <OrderList service={serviceQuery.data} refetchService={refetchService} sid={sid as any} data={orders} />

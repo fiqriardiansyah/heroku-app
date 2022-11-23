@@ -9,7 +9,7 @@ import userService from "services/user";
 import { IMAGE_FALLBACK } from "utils/constant";
 import parser from "html-react-parser";
 import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
-import CutTokenModal from "components/modal/cut-token-modal";
+import WarningModal from "components/modal/warning-modal";
 import { ChatInfo, Poster } from "models";
 import ButtonChat from "components/button/chat";
 import Utils from "utils";
@@ -42,12 +42,11 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
     );
 
     const acceptBidMutation = useMutation(
-        async (callback: () => void) => {
+        async () => {
             if (isHeroFull) {
                 throw new Error("Hero acceptance is full");
             }
             await ownerService.AcceptBidHero({ biid, data: fetcher.data as any });
-            callback();
         },
         {
             onSuccess: () => {
@@ -60,13 +59,8 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
         }
     );
 
-    const onPayClickHandler = (totalToken: number, callback?: () => void) => {
-        // [IMPORTANT] potong token owner sebelum order
-        acceptBidMutation.mutate(() => {
-            if (callback) {
-                callback();
-            }
-        });
+    const onAcceptWarningHandler = () => {
+        acceptBidMutation.mutate();
     };
 
     const chatId = Utils.createChatId({ uids: [user?.uid as any, userQuery.data?.uid as any], postfix: fetcher.data?.id as any });
@@ -108,8 +102,9 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
                                                         />
                                                         <div className="flex flex-col ml-3">
                                                             <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
-                                                            <p className="m-0 text-gray-400 text-xs capitalize">programmer</p>
-                                                            {/* [IMPORTANT] ubah pekerjaan user nanti */}
+                                                            {userQuery.data?.profession && (
+                                                                <p className="m-0 text-gray-400 text-xs capitalize">{userQuery.data?.profession}</p>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </State.Data>
@@ -138,11 +133,7 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
                                         {bidQuery.data?.accept ? (
                                             <p className="text-green-400 m-0">You accept this hero</p>
                                         ) : (
-                                            <CutTokenModal
-                                                onPayClick={onPayClickHandler}
-                                                leftToken={12}
-                                                total={parseInt(bidQuery.data?.price || fetcher.data?.price?.toString() || "0", 10)}
-                                            >
+                                            <WarningModal onOk={onAcceptWarningHandler}>
                                                 {(dt) => (
                                                     <Button
                                                         disabled={isHeroFull}
@@ -153,7 +144,7 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
                                                         Accept
                                                     </Button>
                                                 )}
-                                            </CutTokenModal>
+                                            </WarningModal>
                                         )}
                                         <ButtonChat chatInfo={chatInfo} disabled={userQuery.isLoading} />
                                     </Space>
