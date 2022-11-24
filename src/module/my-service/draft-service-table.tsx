@@ -81,7 +81,15 @@ function DraftServiceTable<T extends ServiceData>({ services, fetcher, onClickDe
         },
     ];
 
-    return <Table loading={fetcher.isLoading} columns={columns} dataSource={services as any} className="w-full" pagination={false} />;
+    return (
+        <Table
+            loading={fetcher.isLoading}
+            columns={columns}
+            dataSource={services as any}
+            className="w-full overflow-x-scroll sm:overflow-auto"
+            pagination={false}
+        />
+    );
 }
 
 export default DraftServiceTable;

@@ -74,7 +74,15 @@ function ActiveServiceTable<T extends ServiceData>({ services, fetcher }: Props<
         },
     ];
 
-    return <Table loading={fetcher.isLoading} columns={columns} dataSource={parseServices as any} className="w-full" pagination={false} />;
+    return (
+        <Table
+            loading={fetcher.isLoading}
+            columns={columns}
+            dataSource={parseServices as any}
+            className="w-full overflow-x-scroll sm:overflow-auto"
+            pagination={false}
+        />
+    );
 }
 
 export default ActiveServiceTable;
