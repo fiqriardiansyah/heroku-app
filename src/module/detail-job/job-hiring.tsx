@@ -153,13 +153,7 @@ function JobHiring<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                                         )}
                                     </ModalApplication>
                                 )}
-                                <button
-                                    disabled={userQuery.isLoading}
-                                    className="cursor-pointer rounded-full w-10 h-10 bg-white border-solid border border-primary flex items-center justify-center"
-                                    type="button"
-                                >
-                                    <FaTelegramPlane className="text-primary text-2xl" />
-                                </button>
+                                <ButtonChat chatInfo={chatInfo} disabled={userQuery.isLoading} />
                             </Space>
                         </div>
                         <br />
