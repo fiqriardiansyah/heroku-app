@@ -51,6 +51,7 @@ function BidCard<T extends Poster>({ biid, fetcher }: Props<T>) {
         {
             onSuccess: () => {
                 fetcher.refetch();
+                bidQuery.refetch();
                 message.success("Hero on the way!");
             },
             onError: (error: any) => {

@@ -8,9 +8,10 @@ import State from "./state";
 
 type Props = {
     uid: string;
+    children?: React.ReactNode;
 };
 
-function UserHeader({ uid }: Props) {
+function UserHeader({ uid, children }: Props) {
     const userQuery = useQuery(
         ["user", uid],
         async () => {
@@ -27,7 +28,7 @@ function UserHeader({ uid }: Props) {
             {(state) => (
                 <>
                     <State.Data state={state}>
-                        <div className="flex">
+                        <div className="flex w-fullf">
                             <Image
                                 preview={false}
                                 referrerPolicy="no-referrer"
@@ -42,9 +43,10 @@ function UserHeader({ uid }: Props) {
                                 }
                                 className="flex-1 bg-gray-300 rounded-full object-cover"
                             />
-                            <div className="flex flex-col ml-3">
+                            <div className="flex-1 flex-col ml-3">
                                 <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
                                 {userQuery.data?.profession && <p className="m-0 text-gray-400 text-xs capitalize">{userQuery.data?.profession}</p>}
+                                {children}
                             </div>
                         </div>
                     </State.Data>

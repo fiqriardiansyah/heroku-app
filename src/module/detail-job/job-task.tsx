@@ -221,6 +221,11 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
         id: chatId,
     };
 
+    const refetch = () => {
+        posterBidsQuery.refetch();
+        refetchQuery();
+    };
+
     return (
         <div className="flex flex-wrap-reverse md:flex-nowrap">
             <div className="flex-1 md:w-2/3 md:mt-0 mt-3">
@@ -270,7 +275,7 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                             <p className="m-0 capitalize text-gray-400">{posterBidsQuery.data?.length} People bid this post</p>
                             <Space>
                                 {!myBid && !posterBidsQuery.isLoading && (
-                                    <ModalBid refetchQuery={refetchQuery} idPoster={id as any} isFixedPrice={!!fetcher.data?.is_fixed_price}>
+                                    <ModalBid refetchQuery={refetch} idPoster={id as any} isFixedPrice={!!fetcher.data?.is_fixed_price}>
                                         {(param) => (
                                             <Button type="primary" onClick={param.showModal}>
                                                 Bid

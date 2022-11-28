@@ -14,6 +14,12 @@ type Props<T> = {
     posters: Poster[];
 };
 
+const applicantTotal = (poster: Poster) => {
+    if (!poster) return 0;
+    if (!poster.applications) return 0;
+    return Utils.parseTreeObjectToArray(poster.applications).length;
+};
+
 function HiringPost<T extends Poster>({ posters, fetcher }: Props<T>) {
     const columns: ColumnsType<T> = [
         {
@@ -34,7 +40,12 @@ function HiringPost<T extends Poster>({ posters, fetcher }: Props<T>) {
         {
             title: "Applicant",
             dataIndex: "applications",
-            render: (text, record) => <p className="capitalize m-0">{record?.applications ? record.applications?.length : 0}</p>,
+            render: (text, record) => <p className="capitalize m-0">{applicantTotal(record)}</p>,
+        },
+        {
+            title: "Accept",
+            dataIndex: "-",
+            render: (text, record) => <p className="capitalize m-0">{record?.accepted_hero || 0}</p>,
         },
         {
             title: "Post Date",

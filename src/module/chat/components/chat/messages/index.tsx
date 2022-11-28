@@ -54,10 +54,9 @@ function Messages() {
 
     return (
         <div className="h-full w-full overflow-y-auto flex-1 bg-gray-100 flex flex-col px-24">
-            <Alert
-                type="warning"
-                description="Be careful of fraud, do not provide personal information such as telephone numbers, id cards and others"
-            />
+            <p className="m-0 text-red-300 text-xs text-center mt-2">
+                Be careful of fraud, do not provide personal information such as telephone numbers, id cards and others
+            </p>
             {data?.length === 0 && !loading && (
                 <div className="w-full h-full flex justify-center items-center flex-col">
                     <Lottie isClickToPauseDisabled options={defaultOptions} height={150} width={150} />

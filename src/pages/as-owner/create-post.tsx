@@ -236,6 +236,9 @@ function CreatePost() {
                             className=""
                             options={[]}
                         />
+                        <span className="text-xs text-gray-400">
+                            When the number of bid/applicant you receive has been reached, this post will close automatically
+                        </span>
                         {parseInt(typeOfJob, 10) === TASK_JOB ? (
                             <ControlledInputText
                                 type="number"

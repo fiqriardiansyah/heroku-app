@@ -43,6 +43,7 @@ import {
 } from "utils/routes";
 import { StateContext } from "context/state";
 import authService from "services/auth";
+import { ActionProvider } from "context/action";
 
 function App() {
     const { user, loading } = useAuthChange();
@@ -63,33 +64,35 @@ function App() {
     return (
         <BrowserRouter>
             {user ? (
-                <Routes>
-                    <Route path={HOME_PATH} element={<Home />} />
-                    <Route path={CHAT_PATH} element={<Chat />} />
-                    <Route path={PROFILE_PATH} element={<Profile />} />
+                <ActionProvider>
+                    <Routes>
+                        <Route path={HOME_PATH} element={<Home />} />
+                        <Route path={CHAT_PATH} element={<Chat />} />
+                        <Route path={PROFILE_PATH} element={<Profile />} />
 
-                    {state?.role === "hero" && (
-                        <>
-                            <Route path={MY_SERVICE_PATH} element={<MyService />} />
-                            <Route path={MY_JOB_PATH} element={<MyJob />} />
-                            <Route path={`${SERVICE_HERO_PATH}/:id`} element={<DetailServiceHero />} />
-                            <Route path={`${DETAIL_JOB_PATH}/:id`} element={<DetailJob />} />
-                            <Route path={CREATE_SERVICE_PATH} element={<CreateService />} />
-                        </>
-                    )}
+                        {state?.role === "hero" && (
+                            <>
+                                <Route path={MY_SERVICE_PATH} element={<MyService />} />
+                                <Route path={MY_JOB_PATH} element={<MyJob />} />
+                                <Route path={`${SERVICE_HERO_PATH}/:id`} element={<DetailServiceHero />} />
+                                <Route path={`${DETAIL_JOB_PATH}/:id`} element={<DetailJob />} />
+                                <Route path={CREATE_SERVICE_PATH} element={<CreateService />} />
+                            </>
+                        )}
 
-                    {state?.role === "owner" && (
-                        <>
-                            <Route path={MY_POST_PATH} element={<MyPost />} />
-                            <Route path={MY_ASSIGNMENT_PATH} element={<MyAssignment />} />
-                            <Route path={CREATE_POST_PATH} element={<CreatePost />} />
-                            <Route path={`${DETAIL_POST_PATH}/:id`} element={<DetailPost />} />
-                            <Route path={`${SERVICE_OWNER_PATH}/:id`} element={<DetailServiceOwner />} />
-                            <Route path={`${DETAIL_POST_PATH}/:id/progress`} element={<PostProgress />} />
-                        </>
-                    )}
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
+                        {state?.role === "owner" && (
+                            <>
+                                <Route path={MY_POST_PATH} element={<MyPost />} />
+                                <Route path={MY_ASSIGNMENT_PATH} element={<MyAssignment />} />
+                                <Route path={CREATE_POST_PATH} element={<CreatePost />} />
+                                <Route path={`${DETAIL_POST_PATH}/:id`} element={<DetailPost />} />
+                                <Route path={`${SERVICE_OWNER_PATH}/:id`} element={<DetailServiceOwner />} />
+                                <Route path={`${DETAIL_POST_PATH}/:id/progress`} element={<PostProgress />} />
+                            </>
+                        )}
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                </ActionProvider>
             ) : (
                 <Routes>
                     <Route path={HOME_PATH} element={<Home />} />

@@ -14,6 +14,12 @@ type Props<T> = {
     posters: Poster[];
 };
 
+const bidTotal = (poster: Poster) => {
+    if (!poster) return 0;
+    if (!poster.bids) return 0;
+    return Utils.parseTreeObjectToArray(poster.bids).length;
+};
+
 function TaskPost<T extends Poster>({ posters, fetcher }: Props<T>) {
     const columns: ColumnsType<T> = [
         {
@@ -34,7 +40,12 @@ function TaskPost<T extends Poster>({ posters, fetcher }: Props<T>) {
         {
             title: "Bid",
             dataIndex: "bid",
-            render: (text, record) => <p className="capitalize m-0">{record?.bids ? record.bids?.length : 0}</p>,
+            render: (text, record) => <p className="capitalize m-0">{bidTotal(record)}</p>,
+        },
+        {
+            title: "Accept",
+            dataIndex: "-",
+            render: (text, record) => <p className="capitalize m-0">{record?.accepted_hero || 0}</p>,
         },
         {
             title: "Post Date",

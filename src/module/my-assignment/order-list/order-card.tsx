@@ -1,10 +1,10 @@
 import { Alert, Button, Card, Image, message, Modal, Skeleton, Space, Steps } from "antd";
 import State from "components/common/state";
-import { ChatInfo, ServiceOwnerOrder } from "models";
+import { ChatInfo, Review, Service, ServiceOwnerOrder } from "models";
 import { BiLink } from "react-icons/bi";
 import moment from "moment";
 import { AiFillFile } from "react-icons/ai";
-import React, { useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { useMutation, useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import ownerService from "services/owner";
@@ -17,6 +17,10 @@ import { IoMdWarning } from "react-icons/io";
 import authService from "services/auth";
 import ButtonChat from "components/button/chat";
 import Utils from "utils";
+import UserHeader from "components/common/user-header";
+import ReviewModal from "components/modal/review-modal";
+import { UserContext } from "context/user";
+import { ActionContext } from "context/action";
 
 type Props = {
     data: ServiceOwnerOrder;
@@ -48,6 +52,8 @@ const steps = [
 
 function OrderCard({ data, refetchFetcher }: Props) {
     const user = authService.CurrentUser();
+    const { state } = useContext(UserContext);
+    const { serviceReview } = useContext(ActionContext);
 
     const userQuery = useQuery(
         ["user", data.hid],
@@ -71,14 +77,40 @@ function OrderCard({ data, refetchFetcher }: Props) {
         }
     );
 
+    const userHeader = useCallback(
+        () => (
+            <UserHeader uid={data.hid}>
+                <>
+                    <Link to={`${SERVICE_OWNER_PATH}/${data.sid}`}>
+                        <p className="m-0 text-blue-300 capitalize text-sm">
+                            {serviceQuery.data?.title} <BiLink />
+                        </p>
+                    </Link>
+                    <p className="m-0 text-gray-400 text-xs capitalize">{moment(data.date).format("DD MMM yyyy, LT")}</p>
+                </>
+            </UserHeader>
+        ),
+        [serviceQuery.data]
+    );
+
     const approveMutation = useMutation(
         async () => {
             await ownerService.ApproveOrderService({ uid: user?.uid as any, order: data });
         },
         {
             onSuccess: () => {
-                refetchFetcher();
                 message.success("Thankyou for your order ❤️");
+                if (serviceReview) {
+                    serviceReview({
+                        header: userHeader(),
+                        review: {
+                            anyid: serviceQuery.data?.id,
+                            heroUid: serviceQuery.data?.uid,
+                            name: state.user?.name,
+                            reviewerUid: state.user?.uid,
+                        },
+                    });
+                }
             },
             onError: (error: any) => {
                 message.error(error?.message);
@@ -130,45 +162,7 @@ function OrderCard({ data, refetchFetcher }: Props) {
 
     return (
         <Card className="flex flex-col !mb-4">
-            <State data={userQuery.data} isLoading={userQuery.isLoading} isError={userQuery.isError}>
-                {(state) => (
-                    <>
-                        <State.Data state={state}>
-                            <div className="w-full flex">
-                                <Image
-                                    preview={false}
-                                    referrerPolicy="no-referrer"
-                                    fallback={IMAGE_FALLBACK}
-                                    src={userQuery.data?.profile}
-                                    width={40}
-                                    height={40}
-                                    placeholder={
-                                        <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
-                                            <FaUserAlt className="text-2xl text-gray-400" />
-                                        </div>
-                                    }
-                                    className="flex-1 bg-gray-300 rounded-full object-cover"
-                                />
-                                <div className="flex flex-col ml-3">
-                                    <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
-                                    <Link to={`${SERVICE_OWNER_PATH}/${data.uid}/${data.sid}`}>
-                                        <p className="m-0 text-blue-300 capitalize text-sm">
-                                            {serviceQuery.data?.title} <BiLink />
-                                        </p>
-                                    </Link>
-                                    <p className="m-0 text-gray-400 text-xs capitalize">{moment(data.date).format("DD MMM yyyy, LT")}</p>
-                                </div>
-                            </div>
-                        </State.Data>
-                        <State.Loading state={state}>
-                            <Skeleton paragraph={{ rows: 2 }} avatar />
-                        </State.Loading>
-                        <State.Error state={state}>
-                            <Alert message={(userQuery.error as any)?.message} type="error" />
-                        </State.Error>
-                    </>
-                )}
-            </State>
+            {userHeader()}
             <div className="flex flex-col items-center justify-center my-10 px-20">
                 <Steps current={data.status}>
                     {mergeSteps.map((step) => (

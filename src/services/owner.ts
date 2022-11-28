@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import configFirebase from "config/firebase";
 import { FirebaseApp } from "firebase/app";
 import { Database, get, getDatabase, push, query, ref, set, serverTimestamp } from "firebase/database";
-import { Application, Bid, IDs, Poster, Service, ServiceData, ServiceDetail, ServiceOwnerOrder, ServiceOwnerRequest, ServiceRequest } from "models";
+import { Application, Bid, IDs, Poster, Review, Service, ServiceData, ServiceDetail, ServiceOwnerOrder, ServiceOwnerRequest, ServiceRequest } from "models";
 import { DEFAULT_ERROR, DOCUMENTS } from "utils/constant";
 import Utils from "utils";
 import OwnerServiceSupport from "./support/owner";
@@ -171,6 +171,13 @@ class OwnerService extends OwnerServiceSupport {
         data: Poster
     }) {
         return this.ProxyRequest(async () => {
+            const poster = await this.GetOnePoster({ pid: data.id as any });
+            if (!poster) {
+                throw new Error("Can't find poster");
+            }
+            if (poster.status === "close") {
+                throw new Error("This poster is closed by now");
+            }
             await this.updateBid({
                 biid, data: {
                     accept: true
@@ -179,7 +186,8 @@ class OwnerService extends OwnerServiceSupport {
             await this.updatePoster({
                 pid: data.id as any, data: {
                     ...data,
-                    accepted_hero: data.accepted_hero ? data.accepted_hero + 1 : 1
+                    accepted_hero: data.accepted_hero ? data.accepted_hero + 1 : 1,
+                    status: (data.accepted_hero || 0) + 1 === data.number_of_hero ? "close" : "open",
                 }
             })
             return null;
@@ -203,10 +211,32 @@ class OwnerService extends OwnerServiceSupport {
                 pid: poster.id as any,
                 data: {
                     ...poster,
-                    accepted_hero: poster.accepted_hero ? poster.accepted_hero + 1 : 1
+                    accepted_hero: poster.accepted_hero ? poster.accepted_hero + 1 : 1,
+                    status: (poster.accepted_hero || 0) + 1 === poster.limit_applicant ? "close" : "open",
                 }
             })
             return null;
+        });
+    }
+
+    async UpdateViewedService({ uid, sid }: Pick<IDs, "uid" | "sid">) {
+        return this.ProxyRequest(async () => {
+            const viewer = await this.getViewedServiceData({ uid, sid });
+            console.log(viewer.exists());
+            if (!viewer.exists()) {
+                await this.addViewedServiceData({ uid, sid });
+            }
+        });
+    }
+
+    async ServiceReview({ sid, review }: Pick<IDs, "sid"> & {
+        review: Partial<Review>
+    }) {
+        return this.ProxyRequest(async () => {
+            const rwid = uuidv4();
+            await this.addReviews({ rwid, review });
+            await this.addReviewToServiceData({ sid, rwid, review });
+            return rwid;
         });
     }
 }

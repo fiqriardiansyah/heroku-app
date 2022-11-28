@@ -1,6 +1,6 @@
 import Layout from "components/common/layout";
 import { Alert, Card, Skeleton, Tabs } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import OrderList from "module/my-assignment/order-list";
 import FinishList from "module/my-assignment/finish-list";
@@ -9,16 +9,25 @@ import { useQuery } from "react-query";
 import authService from "services/auth";
 import ownerService from "services/owner";
 import State from "components/common/state";
+import { ActionContext } from "context/action";
+import { Review } from "models";
 
 const Swal = require("sweetalert2");
 
 function MyAssignment() {
     const user = authService.CurrentUser();
+    const { state: actionContext } = useContext(ActionContext);
 
-    const assignmentQuery = useQuery(["assignment"], async () => {
-        const assigments = await ownerService.GetMyAssigments({ uid: user?.uid as any });
-        return assigments;
-    });
+    const assignmentQuery = useQuery(
+        ["assignment"],
+        async () => {
+            const assigments = await ownerService.GetMyAssigments({ uid: user?.uid as any });
+            return assigments;
+        },
+        {
+            enabled: !actionContext?.review,
+        }
+    );
 
     const myServicesOnClick = () => {
         Swal.fire(
@@ -33,7 +42,11 @@ function MyAssignment() {
     };
 
     const itemsTabs = [
-        { label: "Order", key: "order-tabs", children: <OrderList refetchFetcher={refetchFetcher} data={assignmentQuery.data?.orders || []} /> }, // remember to pass the key prop
+        {
+            label: "Order",
+            key: "order-tabs",
+            children: <OrderList refetchFetcher={refetchFetcher} data={assignmentQuery.data?.orders || []} />,
+        }, // remember to pass the key prop
         { label: "Finish", key: "finish-tabs", children: <FinishList data={assignmentQuery.data?.finish || []} /> },
         { label: "Request", key: "request-tabs", children: <RequestList data={assignmentQuery.data?.request || []} /> },
     ];

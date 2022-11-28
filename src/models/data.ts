@@ -14,6 +14,7 @@ export interface IDs {
     anyid: string; // any other id;
     cid: string; // chat id
     mid: string; // message id
+    rwid: string; // review id
 }
 export interface SignUpEmail {
     name: string;
@@ -58,6 +59,17 @@ export interface ServiceOrder extends Pick<IDs, 'uid' | 'hid'> {
 
 export interface ServiceFinish extends ServiceOrder { }
 
+export interface Review {
+    id?: string;
+    anyid: string;
+    name: string;
+    date: number;
+    rate: number;
+    review: string;
+    reviewerUid: string;
+    heroUid: string;
+}
+
 export interface ServiceData {
     id?: string;
     uid?: string;
@@ -70,9 +82,9 @@ export interface ServiceData {
     finish?: string[];
     orders?: ServiceOrder[];
     request?: ServiceRequest[];
-    viewed?: number;
+    viewed?: any[];
+    reviews?: Review[];
 }
-
 export interface ServiceOwnerRequest extends Pick<IDs, 'uid' | 'sid'> {
     id?: string;
     date: any;
@@ -96,15 +108,6 @@ export interface ServiceOwnerFinish extends ServiceOwnerOrder { }
 
 export interface ServiceDetail extends Service, ServiceData {
     _?: any;
-}
-
-export interface User {
-    uid: string;
-    name: string;
-    profile: string;
-    profession?: string;
-    services?: string[];
-    chats?: string[];
 }
 
 export interface Assignments {
@@ -193,5 +196,15 @@ export interface TaskProgress extends Pick<IDs, 'mid'> {
     error: null | any;
     task: UploadTask;
 }
+
+export interface User {
+    uid: string;
+    name: string;
+    profile: string;
+    profession?: string;
+    services?: string[];
+    chats?: ChatInfo[];
+}
+
 
 export default {};

@@ -88,7 +88,7 @@ function RequestCard({ data }: Props) {
                                 />
                                 <div className="flex flex-col ml-3">
                                     <p className="m-0 font-semibold text-gray-500 capitalize">{userQuery.data?.name}</p>
-                                    <Link to={`${SERVICE_OWNER_PATH}/${data.uid}/${data.sid}`}>
+                                    <Link to={`${SERVICE_OWNER_PATH}/${data.sid}`}>
                                         <p className="m-0 text-blue-300 capitalize text-sm">
                                             {serviceQuery.data?.title} <BiLink />
                                         </p>

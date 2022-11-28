@@ -1,7 +1,7 @@
 import { Alert, Button, Card, Image, message, Modal, Skeleton, Space, Spin, Tabs } from "antd";
 import Layout from "components/common/layout";
 import State from "components/common/state";
-import { ServiceDetail, ServiceFinish, ServiceOrder, ServiceRequest } from "models";
+import { Review, ServiceDetail, ServiceFinish, ServiceOrder, ServiceRequest } from "models";
 import RequestCard from "module/detail-service-as-hero/request-list/request-card";
 import RequestList from "module/detail-service-as-hero/request-list";
 import React, { useMemo, useState } from "react";
@@ -18,6 +18,7 @@ import FinishList from "module/detail-service-as-hero/finish-list";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { RiErrorWarningFill } from "react-icons/ri";
 import WarningModal from "components/modal/warning-modal";
+import Reviews from "components/common/reviews";
 
 const tabs = [
     {
@@ -120,6 +121,7 @@ function DetailServiceHero() {
     const request = Utils.parseTreeObjectToArray<ServiceRequest>(serviceQuery.data?.request || {});
     const orders = Utils.parseTreeObjectToArray<ServiceOrder>(serviceQuery.data?.orders || {});
     const finish = Utils.parseTreeObjectToArray<ServiceFinish>(serviceQuery.data?.finish || {});
+    const reviews = Utils.parseTreeObjectToArray<Review>(serviceQuery.data?.reviews || {});
 
     const refetchService = () => {
         serviceQuery.refetch();
@@ -129,12 +131,12 @@ function DetailServiceHero() {
 
     return (
         <Layout>
-            <div className="flex w-full mt-5 gap-4">
-                <State data={serviceQuery.data} isLoading={serviceQuery.isLoading} isError={serviceQuery.isError}>
-                    {(state) => (
-                        <>
-                            <State.Data state={state}>
-                                <Card className="flex-2 h-fit">
+            <State data={serviceQuery.data} isLoading={serviceQuery.isLoading} isError={serviceQuery.isError}>
+                {(state) => (
+                    <>
+                        <State.Data state={state}>
+                            <div className="flex w-full mt-5 gap-4">
+                                <Card className="flex-2 h-fit max-w-[60vw]">
                                     <div className="w-full flex items-center justify-between">
                                         <p className="capitalize text-gray-400 font-semibold">all your work for this service is here</p>
                                         <WarningModal onOk={clickWarningHandler}>
@@ -150,47 +152,51 @@ function DetailServiceHero() {
                                         <RequestList service={serviceQuery.data} refetchService={refetchService} sid={sid as any} data={request} />
                                     )}
                                 </Card>
-                                <Card className="flex-1 h-fit !w-[300px]">
-                                    <Image
-                                        preview={false}
-                                        referrerPolicy="no-referrer"
-                                        fallback={IMAGE_FALLBACK}
-                                        src={serviceQuery.data?.poster_image || undefined}
-                                        height={200}
-                                        width="100%"
-                                        placeholder={
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <Spin />
-                                            </div>
-                                        }
-                                        className="bg-gray-300 rounded-md object-cover !w-full"
-                                    />
-                                    <p className="font-semibold capitalize m-0 my-2 break-words">{serviceQuery.data?.title}</p>
-                                    <p className="text-gray-400 text-sm font-light break-words">
-                                        {Utils.stripHtml(serviceQuery.data?.description || "").CutText(200)}
-                                    </p>
-                                    <div className="w-full flex items-center justify-end">
-                                        <Space>
-                                            <Button onClick={() => onClickDelete(serviceQuery.data)} type="text">
-                                                Delete service
-                                            </Button>
-                                            <Button onClick={() => onClickEdit(serviceQuery.data)} type="primary">
-                                                Edit Service
-                                            </Button>
-                                        </Space>
-                                    </div>
-                                </Card>
-                            </State.Data>
-                            <State.Loading state={state}>
-                                <Skeleton paragraph={{ rows: 5 }} />
-                            </State.Loading>
-                            <State.Error state={state}>
-                                <Alert message={(serviceQuery.error as any)?.message} type="error" />
-                            </State.Error>
-                        </>
-                    )}
-                </State>
-            </div>
+                                <div className="flex-1 h-fit !w-[300px]">
+                                    <Card className="">
+                                        <div className="flex w-full">
+                                            <Image
+                                                preview={false}
+                                                referrerPolicy="no-referrer"
+                                                fallback={IMAGE_FALLBACK}
+                                                src={serviceQuery.data?.poster_image || undefined}
+                                                height={100}
+                                                width={150}
+                                                placeholder={
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <Spin />
+                                                    </div>
+                                                }
+                                                className="bg-gray-300 rounded-md object-cover !w-full"
+                                            />
+                                            <p className="font-medium capitalize m-0 break-words ml-3">{serviceQuery.data?.title}</p>
+                                        </div>
+                                        <div className="w-full flex items-center justify-end mt-4">
+                                            <Space>
+                                                <Button onClick={() => onClickDelete(serviceQuery.data)} type="text">
+                                                    Delete service
+                                                </Button>
+                                                <Button onClick={() => onClickEdit(serviceQuery.data)} type="primary">
+                                                    Edit Service
+                                                </Button>
+                                            </Space>
+                                        </div>
+                                    </Card>
+                                    <Card className="!mt-4">
+                                        <Reviews reviews={reviews} />
+                                    </Card>
+                                </div>
+                            </div>
+                        </State.Data>
+                        <State.Loading state={state}>
+                            <Skeleton paragraph={{ rows: 5 }} />
+                        </State.Loading>
+                        <State.Error state={state}>
+                            <Alert message={(serviceQuery.error as any)?.message} type="error" />
+                        </State.Error>
+                    </>
+                )}
+            </State>
         </Layout>
     );
 }

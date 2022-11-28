@@ -1,4 +1,4 @@
-import { ServiceOwnerOrder } from "models";
+import { Review, ServiceOwnerOrder } from "models";
 import React from "react";
 import OrderCard from "./order-list/order-card";
 

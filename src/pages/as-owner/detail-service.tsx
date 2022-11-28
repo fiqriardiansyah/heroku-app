@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import Layout from "components/common/layout";
-import React, { Children, useContext, useState } from "react";
-import { Alert, Button, Card, Image, message, Modal, Skeleton, Space } from "antd";
+import React, { Children, useCallback, useContext, useMemo, useState } from "react";
+import { Alert, Button, Card, Image, message, Modal, Rate, Skeleton, Space } from "antd";
 import parser from "html-react-parser";
 import { useNavigate, useParams } from "react-router-dom";
 import { CHAT_PATH, MY_ASSIGNMENT_PATH, SERVICE_HERO_PATH } from "utils/routes";
@@ -9,17 +9,18 @@ import { FaTelegramPlane, FaUserAlt } from "react-icons/fa";
 import { useMutation, useQuery } from "react-query";
 import ownerService from "services/owner";
 import State from "components/common/state";
-import { IMAGE_FALLBACK } from "utils/constant";
+import { HIGHEST_RATE, IMAGE_FALLBACK, RATE_DESC } from "utils/constant";
 import Chip from "components/common/chip";
 import ButtonFileDownload from "components/button/file-download";
 import WarningModal from "components/modal/warning-modal";
-import { ChatInfo, ServiceDetail } from "models";
+import { ChatInfo, Review, ServiceDetail } from "models";
 import authService from "services/auth";
 import { IoMdWarning } from "react-icons/io";
 import { StateContext } from "context/state";
 import userService from "services/user";
 import ButtonChat from "components/button/chat";
 import Utils from "utils";
+import Reviews from "components/common/reviews";
 
 function DetailServiceOwner() {
     const navigate = useNavigate();
@@ -62,6 +63,19 @@ function DetailServiceOwner() {
         }
     );
 
+    const updateViewed = useQuery(
+        ["viewed service", id],
+        async () => {
+            await ownerService.UpdateViewedService({ uid: user?.uid as any, sid: id as any });
+        },
+        {
+            enabled: !!id,
+            refetchInterval: false,
+            refetchOnReconnect: false,
+            refetchOnMount: false,
+        }
+    );
+
     const onAcceptWarningHandler = () => {
         if (!serviceQuery.data) return;
         orderServiceMutation.mutate(serviceQuery.data);
@@ -97,6 +111,23 @@ function DetailServiceOwner() {
         cid: chatId,
         id: chatId,
     };
+
+    const reviews = serviceQuery.data ? Utils.parseTreeObjectToArray(serviceQuery.data?.reviews || {}) : [];
+
+    const totalOrder = useMemo(() => {
+        if (!serviceQuery.data) return 0;
+        const order = Utils.parseTreeObjectToArray(serviceQuery.data?.orders || {}).length;
+        const finish = Utils.parseTreeObjectToArray(serviceQuery.data?.finish || {}).length;
+        return order + finish;
+    }, [serviceQuery.data]);
+
+    const totalRate = useMemo(() => {
+        if (reviews.length === 0) return 0;
+        const total = (reviews as Review[]).reduce((a, b) => a + b.rate, 0);
+        return Number((total / reviews.length).toFixed(1));
+    }, [reviews]);
+
+    const rate = useCallback(() => <Rate allowHalf defaultValue={totalRate} disabled />, [totalRate]);
 
     return (
         <Layout>
@@ -200,12 +231,12 @@ function DetailServiceOwner() {
                         {(state) => (
                             <>
                                 <State.Data state={state}>
-                                    <div className="w-full flex flex-col items-end h-fit">
-                                        <p className="text-2xl font-semibold text-center w-full">
+                                    <div className="w-full flex items-center h-fit justify-between">
+                                        <p className="text-2xl font-semibold w-full m-0">
                                             {parseInt(serviceQuery.data?.price as string, 10)?.ToIndCurrency("Rp")}
                                         </p>
                                         {serviceQuery.data?.uid === user?.uid ? (
-                                            <Button onClick={onClickDetailHandler} type="text">
+                                            <Button onClick={onClickDetailHandler} type="link">
                                                 To Detail
                                             </Button>
                                         ) : (
@@ -226,6 +257,15 @@ function DetailServiceOwner() {
                                                 <ButtonChat chatInfo={chatInfo} disabled={serviceQuery.isLoading || userQuery.isLoading} />
                                             </Space>
                                         )}
+                                    </div>
+                                    <div className="">
+                                        <p className="capitalize font-semibold m-0 mt-5">about the service</p>
+                                        <div className="flex items-center">
+                                            {rate()}
+                                            <p className="capitalize text-gray-400 m-0 ml-3">{`(${totalRate}) from ${reviews.length} reviews`}</p>
+                                        </div>
+                                        <p className="capitalize text-gray-400">{totalOrder} Order</p>
+                                        <Reviews reviews={reviews} />
                                     </div>
                                 </State.Data>
                                 <State.Loading state={state}>

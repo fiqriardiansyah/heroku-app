@@ -1,10 +1,10 @@
 /* eslint-disable no-shadow */
-import { Alert, Card, Image, Skeleton, Space } from "antd";
+import { Alert, Card, Image, message, Skeleton, Space } from "antd";
 import Layout from "components/common/layout";
 import State from "components/common/state";
 import React from "react";
 import { useMutation, useQuery } from "react-query";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ownerService from "services/owner";
 import userService from "services/user";
 import { IMAGE_FALLBACK } from "utils/constant";
@@ -41,15 +41,20 @@ function DetailJob() {
                 {(state) => (
                     <>
                         <State.Data state={state}>
-                            {posterQuery.data?.type_of_job === "task" && <JobTask refetchQuery={refetchQuery} fetcher={posterQuery} />}
-                            {posterQuery.data?.type_of_job === "hiring" && <JobHiring refetchQuery={refetchQuery} fetcher={posterQuery} />}
+                            {posterQuery.data?.status === "close" && <Alert message="Poster is closed by now" type="error" />}
+                            {posterQuery.data?.status === "open" && posterQuery.data?.type_of_job === "task" && (
+                                <JobTask refetchQuery={refetchQuery} fetcher={posterQuery} />
+                            )}
+                            {posterQuery.data?.status === "open" && posterQuery.data?.type_of_job === "hiring" && (
+                                <JobHiring refetchQuery={refetchQuery} fetcher={posterQuery} />
+                            )}
                         </State.Data>
                         <State.Loading state={state}>
                             <Skeleton paragraph={{ rows: 5 }} active />
                             <Skeleton.Image active />
                         </State.Loading>
                         <State.Error state={state}>
-                            <Alert message={(posterQuery.error as any)?.message || posterQuery.error} />
+                            <Alert message={(posterQuery.error as any)?.message || posterQuery.error} type="error" />
                         </State.Error>
                     </>
                 )}

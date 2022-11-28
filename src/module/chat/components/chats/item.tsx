@@ -46,6 +46,7 @@ function ChatItem({ data, onClick }: Props) {
     return (
         <button onClick={() => onClick(data)} type="button" className={className}>
             <Image
+                loading="lazy"
                 preview={false}
                 referrerPolicy="no-referrer"
                 fallback={IMAGE_FALLBACK}
@@ -64,7 +65,7 @@ function ChatItem({ data, onClick }: Props) {
                     {userQuery.isLoading ? (
                         <SkeletonInput active size="small" />
                     ) : (
-                        <p className="m-0 capitalize text-sm text-gray-700">{userQuery.data?.name}</p>
+                        <p className="m-0 capitalize text-sm text-gray-700 text-left">{userQuery.data?.name.CutText(20)}</p>
                     )}
                     <span className="m-0 text-xs text-gray-300">{moment(data.last_chat).format("DD MMM, LT")}</span>
                 </div>

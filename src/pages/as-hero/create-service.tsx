@@ -104,7 +104,7 @@ function CreateService() {
             onSuccess: (idService, { status }) => {
                 if (status === "active") {
                     message.success("Your New Service Is On Air!");
-                    navigate(`${`${SERVICE_HERO_PATH}/${user?.uid}` as any}/${idService}`);
+                    navigate(`${SERVICE_HERO_PATH}/${idService}`);
                     return;
                 }
                 message.success("successful save draft");

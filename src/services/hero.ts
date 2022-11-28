@@ -53,7 +53,7 @@ class HeroService extends HeroServiceSupport {
                     post_date: serverTimestamp(),
                     price: service.price,
                     status,
-                    viewed: 0,
+                    viewed: [],
                     poster_image: service?.images ? service?.images[0] : '',
                     title: service.title,
                     flag: `${service.title} ${service.category} ${service.tags?.join(' ')}`
@@ -291,6 +291,14 @@ class HeroService extends HeroServiceSupport {
 
     async SendBid({ pid, uid, data }: Pick<IDs, 'pid' | 'uid'> & { data: Bid }) {
         return this.ProxyRequest(async () => {
+            const poster = await this.GetOnePoster({ pid });
+            if (!poster) {
+                throw new Error("Can't find poster");
+            }
+            if (poster.status === "close") {
+                throw new Error("This poster is closed by now");
+            }
+
             const id = uuidv4();
             const bids = await this.GetPosterBid({ pid });
             const alreadyBid = bids.find((bid) => bid.uid === uid);

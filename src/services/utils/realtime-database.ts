@@ -17,6 +17,7 @@ import {
     ChatInfo,
     IDs,
     Poster,
+    Review,
     Service,
     ServiceData,
     ServiceOrder,
@@ -47,6 +48,8 @@ class RealtimeDatabase extends BaseService {
     appl = DOCUMENTS.applications;
 
     users = DOCUMENTS.users;
+
+    reviews = DOCUMENTS.reviews;
 
     constructor(db: Database) {
         super();
@@ -156,6 +159,17 @@ class RealtimeDatabase extends BaseService {
         data: ServiceOrder;
     }) {
         return update(ref(this.db, `${this.servDt}/${ids.sid}/orders/${ids.oid}`), data);
+    }
+
+    getViewedServiceData({ uid, sid }: Pick<IDs, "sid" | "uid">) {
+        return get(ref(this.db, `${this.servDt}/${sid}/viewed/${uid}`));
+    }
+
+    addViewedServiceData({ uid, sid }: Pick<IDs, "sid" | "uid">) {
+        return push(ref(this.db, `${this.servDt}/${sid}/viewed/${uid}`), {
+            uid,
+            date: new Date().getTime(),
+        });
     }
 
     // assignments documents
@@ -380,6 +394,20 @@ class RealtimeDatabase extends BaseService {
     udpateUser(user: User) {
         return update(ref(this.db, `${this.users}/${user.uid}`), user);
     }
+
+    // reviews
+    addReviews({ rwid, review }: Pick<IDs, 'rwid'> & {
+        review: Partial<Review>
+    }) {
+        return update(ref(this.db, `${this.reviews}/${rwid}`), review);
+    }
+
+    addReviewToServiceData({ sid, rwid, review }: Pick<IDs, 'sid' | 'rwid'> & {
+        review: Partial<Review>
+    }) {
+        return update(ref(this.db, `${this.servDt}/${sid}/reviews/${rwid}`), review)
+    }
+
 }
 
 export default RealtimeDatabase;

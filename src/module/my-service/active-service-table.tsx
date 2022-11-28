@@ -13,6 +13,11 @@ type Props<T> = {
     services: ServiceData[];
 };
 
+const totalViewed = (service: ServiceData) => {
+    if (!service.viewed) return 0;
+    return Utils.parseTreeObjectToArray(service.viewed).length;
+};
+
 function ActiveServiceTable<T extends ServiceData>({ services, fetcher }: Props<T>) {
     const parseServices = useMemo(() => {
         return services.map((service) => {
@@ -65,7 +70,7 @@ function ActiveServiceTable<T extends ServiceData>({ services, fetcher }: Props<
         {
             title: "Viewed",
             dataIndex: "viewed",
-            render: (text) => <p className="capitalize m-0">{text || 0}</p>,
+            render: (text, record) => <p className="capitalize m-0">{totalViewed(record)}</p>,
         },
         {
             title: "Request",

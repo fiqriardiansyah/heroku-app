@@ -2,6 +2,7 @@ import Navigation from "components/navigation";
 import React from "react";
 import Lottie from "react-lottie";
 import JsonLoadingAnim from "assets/animation/loading-4-box.json";
+import useScrollToTop from "hooks/useScrollToTop";
 import Footer from "./footer";
 
 type Props = {
@@ -20,6 +21,8 @@ const defaultOptions = {
 };
 
 function Layout({ children, useFooter = true, loading = false }: Props) {
+    useScrollToTop();
+
     return (
         <div className="w-full bg-base">
             <Navigation />

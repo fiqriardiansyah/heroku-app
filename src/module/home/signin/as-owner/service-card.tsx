@@ -1,4 +1,5 @@
 import { Image, Skeleton } from "antd";
+import UserHeader from "components/common/user-header";
 import { ServiceData } from "models";
 import React from "react";
 import { FaUserAlt } from "react-icons/fa";
@@ -22,54 +23,16 @@ function Loading() {
 }
 
 function ServiceCard({ data }: Props) {
-    const userQuery = useQuery(
-        [data.uid],
-        async () => {
-            const user = await userService.GetUser(data.uid!);
-            return user;
-        },
-        {
-            enabled: !!data.uid,
-        }
-    );
-
     return (
         <Link to={`${SERVICE_OWNER_PATH}/${data.id}`}>
-            <div className="flex flex-col justify-center bg-gray-50 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
-                {userQuery.isLoading && <Skeleton avatar paragraph={{ rows: 2 }} />}
-                {userQuery.data && (
-                    <div className="m-4 mb-2 flex flex-row">
-                        <Image
-                            referrerPolicy="no-referrer"
-                            preview={false}
-                            fallback={IMAGE_FALLBACK}
-                            loading="lazy"
-                            className="rounded-full bg-gray-200 object-cover "
-                            src={userQuery.data?.profile || undefined}
-                            height={40}
-                            width={40}
-                            placeholder={
-                                <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
-                                    <FaUserAlt className="text-2xl text-gray-400" />
-                                </div>
-                            }
-                        />
-                        <div className="ml-3">
-                            <p style={{ lineHeight: "100%" }} className="capitalize text-lg font-medium m-0 text-gray-900 dark:text-white">
-                                {userQuery.data.name}
-                            </p>
-                            <span style={{ lineHeight: "7px" }} className="text-xs text-gray-400 capitalize">
-                                analytic
-                            </span>
-                        </div>
-                    </div>
-                )}
-                <div className="m-4 flex flex-col">
+            <div className="p-3 flex flex-col justify-center bg-gray-50 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
+                <UserHeader uid={data.uid as any} />
+                <div className="flex flex-col mt-3">
                     <Image
                         preview={false}
                         fallback={IMAGE_FALLBACK}
                         loading="lazy"
-                        className="rounded-md bg-gray-200 object-cover "
+                        className="rounded-md bg-gray-200 object-cover"
                         src={data.poster_image || undefined}
                         height={150}
                     />

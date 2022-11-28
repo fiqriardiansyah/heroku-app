@@ -31,8 +31,6 @@ function StateProvider({ children }: Props) {
         chatActive: null,
     });
 
-    console.log(state.chatActive);
-
     const setChatActive = (chatInfo: ChatInfo) => {
         setState((prev) => ({
             ...prev,
