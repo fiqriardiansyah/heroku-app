@@ -52,7 +52,7 @@ function MyService() {
     );
 
     const myServicesOnClick = () => {
-        Swal.fire("What is My Services?", "My Services is page of your service that you provide for people who needs");
+        Swal.fire("What is My Services?", "My Services is a page of your service that you provide for people who needs");
     };
 
     const onDraftBtnClick = () => {
@@ -80,7 +80,7 @@ function MyService() {
     return (
         <Layout>
             <br />
-            <div className="flex flex-row space-x-2 justify-between">
+            <div className="flex flex-row space-x-2 justify-between flex-wrap">
                 <div className="flex items-center">
                     <p className="m-0 mr-2 font-semibold text-xl capitalize">create service</p>
                     <AiFillQuestionCircle className="text-gray-400 text-xl cursor-pointer" onClick={myServicesOnClick} />

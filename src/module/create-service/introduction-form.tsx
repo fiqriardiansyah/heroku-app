@@ -86,7 +86,7 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
                 layout="horizontal"
                 onFinish={onSubmitHandler}
             >
-                <div className="w-full grid grid-cols-2 gap-4 mb-10">
+                <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                     <div className="">
                         <div className="">
                             <span className="m-0 text-gray-300 text-xs">

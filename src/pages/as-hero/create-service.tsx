@@ -18,6 +18,7 @@ import JsonAdminAnim from "assets/animation/admin.json";
 import { DEFAULT_ERROR } from "utils/constant";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { SERVICE_HERO_PATH } from "utils/routes";
+import Swal from "sweetalert2";
 
 const steps = [
     {
@@ -141,7 +142,9 @@ function CreateService() {
         }
     );
 
-    const onClickGuide = () => {};
+    const onClickGuide = () => {
+        Swal.fire("What is My Services?", "My Services is a page of your service that you provide for people who needs");
+    };
 
     const prevStep = () => {
         window.scrollTo(0, 0);
