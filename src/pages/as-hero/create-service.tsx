@@ -130,8 +130,8 @@ function CreateService() {
             onSuccess: (service) => {
                 setIntroductionData({
                     title: service.title,
-                    category: service.category,
-                    sub_category: service.sub_category,
+                    category: Number(service.category),
+                    sub_category: Number(service.sub_category),
                     price: service.price,
                     tags: service.tags,
                 });
@@ -205,7 +205,9 @@ function CreateService() {
                 {createMutation.isLoading && (
                     <div className="w-full mt-10 bg-white min-h-[400px] flex items-center justify-center flex-col rounded-md border-solid border border-gray-300 p-6">
                         <Lottie isClickToPauseDisabled options={defaultOptions} height={350} width={350} />
-                        <p className="m-0 capitalize text-xl mt-2 text-gray-400 font-medium">wait, creating your service post</p>
+                        <p className="m-0 capitalize text-xl mt-2 text-gray-400 font-medium">
+                            {getServiceQuery.data ? "Wait, updating this post" : "Wait, creating your service post"}
+                        </p>
                     </div>
                 )}
             </div>

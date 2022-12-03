@@ -25,6 +25,7 @@ import { FaTelegramPlane } from "react-icons/fa";
 import ButtonFileDownload from "components/button/file-download";
 import ButtonChat from "components/button/chat";
 import Utils from "utils";
+import { CATEGORY } from "utils/field-constant";
 import ModalBid from "./modal-bid";
 
 type Props<T> = {
@@ -226,6 +227,11 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
         refetchQuery();
     };
 
+    const category = useMemo(() => {
+        if (!fetcher.data?.category || !CATEGORY) return "";
+        return CATEGORY?.find((el) => el.value === Number(fetcher.data?.category))?.label;
+    }, [fetcher.data]);
+
     return (
         <div className="flex flex-wrap-reverse md:flex-nowrap">
             <div className="flex-1 md:w-2/3 md:mt-0 mt-3">
@@ -249,7 +255,7 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                     <div className="w-full flex">
                         <div className="flex-1">
                             <p className="capitalize font-medium">category</p>
-                            <Chip text={fetcher.data?.category} />
+                            <Chip text={category} />
                         </div>
                         <div className="flex-1">
                             <p className="capitalize font-medium">skills</p>

@@ -6,13 +6,6 @@ import React from "react";
 import { useMutation, useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import ownerService from "services/owner";
-import userService from "services/user";
-import { IMAGE_FALLBACK } from "utils/constant";
-import parser from "html-react-parser";
-import Chip from "components/common/chip";
-import moment from "moment";
-import PostTask from "module/detail-post/post-task";
-import PostHiring from "module/detail-post/post-hiring";
 import JobTask from "module/detail-job/job-task";
 import JobHiring from "module/detail-job/job-hiring";
 

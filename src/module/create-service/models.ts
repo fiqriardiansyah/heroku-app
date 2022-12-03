@@ -2,8 +2,8 @@ export default {};
 
 export interface FDataIntroduction {
     title: string;
-    category: string;
-    sub_category: string;
+    category: number;
+    sub_category: number;
     price: number | string;
     tags: string[];
 }

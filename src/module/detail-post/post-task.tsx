@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 /* eslint-disable no-shadow */
 import { Alert, Button, Card, Image, Skeleton, Space } from "antd";
@@ -16,6 +16,7 @@ import moment from "moment";
 import { Poster } from "models";
 import Utils from "utils";
 import { DETAIL_POST_PATH } from "utils/routes";
+import { CATEGORY } from "utils/field-constant";
 
 type Props<T> = {
     fetcher: UseQueryResult<T, unknown>;
@@ -37,6 +38,11 @@ function PostTask<T extends Poster>({ fetcher }: Props<T>) {
 
     const bids = Utils.parseTreeObjectToArray(fetcher.data?.bids || {});
 
+    const category = useMemo(() => {
+        if (!fetcher.data?.category || !CATEGORY) return "";
+        return CATEGORY?.find((el) => el.value === Number(fetcher.data?.category))?.label;
+    }, [fetcher.data]);
+
     return (
         <Card className="">
             <p className="m-0 capitalize font-semibold text-lg">{fetcher.data?.title}</p>
@@ -53,7 +59,7 @@ function PostTask<T extends Poster>({ fetcher }: Props<T>) {
             <div className="w-full flex">
                 <div className="flex-1">
                     <p className="capitalize font-medium">category</p>
-                    <Chip text={fetcher.data?.category} />
+                    <Chip text={category} />
                 </div>
                 <div className="flex-1">
                     <p className="capitalize font-medium">skills</p>

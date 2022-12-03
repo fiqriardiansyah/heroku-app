@@ -6,26 +6,16 @@ import { useForm } from "react-hook-form";
 import ControlledInputText from "components/form/controlled-inputs/controlled-input-text";
 import ControlledInputNumber from "components/form/controlled-inputs/controlled-input-number";
 import ControlledSelectInput from "components/form/controlled-inputs/controlled-input-select";
+import { CATEGORY, SUB_CATEGORY } from "utils/field-constant";
 import { FDataIntroduction } from "./models";
 
 const schema: yup.SchemaOf<FDataIntroduction> = yup.object().shape({
     title: yup.string().required("Service title is required!"),
     price: yup.string().required("price is required!"),
-    category: yup.string().required("Category is required!"),
-    sub_category: yup.string().required("Sub category is required!"),
+    category: yup.number().required("Category is required!"),
+    sub_category: yup.number().required("Sub category is required!"),
     tags: yup.array().required("Tags is required!"),
 });
-
-const optionsCategory = [
-    {
-        value: 1,
-        label: "satu",
-    },
-    {
-        value: 2,
-        label: "dua",
-    },
-];
 
 type Props = {
     nextStep: () => void;
@@ -53,6 +43,7 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
     });
 
     const watchAll = watch();
+    const watchCategory = watch("category");
 
     useEffect(() => {
         if (currentData) {
@@ -65,7 +56,11 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
     }, [currentData]);
 
     const onSubmitHandler = handleSubmit((data) => {
-        onSubmit(data);
+        onSubmit({
+            ...data,
+            category: Number(data.category),
+            sub_category: Number(data.sub_category),
+        });
         nextStep();
     });
 
@@ -74,6 +69,13 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
         if (!title || !category || !subCategory || !tags || tags.length === 0 || !price) return false;
         return true;
     }, [watchAll]);
+
+    const subCategory = useMemo(() => {
+        setValue("sub_category", undefined as any);
+
+        if (Number.isNaN(watchCategory as any)) return [];
+        return SUB_CATEGORY[watchCategory as any];
+    }, [watchCategory]);
 
     return (
         <div className="w-full">
@@ -111,10 +113,19 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
                                     label="Category"
                                     placeholder="Category"
                                     className=""
-                                    options={optionsCategory}
+                                    options={CATEGORY as any}
                                 />
                                 <div className="w-4" />
-                                <ControlledInputText control={control} name="sub_category" label="" placeholder="Ex: web development" className="" />
+                                <ControlledSelectInput
+                                    control={control}
+                                    disabled={Number.isNaN(watchCategory) || watchCategory === undefined}
+                                    name="sub_category"
+                                    labelCol={{ xs: 10 }}
+                                    label=""
+                                    placeholder="Sub Category"
+                                    className=""
+                                    options={subCategory || []}
+                                />
                             </div>
                         </div>
                     </div>

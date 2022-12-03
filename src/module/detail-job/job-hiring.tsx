@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 
 /* eslint-disable no-shadow */
 import { Alert, Button, Card, Image, Modal, Skeleton, Space } from "antd";
@@ -23,6 +23,7 @@ import { StateContext } from "context/state";
 import { CHAT_PATH, DETAIL_POST_PATH } from "utils/routes";
 import Utils from "utils";
 import ButtonChat from "components/button/chat";
+import { CATEGORY } from "utils/field-constant";
 import ModalApplication from "./modal-application";
 
 type Props<T> = {
@@ -100,6 +101,11 @@ function JobHiring<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
         id: chatId,
     };
 
+    const category = useMemo(() => {
+        if (!fetcher.data?.category || !CATEGORY) return "";
+        return CATEGORY?.find((el) => el.value === Number(fetcher.data?.category))?.label;
+    }, [fetcher.data]);
+
     return (
         <div className="flex flex-wrap-reverse md:flex-nowrap">
             <div className="flex-1 w-full md:w-2/3">
@@ -119,7 +125,7 @@ function JobHiring<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                     <div className="w-full flex">
                         <div className="flex-1">
                             <p className="capitalize font-medium">category</p>
-                            <Chip text={fetcher.data?.category} />
+                            <Chip text={category} />
                         </div>
                         <div className="flex-1">
                             <p className="capitalize font-medium">skills</p>

@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 import Layout from "components/common/layout";
-import React, { Children, useCallback, useContext, useMemo, useState } from "react";
+import React, { Children, Suspense, useCallback, useContext, useMemo, useState } from "react";
 import { Alert, Button, Card, Image, message, Modal, Rate, Skeleton, Space } from "antd";
 import parser from "html-react-parser";
 import { useNavigate, useParams } from "react-router-dom";
@@ -21,6 +21,7 @@ import userService from "services/user";
 import ButtonChat from "components/button/chat";
 import Utils from "utils";
 import Reviews from "components/common/reviews";
+import { CATEGORY, SUB_CATEGORY } from "../../utils/field-constant";
 
 function DetailServiceOwner() {
     const navigate = useNavigate();
@@ -129,6 +130,16 @@ function DetailServiceOwner() {
 
     const rate = useCallback(() => <Rate allowHalf defaultValue={totalRate} disabled />, [totalRate]);
 
+    const category = useMemo(() => {
+        if (!serviceQuery.data || !CATEGORY) return "";
+        return CATEGORY?.find((el) => el.value === Number(serviceQuery.data?.category))?.label;
+    }, [serviceQuery.data]);
+
+    const subCategory = useMemo(() => {
+        if (!serviceQuery.data || !SUB_CATEGORY) return "";
+        return SUB_CATEGORY[Number(serviceQuery.data?.category)].find((sub) => sub.value === Number(serviceQuery.data?.sub_category || "0"))?.label;
+    }, [serviceQuery.data]);
+
     return (
         <Layout>
             <br />
@@ -183,7 +194,12 @@ function DetailServiceOwner() {
                                         <div className="w-full flex">
                                             <div className="flex-1">
                                                 <p className="capitalize font-medium">category</p>
-                                                <Chip text={serviceQuery.data?.category} />
+                                                <Suspense>
+                                                    <Space direction="vertical">
+                                                        <Chip text={category} />
+                                                        <Chip text={subCategory} />
+                                                    </Space>
+                                                </Suspense>
                                             </div>
                                             <div className="flex-1">
                                                 <p className="capitalize font-medium">tags</p>
@@ -194,7 +210,7 @@ function DetailServiceOwner() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <p className="capitalize font-medium">images</p>
+                                        <p className="capitalize font-medium mt-5">images</p>
                                         <Space direction="horizontal">
                                             {serviceQuery.data?.images?.map((image) => (
                                                 <Image
