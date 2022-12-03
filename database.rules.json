@@ -1,0 +1,37 @@
+{
+    "rules": {
+        ".read": "now < 1921968000000", // 2030-11-27
+        ".write": "now < 1921968000000", // 2030-11-27
+        "services": {
+            ".indexOn": ["post_date", "uid"]
+        },
+        "services_data": {
+            ".indexOn": ["status", "flag", "post_date", "uid"]
+        },
+        "request": {
+            ".indexOn": "sid"
+        },
+        "orders": {
+            ".indexOn": "sid"
+        },
+        "posters": {
+            ".indexOn": ["status", "flag", "category", "uid"]
+        },
+        "bids": {
+            ".indexOn": ["pid", "uid"]
+        },
+        "applications": {
+            ".indexOn": ["pid", "uid"]
+        },
+        "chats": {
+            ".indexOn": ["last_chat"]
+        },
+        "assignment": {
+            "uid": {
+                "orders": {
+                    ".indexOn": ["key"]
+                }
+            }
+        }
+    }
+}
