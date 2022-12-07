@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Layout from "components/common/layout";
 import React from "react";
+import Swal from "sweetalert2";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { FDataPost } from "module/create-post/models";
 import ControlledInputText from "components/form/controlled-inputs/controlled-input-text";
@@ -144,7 +145,9 @@ function CreatePost() {
         } as Poster);
     });
 
-    const onClickGuide = () => {};
+    const onClickGuide = () => {
+        Swal.fire("Create Post", "You can create job postings or task postings", "question");
+    };
 
     return (
         <Layout>

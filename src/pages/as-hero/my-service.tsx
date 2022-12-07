@@ -82,7 +82,7 @@ function MyService() {
             <br />
             <div className="flex flex-row space-x-2 justify-between flex-wrap">
                 <div className="flex items-center">
-                    <p className="m-0 mr-2 font-semibold text-xl capitalize">create service</p>
+                    <p className="m-0 mr-2 font-semibold text-xl capitalize">My Services</p>
                     <AiFillQuestionCircle className="text-gray-400 text-xl cursor-pointer" onClick={myServicesOnClick} />
                 </div>
                 <div className="flex flex-row gap-1">

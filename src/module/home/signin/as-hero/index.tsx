@@ -59,7 +59,7 @@ function HomeAsHero() {
                     {!loading && !query && data?.map((poster) => <JobCard poster={poster} key={poster.id} />)}
                     {!searchMutation.isLoading && query && searchMutation.data?.map((poster) => <JobCard poster={poster} key={poster.id} />)}
                 </div>
-                {(!data || data.length === 0 || searchMutation.data?.length === 0) && (
+                {(!data || data.length === 0 || searchMutation.data?.length === 0) && !loading && (
                     <div className="w-full flex items-center justify-center flex-col">
                         <img src={EmptyImage} alt="no job" className="w-11/12 h-full sm:w-96" />
                     </div>

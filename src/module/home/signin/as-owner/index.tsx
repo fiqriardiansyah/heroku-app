@@ -60,7 +60,7 @@ function HomeAsOwner() {
                     {!loading && !query && data?.map((service) => <ServiceCard data={service} key={service.id} />)}
                     {!searchMutation.isLoading && query && searchMutation.data?.map((service) => <ServiceCard data={service} key={service.id} />)}
                 </div>
-                {(!data || data.length === 0 || searchMutation.data?.length === 0) && (
+                {(!data || data.length === 0 || searchMutation.data?.length === 0) && !loading && (
                     <div className="w-full flex items-center justify-center flex-col">
                         <img src={EmptyImage} alt="" />
                     </div>

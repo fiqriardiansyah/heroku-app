@@ -143,7 +143,7 @@ function CreateService() {
     );
 
     const onClickGuide = () => {
-        Swal.fire("What is My Services?", "My Services is a page of your service that you provide for people who needs");
+        Swal.fire("Create Service?", "You can make services according to your expertise and get paid");
     };
 
     const prevStep = () => {

@@ -36,7 +36,7 @@ function MyPost() {
     );
 
     const myServicesOnClick = () => {
-        Swal.fire("What is My Post?", "---", "question");
+        Swal.fire("My Post", "Posts are divided into two, namely posting task and posting job vacancies", "question");
     };
 
     const itemsTabs = [

@@ -176,7 +176,7 @@ function Profile() {
                         </Space>
                         <p className="m-0 capitalize text-lg mb-10 mt-5">History</p>
                         <div className="flex flex-col w-full max-h-[400px] overflow-auto px-4">
-                            <HistoryCard />
+                            <Alert type="info" message="Development" description="Your history transaction feature in development" />
                         </div>
                     </div>
                 </div>
