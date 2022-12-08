@@ -2,9 +2,9 @@
 import { Alert, Card, Image, Skeleton, Space } from "antd";
 import Layout from "components/common/layout";
 import State from "components/common/state";
-import React from "react";
+import React, { useContext } from "react";
 import { useMutation, useQuery } from "react-query";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ownerService from "services/owner";
 import userService from "services/user";
 import { IMAGE_FALLBACK } from "utils/constant";
@@ -15,14 +15,24 @@ import PostTask from "module/detail-post/post-task";
 import PostHiring from "module/detail-post/post-hiring";
 import Bids from "module/detail-post/bids";
 import Applicants from "module/detail-post/applicants";
+import authService from "services/auth";
+import { StateContext } from "context/state";
+import { DETAIL_JOB_PATH } from "utils/routes";
 
 function DetailPost() {
+    const user = authService.CurrentUser();
+    const { changeRole, state } = useContext(StateContext);
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const posterQuery = useQuery(
         ["poster", id],
         async () => {
             const poster = await ownerService.GetOnePoster({ pid: id as any });
+            if (poster.uid !== user?.uid) {
+                if (state?.role === "owner" && changeRole) changeRole();
+                navigate(`${DETAIL_JOB_PATH}/${id}`);
+            }
             return poster;
         },
         {

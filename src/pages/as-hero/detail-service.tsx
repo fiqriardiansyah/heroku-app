@@ -4,7 +4,7 @@ import State from "components/common/state";
 import { Review, ServiceDetail, ServiceFinish, ServiceOrder, ServiceRequest } from "models";
 import RequestCard from "module/detail-service-as-hero/request-list/request-card";
 import RequestList from "module/detail-service-as-hero/request-list";
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { IoMdWarning } from "react-icons/io";
 import { useMutation, useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,13 +12,14 @@ import authService from "services/auth";
 import heroService from "services/hero";
 import Utils from "utils";
 import { IMAGE_FALLBACK } from "utils/constant";
-import { CREATE_SERVICE_PATH, MY_SERVICE_PATH } from "utils/routes";
+import { CREATE_SERVICE_PATH, MY_SERVICE_PATH, SERVICE_HERO_PATH, SERVICE_OWNER_PATH } from "utils/routes";
 import OrderList from "module/detail-service-as-hero/order-list";
 import FinishList from "module/detail-service-as-hero/finish-list";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { RiErrorWarningFill } from "react-icons/ri";
 import WarningModal from "components/modal/warning-modal";
 import Reviews from "components/common/reviews";
+import { StateContext } from "context/state";
 
 const tabs = [
     {
@@ -36,6 +37,8 @@ const tabs = [
 ];
 
 function DetailServiceHero() {
+    const user = authService.CurrentUser();
+    const { changeRole } = useContext(StateContext);
     const { id: sid } = useParams();
     const navigate = useNavigate();
 
@@ -45,6 +48,11 @@ function DetailServiceHero() {
         [`detail-service${sid}`],
         async () => {
             const service = await heroService.GetDetailService({ sid: sid as any });
+            if (service.uid !== user?.uid) {
+                if (changeRole) changeRole();
+                navigate(`${SERVICE_OWNER_PATH}/${sid}`);
+                throw new Error("Access Denied!");
+            }
             return service;
         },
         {
