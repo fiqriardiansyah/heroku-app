@@ -17,7 +17,7 @@ import { StorageReference } from "firebase/storage";
 import JsonAdminAnim from "assets/animation/admin.json";
 import { DEFAULT_ERROR } from "utils/constant";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { SERVICE_HERO_PATH } from "utils/routes";
+import { CREATE_SERVICE_PATH, MY_SERVICE_PATH, SERVICE_HERO_PATH } from "utils/routes";
 import Swal from "sweetalert2";
 
 const steps = [
@@ -109,7 +109,7 @@ function CreateService() {
                     return;
                 }
                 message.success("successful save draft");
-                navigate("/");
+                navigate(MY_SERVICE_PATH);
             },
             onError: (err: any) => {
                 message.error(err?.message || DEFAULT_ERROR);

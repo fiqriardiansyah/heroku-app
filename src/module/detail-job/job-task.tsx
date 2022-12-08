@@ -327,10 +327,7 @@ function JobTask<T extends Poster>({ fetcher, refetchQuery }: Props<T>) {
                             </Steps>
                             <p className="text-gray-300 capitalize m-0 text-xs">If you have multiple file, you can archive those file first</p>
                             <div className="w-full flex justify-end items-center mt-2">
-                                <Space>
-                                    {actions?.find((act) => act.status === myBid?.status)?.button}
-                                    <ButtonChat chatInfo={chatInfo} disabled={userQuery.isLoading} />
-                                </Space>
+                                <Space>{actions?.find((act) => act.status === myBid?.status)?.button}</Space>
                             </div>
                         </Card>
                         <br />

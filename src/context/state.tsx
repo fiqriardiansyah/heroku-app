@@ -1,6 +1,6 @@
 import { ChatInfo } from "models";
 import React, { createContext, Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { CURRENT_ROLE } from "utils/constant";
+import { CURRENT_ROLE, HERO, OWNER } from "utils/constant";
 
 type Props = {
     children: any;
@@ -20,14 +20,14 @@ type ValueContextType = {
 
 const StateContext = createContext<ValueContextType>({
     state: {
-        role: (localStorage.getItem(CURRENT_ROLE) || "hero") as any,
+        role: (localStorage.getItem(CURRENT_ROLE) || HERO) as any,
         chatActive: null,
     },
 });
 
 function StateProvider({ children }: Props) {
     const [state, setState] = useState<StateType>({
-        role: (localStorage.getItem(CURRENT_ROLE) || "hero") as any,
+        role: (localStorage.getItem(CURRENT_ROLE) || HERO) as any,
         chatActive: null,
     });
 
@@ -40,7 +40,7 @@ function StateProvider({ children }: Props) {
 
     const changeRole = () => {
         setState((prev) => {
-            const switchRole = prev.role === "hero" ? "owner" : "hero";
+            const switchRole = prev.role === HERO ? OWNER : HERO;
             localStorage.setItem(CURRENT_ROLE, switchRole);
             return {
                 ...prev,

@@ -5,6 +5,9 @@ import { BsArrowRight } from "react-icons/bs";
 import HerokuImage from "assets/svgs/heroku-image.svg";
 import Bg1 from "assets/images/bg-1.png";
 import Bg2 from "assets/images/bg-2.png";
+import { Link } from "react-router-dom";
+import { CREATE_POST_PATH, CREATE_SERVICE_PATH, SIGN_IN_PATH } from "utils/routes";
+import { HERO, OWNER } from "utils/constant";
 
 function HomeNotSignIn() {
     return (
@@ -20,12 +23,16 @@ function HomeNotSignIn() {
                         penghasilan
                     </p>
                     <Space className="!mt-3">
-                        <button className="capitalize bg-primary border-none px-4 py-2 rounded-full text-white cursor-pointer" type="button">
-                            create service
-                        </button>
-                        <Button type="text" className="!text-primary">
-                            Need Help
-                        </Button>
+                        <Link to={`${SIGN_IN_PATH}?redirect=${CREATE_SERVICE_PATH}&as=${HERO}`}>
+                            <button className="capitalize bg-primary border-none px-4 py-2 rounded-full text-white cursor-pointer" type="button">
+                                create service
+                            </button>
+                        </Link>
+                        <Link to={`${SIGN_IN_PATH}?redirect=${CREATE_POST_PATH}&as=${OWNER}`}>
+                            <Button type="text" className="!text-primary">
+                                Need Help
+                            </Button>
+                        </Link>
                     </Space>
                 </div>
             </section>
@@ -35,20 +42,24 @@ function HomeNotSignIn() {
                     <h2 className="text-white font-semibold text-base md:text-2xl xl:text-5xl max-w-[50%]">Create your poster service</h2>
                     <p className="text-white text-xs md:text-lg xl:text-3xl max-w-[50%]">Jual jasa keahlianmu dan tunjukkan pada dunia!</p>
                     <Space>
-                        <button
-                            className="flex items-center capitalize bg-primary border-none px-4 py-2 rounded-lg text-white cursor-pointer"
-                            type="button"
-                        >
-                            create service
-                            <BsArrowRight className="ml-2" />
-                        </button>
-                        <button
-                            className="flex items-center capitalize bg-primary border-none px-4 py-2 rounded-lg text-white cursor-pointer"
-                            type="button"
-                        >
-                            find work
-                            <BsArrowRight className="ml-2" />
-                        </button>
+                        <Link to={`${SIGN_IN_PATH}?redirect=${CREATE_SERVICE_PATH}&as=${HERO}`}>
+                            <button
+                                className="flex items-center capitalize bg-primary border-none px-4 py-2 rounded-lg text-white cursor-pointer"
+                                type="button"
+                            >
+                                create service
+                                <BsArrowRight className="ml-2" />
+                            </button>
+                        </Link>
+                        <Link to={`${SIGN_IN_PATH}?as=${HERO}`}>
+                            <button
+                                className="flex items-center capitalize bg-primary border-none px-4 py-2 rounded-lg text-white cursor-pointer"
+                                type="button"
+                            >
+                                find work
+                                <BsArrowRight className="ml-2" />
+                            </button>
+                        </Link>
                     </Space>
                 </div>
             </section>
@@ -58,20 +69,24 @@ function HomeNotSignIn() {
                     <h2 className="text-white font-semibold text-base md:text-2xl xl:text-5xl max-w-[50%]">Find the right talent</h2>
                     <p className="text-white text-xs md:text-lg xl:text-3xl max-w-[50%]">Temukan kandidat talenta yang sesusai dengan anda</p>
                     <Space>
-                        <button
-                            className="flex items-center capitalize bg-primary border-none px-4 py-2 rounded-lg text-white cursor-pointer"
-                            type="button"
-                        >
-                            create task
-                            <BsArrowRight className="ml-2" />
-                        </button>
-                        <button
-                            className="flex items-center capitalize bg-primary border-none px-4 py-2 rounded-lg text-white cursor-pointer"
-                            type="button"
-                        >
-                            find service
-                            <BsArrowRight className="ml-2" />
-                        </button>
+                        <Link to={`${SIGN_IN_PATH}?redirect=${CREATE_POST_PATH}&as=${OWNER}`}>
+                            <button
+                                className="flex items-center capitalize bg-primary border-none px-4 py-2 rounded-lg text-white cursor-pointer"
+                                type="button"
+                            >
+                                create task
+                                <BsArrowRight className="ml-2" />
+                            </button>
+                        </Link>
+                        <Link to={`${SIGN_IN_PATH}?as=${OWNER}`}>
+                            <button
+                                className="flex items-center capitalize bg-primary border-none px-4 py-2 rounded-lg text-white cursor-pointer"
+                                type="button"
+                            >
+                                find service
+                                <BsArrowRight className="ml-2" />
+                            </button>
+                        </Link>
                     </Space>
                 </div>
             </section>

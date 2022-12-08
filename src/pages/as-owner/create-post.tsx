@@ -18,6 +18,8 @@ import { Poster } from "models";
 import { useNavigate } from "react-router-dom";
 import ownerService from "services/owner";
 import authService from "services/auth";
+import { CATEGORY } from "utils/field-constant";
+import { CREATE_POST_PATH, MY_POST_PATH } from "utils/routes";
 
 const schema: yup.SchemaOf<FDataPost> = yup.object().shape({
     title: yup.string().required("Service title is required!"),
@@ -31,17 +33,6 @@ const schema: yup.SchemaOf<FDataPost> = yup.object().shape({
     number_of_hero: yup.number(),
     limit_applicant: yup.number(),
 });
-
-const optionsCategory = [
-    {
-        value: 1,
-        label: "satu",
-    },
-    {
-        value: 2,
-        label: "dua",
-    },
-];
 
 function CreatePost() {
     const navigate = useNavigate();
@@ -82,7 +73,7 @@ function CreatePost() {
         {
             onSuccess: () => {
                 message.success("Your job/task posting is On Air!");
-                navigate("/");
+                navigate(MY_POST_PATH);
             },
             onError: (err: any) => {
                 message.error(err?.message || DEFAULT_ERROR);
@@ -226,7 +217,7 @@ function CreatePost() {
                             label="Category"
                             placeholder="Category"
                             className=""
-                            options={optionsCategory}
+                            options={CATEGORY}
                         />
 
                         <ControlledSelectInput

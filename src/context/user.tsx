@@ -2,7 +2,9 @@ import useAuthChange from "hooks/useAuthChange";
 import useRealtimeValue from "hooks/useRealtimeValue";
 import { ChatInfo, User } from "models";
 import React, { createContext, Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import userService from "services/user";
+import qstring from "query-string";
 
 type Props = {
     children: any;
@@ -25,6 +27,8 @@ const UserContext = createContext<ValueContextType>({
 });
 
 function UserProvider({ children }: Props) {
+    const { redirect } = qstring.parse(window.location.search);
+
     const { user: userAuth } = useAuthChange();
     const [state, setState] = useState<UserData>({
         user: null,
@@ -44,6 +48,10 @@ function UserProvider({ children }: Props) {
                 callback: (user) => {
                     setLoading(false);
                     saveUser(user);
+
+                    if (redirect) {
+                        window.location.href = redirect.toString() || "";
+                    }
                 },
             });
         }

@@ -42,7 +42,6 @@ import {
     SIGN_UP_PATH,
 } from "utils/routes";
 import { StateContext } from "context/state";
-import authService from "services/auth";
 import { ActionProvider } from "context/action";
 
 function App() {

@@ -10,6 +10,9 @@ export const IMAGE_FALLBACK = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMI
 
 export const HIGHEST_RATE = 5;
 
+export const OWNER = "owner";
+export const HERO = "hero";
+
 export const LOCALE = "en-us";
 export const CURRENT_ROLE = "current_role";
 export const CURRENCY = [

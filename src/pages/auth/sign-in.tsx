@@ -12,8 +12,9 @@ import HerokuImage from "assets/svgs/heroku-image.svg";
 import { SignInEmail } from "models";
 import ControlledInputText from "components/form/controlled-inputs/controlled-input-text";
 import { SIGN_UP_PATH } from "utils/routes";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import userService from "services/user";
+import { CURRENT_ROLE } from "utils/constant";
 
 const schema: yup.SchemaOf<SignInEmail> = yup.object().shape({
     email: yup.string().required("Email wajib diisi"),
@@ -21,6 +22,12 @@ const schema: yup.SchemaOf<SignInEmail> = yup.object().shape({
 });
 
 function SignIn() {
+    const [searchParams] = useSearchParams();
+
+    if (searchParams.get("as")) {
+        localStorage.setItem(CURRENT_ROLE, searchParams.get("as")!);
+    }
+
     const [form] = Form.useForm();
 
     const {
