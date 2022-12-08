@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { Button, Form, Space } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -66,7 +67,7 @@ function IntroductionForm({ nextStep, onSubmit, currentData }: Props) {
 
     const isAllValid = useMemo(() => {
         const { title, category, price, sub_category: subCategory, tags } = watchAll;
-        if (!title || !category || !subCategory || !tags || tags.length === 0 || !price) return false;
+        if (!title || isNaN(category) || isNaN(subCategory) || !tags || tags.length === 0 || !price) return false;
         return true;
     }, [watchAll]);
 
