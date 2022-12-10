@@ -34,13 +34,8 @@ function DetailJob() {
                 {(state) => (
                     <>
                         <State.Data state={state}>
-                            {posterQuery.data?.status === "close" && <Alert message="Poster is closed by now" type="error" />}
-                            {posterQuery.data?.status === "open" && posterQuery.data?.type_of_job === "task" && (
-                                <JobTask refetchQuery={refetchQuery} fetcher={posterQuery} />
-                            )}
-                            {posterQuery.data?.status === "open" && posterQuery.data?.type_of_job === "hiring" && (
-                                <JobHiring refetchQuery={refetchQuery} fetcher={posterQuery} />
-                            )}
+                            {posterQuery.data?.type_of_job === "task" && <JobTask refetchQuery={refetchQuery} fetcher={posterQuery} />}
+                            {posterQuery.data?.type_of_job === "hiring" && <JobHiring refetchQuery={refetchQuery} fetcher={posterQuery} />}
                         </State.Data>
                         <State.Loading state={state}>
                             <Skeleton paragraph={{ rows: 5 }} active />
